@@ -334,7 +334,7 @@
         <p>Buy • Sell • Connect</p>
 
         <p>
-            © <span id="year"></span> Sioma Market
+            © <span id="year"></span> Sioma Market 2026
         </p>
 
     </div>
