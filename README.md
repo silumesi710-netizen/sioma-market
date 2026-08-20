@@ -1,347 +1,545 @@
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* =========================
+   SIOMA MARKET
+   MOBILE-FIRST CSS
+   ========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7f6;
+    color: #222;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 15px;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+.header {
+    background: white;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo span {
+    width: 40px;
+    height: 40px;
+    background: #087f5b;
+    color: white;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+}
+
+.logo h1 {
+    font-size: 18px;
+}
+
+.logo small {
+    color: #777;
+    font-size: 11px;
+}
+
+
+/* MOBILE MENU */
+
+.menu-btn {
+    border: none;
+    background: none;
+    font-size: 28px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+nav {
+    display: none;
+
+    position: absolute;
+    top: 65px;
+    left: 0;
+    right: 0;
+
+    background: white;
+    padding: 15px;
+
+    border-bottom: 1px solid #ddd;
+}
 
-    <title>Sioma Market - Buy & Sell in Sioma</title>
+nav.active {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
-    <meta name="description"
-          content="Sioma Market connects buyers and sellers in Sioma, Zambia.">
+nav a {
+    text-decoration: none;
+    color: #222;
+    font-weight: bold;
+    padding: 8px;
+}
 
-    <link rel="stylesheet" href="style.css">
-</head>
 
-<body>
+/* =========================
+   HERO
+   ========================= */
 
-<header class="header">
+.hero {
+    background: #087f5b;
+    color: white;
+    padding: 50px 0;
+}
 
-    <div class="container nav">
+.hero h2 {
+    font-size: 32px;
+    line-height: 1.15;
+    margin-bottom: 15px;
+}
 
-        <div class="logo">
-            <span>SM</span>
-            <div>
-                <h1>Sioma Market</h1>
-                <small>Buy • Sell • Connect</small>
-            </div>
-        </div>
+.hero p {
+    font-size: 16px;
+    margin-bottom: 25px;
+}
 
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-        <nav id="navMenu">
-            <a href="#home">Home</a>
-            <a href="#products">Buy</a>
-            <a href="#sell">Sell</a>
-            <a href="#about">About</a>
-        </nav>
 
-    </div>
+/* =========================
+   BUTTONS
+   ========================= */
 
-</header>
+.btn {
+    display: block;
+    width: 100%;
 
+    padding: 14px 18px;
 
-<main>
+    border-radius: 8px;
+    border: none;
 
-<!-- HERO -->
+    text-align: center;
+    text-decoration: none;
 
-<section id="home" class="hero">
+    font-weight: bold;
+    font-size: 16px;
 
-    <div class="container hero-content">
+    cursor: pointer;
+}
 
-        <div>
+.primary {
+    background: #087f5b;
+    color: white;
+}
 
-            <h2>Buy and sell locally in Sioma.</h2>
+.secondary {
+    background: white;
+    color: #087f5b;
+}
 
-            <p>
-                Find products, livestock, farm produce and services
-                from sellers around Sioma.
-            </p>
 
-            <div class="hero-buttons">
-                <a href="#products" class="btn primary">
-                    Browse Products
-                </a>
+/* =========================
+   SEARCH
+   ========================= */
 
-                <a href="#sell" class="btn secondary">
-                    Sell Something
-                </a>
-            </div>
+.search-section {
+    background: white;
+    padding: 15px 0;
 
-        </div>
+    position: sticky;
+    top: 65px;
+    z-index: 900;
+}
 
-    </div>
+#searchInput {
+    width: 100%;
 
-</section>
+    padding: 15px;
 
+    border: 1px solid #ccc;
+    border-radius: 25px;
 
-<!-- SEARCH -->
+    font-size: 16px;
 
-<section class="search-section">
+    outline: none;
+}
 
-    <div class="container">
+#searchInput:focus {
+    border-color: #087f5b;
+}
 
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search chickens, fish, maize..."
-            onkeyup="searchProducts()"
-        >
 
-    </div>
+/* =========================
+   CATEGORIES
+   ========================= */
 
-</section>
+.categories {
+    padding: 30px 0;
+}
 
+.categories h2 {
+    margin-bottom: 15px;
+}
 
-<!-- CATEGORIES -->
+.category-grid {
+    display: grid;
 
-<section class="categories">
+    grid-template-columns: repeat(2, 1fr);
 
-    <div class="container">
+    gap: 10px;
+}
 
-        <h2>Categories</h2>
+.category-grid button {
+    min-height: 80px;
 
-        <div class="category-grid">
+    background: white;
 
-            <button onclick="filterCategory('All')">
-                🛒<br>All
-            </button>
+    border: 1px solid #ddd;
+    border-radius: 10px;
 
-            <button onclick="filterCategory('Farm Produce')">
-                🌽<br>Farm Produce
-            </button>
+    font-size: 14px;
 
-            <button onclick="filterCategory('Livestock')">
-                🐐<br>Livestock
-            </button>
+    cursor: pointer;
+}
 
-            <button onclick="filterCategory('Fish')">
-                🐟<br>Fish
-            </button>
+.category-grid button:active {
+    transform: scale(.97);
+}
 
-            <button onclick="filterCategory('Poultry')">
-                🐔<br>Poultry
-            </button>
 
-            <button onclick="filterCategory('Electronics')">
-                📱<br>Electronics
-            </button>
+/* =========================
+   PRODUCTS
+   ========================= */
 
-            <button onclick="filterCategory('Services')">
-                🔧<br>Services
-            </button>
+.products-section {
+    padding: 30px 0 50px;
+}
 
-            <button onclick="filterCategory('Property')">
-                🏠<br>Property
-            </button>
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-        </div>
+    margin-bottom: 20px;
+}
 
-    </div>
+.section-heading h2 {
+    font-size: 22px;
+}
 
-</section>
+#productCount {
+    color: #777;
+    font-size: 13px;
+}
 
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
 
-<!-- PRODUCTS -->
 
-<section id="products" class="products-section">
+/* PRODUCT CARD */
 
-    <div class="container">
+.product-card {
+    background: white;
 
-        <div class="section-heading">
+    border-radius: 12px;
 
-            <div>
-                <h2>Available in Sioma</h2>
-                <p>Contact sellers directly.</p>
-            </div>
+    overflow: hidden;
 
-            <span id="productCount"></span>
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
 
-        </div>
+.product-image {
+    height: 150px;
 
+    background: #e9ecef;
 
-        <div id="productGrid" class="product-grid">
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            <!-- Products are inserted by JavaScript -->
+    font-size: 55px;
+}
 
-        </div>
+.product-content {
+    padding: 16px;
+}
 
-    </div>
+.product-content h3 {
+    font-size: 19px;
+    margin-bottom: 5px;
+}
 
-</section>
+.price {
+    color: #087f5b;
 
+    font-size: 21px;
 
-<!-- SELL -->
+    font-weight: bold;
 
-<section id="sell" class="sell-section">
+    margin: 8px 0;
+}
 
-    <div class="container">
+.location {
+    color: #777;
 
-        <div class="sell-box">
+    font-size: 14px;
 
-            <h2>Sell on Sioma Market</h2>
+    margin-bottom: 8px;
+}
 
-            <p>
-                Advertise your product to buyers in Sioma.
-                First 50 sellers can list for free.
-            </p>
+.whatsapp {
+    display: block;
 
+    width: 100%;
 
-            <form id="sellerForm">
+    background: #25D366;
+    color: white;
 
-                <label>Your Name</label>
+    text-align: center;
 
-                <input
-                    type="text"
-                    id="sellerName"
-                    required
-                    placeholder="Enter your name"
-                >
+    padding: 13px;
 
+    border-radius: 8px;
 
-                <label>Phone / WhatsApp</label>
+    text-decoration: none;
 
-                <input
-                    type="tel"
-                    id="sellerPhone"
-                    required
-                    placeholder="097xxxxxxx"
-                >
+    font-weight: bold;
 
+    margin-top: 12px;
+}
 
-                <label>Product</label>
 
-                <input
-                    type="text"
-                    id="sellerProduct"
-                    required
-                    placeholder="Example: Village chickens"
-                >
+/* =========================
+   SELL SECTION
+   ========================= */
 
+.sell-section {
+    background: white;
+    padding: 50px 0;
+}
 
-                <label>Category</label>
+.sell-box {
+    width: 100%;
+}
 
-                <select id="sellerCategory" required>
+.sell-box h2 {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
 
-                    <option value="">Select category</option>
+.sell-box > p {
+    color: #666;
+    margin-bottom: 25px;
+}
 
-                    <option>Farm Produce</option>
-                    <option>Livestock</option>
-                    <option>Fish</option>
-                    <option>Poultry</option>
-                    <option>Electronics</option>
-                    <option>Services</option>
-                    <option>Property</option>
 
-                </select>
+/* FORM */
 
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-                <label>Price (K)</label>
+form label {
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-                <input
-                    type="number"
-                    id="sellerPrice"
-                    required
-                    placeholder="Example: 850"
-                >
+form input,
+form select,
+form textarea {
+    width: 100%;
 
+    padding: 14px;
 
-                <label>Location</label>
+    border: 1px solid #ccc;
 
-                <input
-                    type="text"
-                    id="sellerLocation"
-                    required
-                    placeholder="Example: Sioma"
-                >
+    border-radius: 8px;
 
+    font-size: 16px;
 
-                <label>Description</label>
+    background: white;
+}
 
-                <textarea
-                    id="sellerDescription"
-                    required
-                    placeholder="Describe your product..."
-                ></textarea>
+form textarea {
+    min-height: 120px;
+}
 
+form button {
+    margin-top: 15px;
+}
 
-                <button type="submit" class="btn primary">
-                    Submit Listing
-                </button>
 
-            </form>
+/* =========================
+   ABOUT
+   ========================= */
 
+.about-section {
+    padding: 50px 0;
+}
 
-            <div id="formMessage"></div>
+.about-section h2 {
+    margin-bottom: 12px;
+}
 
-        </div>
+.about-section > .container > p {
+    color: #666;
+    margin-bottom: 25px;
+}
 
-    </div>
+.how-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
 
-</section>
+.how-grid div {
+    background: white;
 
+    padding: 20px;
 
-<!-- ABOUT -->
+    border-radius: 10px;
+}
 
-<section id="about" class="about-section">
+.how-grid strong {
+    font-size: 28px;
+    color: #087f5b;
+}
 
-    <div class="container">
 
-        <h2>About Sioma Market</h2>
+/* =========================
+   FOOTER
+   ========================= */
 
-        <p>
-            Sioma Market is a local marketplace designed to connect
-            buyers and sellers in Sioma and surrounding areas.
-        </p>
+footer {
+    background: #222;
+    color: white;
 
-        <div class="how-grid">
+    text-align: center;
 
-            <div>
-                <strong>1</strong>
-                <h3>Seller lists</h3>
-                <p>Products are advertised on the marketplace.</p>
-            </div>
+    padding: 30px 15px;
+}
 
-            <div>
-                <strong>2</strong>
-                <h3>Buyer searches</h3>
-                <p>Buyers find products they need.</p>
-            </div>
+footer h3 {
+    margin-bottom: 5px;
+}
 
-            <div>
-                <strong>3</strong>
-                <h3>They connect</h3>
-                <p>Buyer contacts the seller directly.</p>
-            </div>
 
-        </div>
+/* =========================
+   TABLETS
+   ========================= */
 
-    </div>
+@media (min-width: 600px) {
 
-</section>
+    .hero-buttons {
+        flex-direction: row;
+    }
 
-</main>
+    .btn {
+        width: auto;
+    }
 
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-<!-- FOOTER -->
+    .how-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 
-<footer>
+}
 
-    <div class="container">
 
-        <h3>Sioma Market</h3>
+/* =========================
+   DESKTOP
+   ========================= */
 
-        <p>Buy • Sell • Connect</p>
+@media (min-width: 850px) {
 
-        <p>
-            © <span id="year"></span> Sioma Market 2026
-        </p>
+    .container {
+        padding: 0 20px;
+    }
 
-    </div>
+    .menu-btn {
+        display: none;
+    }
 
-</footer>
+    nav {
+        display: flex;
 
+        position: static;
 
-<script src="script.js"></script>
+        flex-direction: row;
 
-</body>
-</html>
+        padding: 0;
+
+        border: none;
+
+        gap: 25px;
+    }
+
+    nav a {
+        padding: 5px;
+    }
+
+    .hero {
+        padding: 90px 0;
+    }
+
+    .hero h2 {
+        font-size: 48px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+}
