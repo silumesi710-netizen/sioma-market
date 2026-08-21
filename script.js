@@ -310,3 +310,112 @@ function contactSeller(
         "_blank"
     );
             }
+async function buyNow() {
+
+    const results =
+        document.getElementById("searchResults");
+
+    results.innerHTML = `
+        <div class="no-results">
+            🔎 Loading products...
+        </div>
+    `;
+
+    const { data, error } =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq("status", "active")
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(error);
+
+        results.innerHTML = `
+            <div class="no-results">
+                ❌ Unable to load products.
+            </div>
+        `;
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+
+        results.innerHTML = `
+            <div class="no-results">
+                🛒 No products are currently available.
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h2>🛒 Products for Sale</h2>
+
+        <div class="results-grid">
+    `;
+
+    data.forEach(product => {
+
+        const image =
+            product.image_url ||
+            "https://via.placeholder.com/600x400?text=SiomaMarket";
+
+        html += `
+            <div class="result-card">
+
+                <img
+                    src="${image}"
+                    alt="${product.title}">
+
+                <div class="result-info">
+
+                    <h3>
+                        ${product.title}
+                    </h3>
+
+                    <p class="result-price">
+                        K${Number(
+                            product.price || 0
+                        ).toLocaleString()}
+                    </p>
+
+                    <p>
+                        📍 ${
+                            product.location ||
+                            "Sioma"
+                        }
+                    </p>
+
+                    <button
+                        class="buy-result"
+                        onclick="viewListing('${product.id}')">
+
+                        🛒 VIEW & BUY
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    results.innerHTML = html;
+
+    /* Scroll to products */
+
+    results.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
