@@ -711,6 +711,17 @@ async function viewListing(id) {
 
     }
 
+function closeProductPage() {
+
+    document.getElementById(
+        "productPage"
+    ).style.display =
+        "none";
+
+
+    document.body.style.overflow =
+        "auto";
+
 }
 
     </script>
