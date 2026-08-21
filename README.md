@@ -401,15 +401,6 @@ function searchProducts() {
 
   alert("Searching for: " + search);
 }
-</script>
-<div class="search">
-
-<input
-id="search"
-placeholder="Search Sioma Market..."
-oninput="loadListings()">
-
-</div>
 
 </header>
 
