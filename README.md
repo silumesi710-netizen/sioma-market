@@ -21,6 +21,14 @@ content="width=device-width, initial-scale=1.0">
     padding:0;
 }
 
+
+/* MAIN CENTER CONTAINER */
+.container {
+width: 100%;
+max-width: 1100px;
+margin: 0 auto;
+padding: 0 15px;
+}
 body{
     font-family:Arial,sans-serif;
     background:#f5f7f5;
