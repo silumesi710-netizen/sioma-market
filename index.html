@@ -561,7 +561,144 @@ font-size: 24px;
 </head>
 
 <body>
+<!-- SELL NOW PAGE -->
 
+<div id="sellPage" class="sell-page">
+
+    <div class="sell-page-header">
+
+        <button
+            type="button"
+            class="back-button"
+            onclick="closeSellPage()">
+            ← Back
+        </button>
+
+        <h2>Sell on SiomaMarket</h2>
+
+    </div>
+
+    <div class="sell-container">
+
+        <div class="sell-intro">
+
+            <div class="sell-icon-large">
+                🏷️
+            </div>
+
+            <h1>Sell Your Product</h1>
+
+            <p>
+                Reach buyers in Sioma by listing
+                your product on SiomaMarket.
+            </p>
+
+        </div>
+
+        <form id="sellForm" class="sell-form">
+
+            <label>Product Name</label>
+
+            <input
+                type="text"
+                id="sellTitle"
+                placeholder="e.g. Fresh Fish"
+                required>
+
+
+            <label>Description</label>
+
+            <textarea
+                id="sellDescription"
+                placeholder="Describe your product..."
+                rows="4"
+                required></textarea>
+
+
+            <label>Price (K)</label>
+
+            <input
+                type="number"
+                id="sellPrice"
+                placeholder="e.g. 80"
+                min="0"
+                required>
+
+
+            <label>Category</label>
+
+            <select id="sellCategory" required>
+
+                <option value="">
+                    Select category
+                </option>
+
+                <option>Agriculture</option>
+                <option>Livestock</option>
+                <option>Fish</option>
+                <option>Phones</option>
+                <option>Vehicles</option>
+                <option>Houses</option>
+                <option>Clothes</option>
+                <option>Services</option>
+                <option>Other</option>
+
+            </select>
+
+
+            <label>Location</label>
+
+            <input
+                type="text"
+                id="sellLocation"
+                value="Sioma"
+                required>
+
+
+            <label>Product Photo URL</label>
+
+            <input
+                type="url"
+                id="sellImage"
+                placeholder="Optional">
+
+
+            <label>Your Name</label>
+
+            <input
+                type="text"
+                id="sellerName"
+                placeholder="Your name"
+                required>
+
+
+            <label>WhatsApp / Phone Number</label>
+
+            <input
+                type="tel"
+                id="sellerPhone"
+                placeholder="0971234567"
+                required>
+
+
+            <button
+                type="submit"
+                class="publish-button">
+
+                🚀 PUBLISH PRODUCT
+
+            </button>
+
+            <div
+                id="sellMessage"
+                class="sell-message">
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 <!-- HEADER -->
 
 <header>
@@ -1462,195 +1599,6 @@ searchMarket();
     </div>
 
 </div>
-<!-- SELL NOW PAGE -->
-
-<div id="sellPage" class="sell-page">
-
-    <div class="sell-page-header">
-
-        <button
-            class="back-button"
-            onclick="closeSellPage()">
-            ← Back
-        </button>
-
-        <h2>Sell on SiomaMarket</h2>
-
-    </div>
-
-    <div class="sell-container">
-
-        <div class="sell-intro">
-
-            <div class="sell-icon-large">
-                🏷️
-            </div>
-
-            <h1>Sell Your Product</h1>
-
-            <p>
-                Reach buyers in Sioma by listing
-                your product on SiomaMarket.
-            </p>
-
-        </div>
-
-
-        <form
-            id="sellForm"
-            class="sell-form">
-
-            <label>
-                Product Name
-            </label>
-
-            <input
-                type="text"
-                id="sellTitle"
-                placeholder="e.g. Fresh Fish"
-                required>
-
-
-            <label>
-                Description
-            </label>
-
-            <textarea
-                id="sellDescription"
-                placeholder="Describe your product..."
-                rows="4"
-                required></textarea>
-
-
-            <label>
-                Price (K)
-            </label>
-
-            <input
-                type="number"
-                id="sellPrice"
-                placeholder="e.g. 80"
-                min="0"
-                required>
-
-
-            <label>
-                Category
-            </label>
-
-            <select
-                id="sellCategory"
-                required>
-
-                <option value="">
-                    Select category
-                </option>
-
-                <option value="Agriculture">
-                    🌾 Agriculture
-                </option>
-
-                <option value="Livestock">
-                    🐔 Livestock
-                </option>
-
-                <option value="Fish">
-                    🐟 Fish
-                </option>
-
-                <option value="Phones">
-                    📱 Phones
-                </option>
-
-                <option value="Vehicles">
-                    🚗 Vehicles
-                </option>
-
-                <option value="Houses">
-                    🏠 Houses
-                </option>
-
-                <option value="Clothes">
-                    👕 Clothes
-                </option>
-
-                <option value="Services">
-                    🛠️ Services
-                </option>
-
-                <option value="Other">
-                    📦 Other
-                </option>
-
-            </select>
-
-
-            <label>
-                Location
-            </label>
-
-            <input
-                type="text"
-                id="sellLocation"
-                value="Sioma"
-                placeholder="e.g. Sioma"
-                required>
-
-
-            <label>
-                Product Photo URL
-            </label>
-
-            <input
-                type="url"
-                id="sellImage"
-                placeholder="Paste your image URL">
-
-
-            <small>
-                You can leave this blank for now.
-            </small>
-
-
-            <label>
-                Your Name
-            </label>
-
-            <input
-                type="text"
-                id="sellerName"
-                placeholder="Your name"
-                required>
-
-
-            <label>
-                WhatsApp / Phone Number
-            </label>
-
-            <input
-                type="tel"
-                id="sellerPhone"
-                placeholder="e.g. 0971234567"
-                required>
-
-
-            <button
-                type="submit"
-                class="publish-button">
-
-                🚀 PUBLISH PRODUCT
-
-            </button>
-
-
-            <div
-                id="sellMessage"
-                class="sell-message">
-            </div>
-
-        </form>
-
-    </div>
 
 </div>
 <script src="script.js"></script>
