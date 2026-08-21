@@ -780,3 +780,23 @@ function saveFavorite() {
     );
 
 }
+function sellNow() {
+
+    const sellPage =
+        document.getElementById("sellPage");
+
+    sellPage.style.display = "block";
+
+    document.body.style.overflow = "hidden";
+}
+
+
+function closeSellPage() {
+
+    const sellPage =
+        document.getElementById("sellPage");
+
+    sellPage.style.display = "none";
+
+    document.body.style.overflow = "auto";
+}
