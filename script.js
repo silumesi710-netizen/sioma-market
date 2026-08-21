@@ -531,3 +531,222 @@ async function buyNow() {
         `;
     }
 }
+async function viewListing(id) {
+
+    console.log("VIEW PRODUCT:", id);
+
+    const productPage =
+        document.getElementById("productPage");
+
+    if (!productPage) {
+
+        alert(
+            "Product details page is missing."
+        );
+
+        return;
+    }
+
+    /* Open product page */
+
+    productPage.style.display = "block";
+
+    document.body.style.overflow = "hidden";
+
+
+    /* Loading message */
+
+    document.getElementById(
+        "detailsTitle"
+    ).textContent =
+        "Loading product...";
+
+
+    /* Get product from Supabase */
+
+    const { data, error } =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+
+    /* Check for error */
+
+    if (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "detailsTitle"
+        ).textContent =
+            "Unable to load product.";
+
+        return;
+    }
+
+
+    /* Product image */
+
+    document.getElementById(
+        "detailsImage"
+    ).src =
+        data.image_url ||
+        "https://via.placeholder.com/800x500?text=SiomaMarket";
+
+
+    /* Product name */
+
+    document.getElementById(
+        "detailsTitle"
+    ).textContent =
+        data.title || "Product";
+
+
+    /* Price */
+
+    document.getElementById(
+        "detailsPrice"
+    ).textContent =
+        "K" +
+        Number(
+            data.price || 0
+        ).toLocaleString();
+
+
+    /* Category */
+
+    document.getElementById(
+        "detailsCategory"
+    ).textContent =
+        data.category || "";
+
+
+    /* Location */
+
+    document.getElementById(
+        "detailsLocation"
+    ).textContent =
+        "📍 " +
+        (
+            data.location ||
+            "Sioma"
+        );
+
+
+    /* Description */
+
+    document.getElementById(
+        "detailsDescription"
+    ).textContent =
+        data.description ||
+        "No description provided.";
+
+
+    /* Seller */
+
+    document.getElementById(
+        "detailsSeller"
+    ).textContent =
+        data.seller_name ||
+        "Sioma Seller";
+
+
+    /* Phone */
+
+    document.getElementById(
+        "detailsPhone"
+    ).textContent =
+        data.seller_phone ||
+        "Phone number not provided";
+
+
+    /* WhatsApp */
+
+    const whatsappButton =
+        document.getElementById(
+            "whatsappButton"
+        );
+
+
+    if (data.seller_phone) {
+
+        whatsappButton.style.display =
+            "block";
+
+
+        whatsappButton.onclick =
+            function () {
+
+                contactSeller(
+                    data.seller_phone,
+                    data.title
+                );
+
+            };
+
+    } else {
+
+        whatsappButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* CLOSE PRODUCT PAGE */
+
+function closeProductPage() {
+
+    const productPage =
+        document.getElementById(
+            "productPage"
+        );
+
+    productPage.style.display =
+        "none";
+
+    document.body.style.overflow =
+        "auto";
+}
+
+
+/* WHATSAPP */
+
+function contactSeller(
+    phone,
+    product
+) {
+
+    let number =
+        String(phone)
+            .replace(/\D/g, "");
+
+
+    if (number.startsWith("0")) {
+
+        number =
+            "260" +
+            number.substring(1);
+
+    }
+
+
+    const message =
+        encodeURIComponent(
+            "Hello, I found your " +
+            product +
+            " on SiomaMarket. Is it still available?"
+        );
+
+
+    window.open(
+        "https://wa.me/" +
+        number +
+        "?text=" +
+        message,
+        "_blank"
+    );
+}
