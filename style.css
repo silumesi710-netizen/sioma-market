@@ -1291,3 +1291,8 @@ footer h3 {
     line-height: 1.5;
 }
 
+body.selling > header,
+body.selling > main,
+body.selling > footer {
+    display: none;
+}
