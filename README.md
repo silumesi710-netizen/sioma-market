@@ -202,7 +202,7 @@
         <div class="logo">
             🛍️ Sioma<span>Market</span>
         </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <!-- SEARCH BAR -->
         <div class="search-container">
 
