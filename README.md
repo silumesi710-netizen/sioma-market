@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Siomamarket</title>
-<h2>Buy and sell locally in Sioma.</h2>
+    <title>Buy and Sell locally in Sioma</title>
+    
     <style>
         * {
             box-sizing: border-box;
