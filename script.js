@@ -246,7 +246,30 @@ async function viewListing(id) {
                     data.seller_phone,
                     data.title
                 );
+const callButton =
+    document.getElementById(
+        "callButton"
+    );
 
+if (data.seller_phone) {
+
+    callButton.style.display =
+        "block";
+
+    callButton.onclick =
+        function () {
+
+            window.location.href =
+                "tel:" +
+                data.seller_phone;
+
+        };
+
+} else {
+
+    callButton.style.display =
+        "none";
+                    }
             };
 
     } else {
