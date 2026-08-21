@@ -1179,3 +1179,189 @@ footer h3 {
 
 }
 
+/* =========================================
+   SELL NOW PAGE
+========================================= */
+
+.sell-page {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: #f4f6f8;
+
+    z-index: 1100;
+
+    overflow-y: auto;
+}
+
+.sell-page-header {
+    background: #087f3d;
+
+    color: white;
+
+    padding: 14px 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 20;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.15);
+}
+
+.sell-page-header h2 {
+    font-size: 20px;
+}
+
+.sell-container {
+    max-width: 650px;
+
+    margin: 30px auto;
+
+    padding: 0 18px 40px;
+}
+
+.sell-intro {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.sell-icon-large {
+    font-size: 50px;
+
+    margin-bottom: 10px;
+}
+
+.sell-intro h1 {
+    color: #087f3d;
+
+    margin-bottom: 8px;
+}
+
+.sell-intro p {
+    color: #666;
+
+    line-height: 1.6;
+}
+
+.sell-form {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.10);
+}
+
+.sell-form label {
+    display: block;
+
+    font-weight: bold;
+
+    margin-top: 16px;
+
+    margin-bottom: 7px;
+
+    color: #333;
+}
+
+.sell-form input,
+.sell-form textarea,
+.sell-form select {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    font-family: Arial, sans-serif;
+}
+
+.sell-form input:focus,
+.sell-form textarea:focus,
+.sell-form select:focus {
+    border-color: #087f3d;
+
+    box-shadow:
+        0 0 0 2px rgba(8,127,61,.10);
+}
+
+.sell-form textarea {
+    resize: vertical;
+}
+
+.sell-form small {
+    display: block;
+
+    color: #888;
+
+    margin-top: 5px;
+}
+
+.publish-button {
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #087f3d;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.publish-button:hover {
+    background: #066b33;
+}
+
+.sell-message {
+    margin-top: 15px;
+
+    text-align: center;
+
+    font-weight: bold;
+
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+
+    .sell-container {
+        margin-top: 20px;
+    }
+
+    .sell-form {
+        padding: 20px;
+    }
+
+}
