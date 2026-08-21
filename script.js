@@ -785,9 +785,14 @@ function sellNow() {
     const sellPage =
         document.getElementById("sellPage");
 
-    sellPage.style.display = "block";
+    if (!sellPage) {
+        alert("SELL page not found.");
+        return;
+    }
 
-    document.body.style.overflow = "hidden";
+    sellPage.classList.add("active");
+
+    window.scrollTo(0, 0);
 }
 
 
@@ -796,9 +801,11 @@ function closeSellPage() {
     const sellPage =
         document.getElementById("sellPage");
 
-    sellPage.style.display = "none";
+    if (!sellPage) return;
 
-    document.body.style.overflow = "auto";
+    sellPage.classList.remove("active");
+
+    window.scrollTo(0, 0);
 }
 document.addEventListener(
     "DOMContentLoaded",
