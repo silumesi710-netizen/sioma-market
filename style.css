@@ -891,3 +891,215 @@ footer h3 {
     font-weight: bold;
     cursor: pointer;
 }
+/* PRODUCT DETAILS */
+
+.product-page {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: #f4f6f8;
+
+    z-index: 1000;
+
+    overflow-y: auto;
+}
+
+.product-page-header {
+    background: #087f3d;
+
+    color: white;
+
+    padding: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+}
+
+.back-button {
+    border: none;
+
+    background: white;
+
+    color: #087f3d;
+
+    padding: 9px 15px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.product-details {
+    max-width: 1000px;
+
+    margin: 30px auto;
+
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.12);
+}
+
+.details-image {
+    width: 100%;
+
+    height: 400px;
+
+    object-fit: contain;
+
+    background: #eee;
+}
+
+.details-content {
+    padding: 25px;
+
+    text-align: left;
+}
+
+.details-category {
+    display: inline-block;
+
+    background: #e8f5ed;
+
+    color: #087f3d;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+.details-content h1 {
+    margin: 12px 0;
+
+    font-size: 30px;
+}
+
+.details-price {
+    color: #087f3d;
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.details-location {
+    color: #666;
+
+    margin-bottom: 20px;
+}
+
+.details-description {
+    color: #555;
+
+    line-height: 1.7;
+
+    margin: 10px 0 20px;
+}
+
+.seller-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    background: #f7f7f7;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin-top: 12px;
+}
+
+.seller-icon {
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: #087f3d;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+}
+
+.whatsapp-button {
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #25D366;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+@media (min-width: 700px) {
+
+    .product-details {
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .details-image {
+        height: 300px;
+    }
+
+    .details-content h1 {
+        font-size: 24px;
+    }
+
+    .details-price {
+        font-size: 24px;
+    }
+
+       }
