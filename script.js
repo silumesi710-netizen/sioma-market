@@ -792,7 +792,12 @@ function sellNow() {
 
     sellPage.classList.add("active");
 
-    window.scrollTo(0, 0);
+    document.body.classList.add("selling");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
 }
 
 
