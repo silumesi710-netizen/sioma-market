@@ -319,6 +319,10 @@
             Your local marketplace in Sioma
         </p>
 
+         <p>
+    Buy and sell locally in Sioma.
+      </p>
+        <p>
         <p>
             © 2026 SiomaMarket
         </p>
