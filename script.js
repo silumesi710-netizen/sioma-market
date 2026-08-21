@@ -419,3 +419,115 @@ async function buyNow() {
     });
 }
 
+async function buyNow() {
+
+    const results =
+        document.getElementById("searchResults");
+
+    results.innerHTML = `
+        <div class="no-results">
+            🔎 Loading products...
+        </div>
+    `;
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("listings")
+                .select("*")
+                .eq("status", "active");
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            results.innerHTML = `
+                <div class="no-results">
+                    🛒 No products available yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        let html = `
+            <h2>🛒 Products for Sale</h2>
+            <div class="results-grid">
+        `;
+
+        data.forEach(product => {
+
+            const image =
+                product.image_url ||
+                "https://via.placeholder.com/500x350?text=SiomaMarket";
+
+            html += `
+                <div class="result-card">
+
+                    <img
+                        src="${image}"
+                        alt="Product">
+
+                    <div class="result-info">
+
+                        <h3>
+                            ${product.title}
+                        </h3>
+
+                        <p class="result-price">
+                            K${Number(
+                                product.price || 0
+                            ).toLocaleString()}
+                        </p>
+
+                        <p>
+                            📍 ${product.location || "Sioma"}
+                        </p>
+
+                        <button
+                            class="buy-result"
+                            onclick="viewListing('${product.id}')">
+
+                            🛒 VIEW PRODUCT
+
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+        });
+
+        html += `
+            </div>
+        `;
+
+        results.innerHTML = html;
+
+        results.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "BUY NOW ERROR:",
+            error
+        );
+
+        results.innerHTML = `
+            <div class="no-results">
+
+                ❌ Could not load products.
+
+                <br><br>
+
+                ${error.message}
+
+            </div>
+        `;
+    }
+}
