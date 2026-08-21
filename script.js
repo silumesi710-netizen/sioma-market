@@ -800,3 +800,156 @@ function closeSellPage() {
 
     document.body.style.overflow = "auto";
 }
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const sellForm =
+            document.getElementById("sellForm");
+
+        if (!sellForm) return;
+
+
+        sellForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    document.getElementById(
+                        "sellMessage"
+                    );
+
+                const button =
+                    sellForm.querySelector(
+                        ".publish-button"
+                    );
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "⏳ Publishing...";
+
+
+                const product = {
+
+                    title:
+                        document.getElementById(
+                            "sellTitle"
+                        ).value.trim(),
+
+                    description:
+                        document.getElementById(
+                            "sellDescription"
+                        ).value.trim(),
+
+                    price:
+                        Number(
+                            document.getElementById(
+                                "sellPrice"
+                            ).value
+                        ),
+
+                    category:
+                        document.getElementById(
+                            "sellCategory"
+                        ).value,
+
+                    location:
+                        document.getElementById(
+                            "sellLocation"
+                        ).value.trim(),
+
+                    image_url:
+                        document.getElementById(
+                            "sellImage"
+                        ).value.trim() || null,
+
+                    seller_name:
+                        document.getElementById(
+                            "sellerName"
+                        ).value.trim(),
+
+                    seller_phone:
+                        document.getElementById(
+                            "sellerPhone"
+                        ).value.trim(),
+
+                    status:
+                        "active"
+                };
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .from("listings")
+                        .insert([product])
+                        .select();
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    message.innerHTML = `
+                        ✅ <strong>
+                        Product published successfully!
+                        </strong>
+                        <br><br>
+                        Your product is now available
+                        on SiomaMarket.
+                    `;
+
+                    message.style.color =
+                        "#087f3d";
+
+
+                    sellForm.reset();
+
+
+                    document.getElementById(
+                        "sellLocation"
+                    ).value = "Sioma";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "SELL ERROR:",
+                        error
+                    );
+
+
+                    message.innerHTML = `
+                        ❌ Could not publish product.
+                        <br><br>
+                        ${error.message}
+                    `;
+
+                    message.style.color =
+                        "#c62828";
+
+                }
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "🚀 PUBLISH PRODUCT";
+
+            }
+        );
+
+    }
+);
