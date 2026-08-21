@@ -773,3 +773,10 @@ function contactSeller(
         "_blank"
     );
 }
+function saveFavorite() {
+
+    alert(
+        "❤️ Product saved! Favorites will be added to your account soon."
+    );
+
+}
