@@ -1177,111 +1177,75 @@ footer h3 {
         font-size: 26px;
     }
 
-
-/* =========================================
-   SELL NOW PAGE
-========================================= */
+/* ================================
+   SELL PAGE
+================================ */
 
 .sell-page {
     display: none;
-
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
     width: 100%;
-    height: 100%;
-
+    min-height: 100vh;
     background: #f4f6f8;
+}
 
-    z-index: 9999;
-
-    overflow-y: auto;
-
-    -webkit-overflow-scrolling: touch;
+.sell-page.active {
+    display: block;
 }
 
 .sell-page-header {
-    position: sticky;
-
-    top: 0;
-
-    z-index: 10000;
-
+    width: 100%;
     background: #087f3d;
-
     color: white;
-
     padding: 14px 16px;
-
     display: flex;
-
     align-items: center;
-
     gap: 15px;
 }
 
 .sell-page-header h2 {
     margin: 0;
-
     font-size: 20px;
 }
 
 .sell-container {
     width: 100%;
-
     max-width: 650px;
-
     margin: 0 auto;
-
-    padding: 25px 16px 60px;
+    padding: 25px 16px 80px;
 }
 
 .sell-intro {
     text-align: center;
-
     margin-bottom: 20px;
 }
 
 .sell-icon-large {
     font-size: 45px;
-
     margin-bottom: 8px;
 }
 
 .sell-intro h1 {
     color: #087f3d;
-
     margin-bottom: 8px;
 }
 
 .sell-intro p {
     color: #666;
-
     line-height: 1.5;
 }
 
 .sell-form {
+    width: 100%;
     background: white;
-
     padding: 22px;
-
     border-radius: 14px;
-
-    box-shadow:
-        0 4px 15px rgba(0,0,0,.10);
+    box-shadow: 0 4px 15px rgba(0,0,0,.10);
 }
 
 .sell-form label {
     display: block;
-
     margin-top: 16px;
-
     margin-bottom: 7px;
-
     font-weight: bold;
 }
 
@@ -1289,17 +1253,11 @@ footer h3 {
 .sell-form textarea,
 .sell-form select {
     width: 100%;
-
     padding: 13px;
-
     border: 1px solid #ddd;
-
     border-radius: 8px;
-
     font-size: 16px;
-
     font-family: Arial, sans-serif;
-
     background: white;
 }
 
@@ -1311,49 +1269,25 @@ footer h3 {
 .sell-form textarea:focus,
 .sell-form select:focus {
     outline: none;
-
     border-color: #087f3d;
 }
 
 .publish-button {
     width: 100%;
-
     margin-top: 25px;
-
     padding: 15px;
-
     border: none;
-
     border-radius: 9px;
-
     background: #087f3d;
-
     color: white;
-
     font-size: 17px;
-
     font-weight: bold;
+    cursor: pointer;
 }
 
 .sell-message {
     margin-top: 15px;
-
     text-align: center;
-
     line-height: 1.5;
 }
 
-@media (max-width: 600px) {
-
-    .sell-container {
-        padding:
-            20px
-            14px
-            70px;
-    }
-
-    .sell-form {
-        padding: 18px;
-    }
-
-}
