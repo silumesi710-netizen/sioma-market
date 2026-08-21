@@ -415,6 +415,205 @@ data.length +
 );
 
 }
+async function viewListing(id) {
+
+    /* SHOW LOADING PAGE */
+
+    const productPage =
+        document.getElementById(
+            "productPage"
+        );
+
+    productPage.style.display =
+        "block";
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    document.getElementById(
+        "detailsTitle"
+    ).innerText =
+        "Loading product...";
+
+
+    /* GET PRODUCT */
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+
+        .from("listings")
+
+        .select(`
+            id,
+            title,
+            description,
+            price,
+            category,
+            location,
+            image_url,
+            seller_id,
+            profiles (
+                full_name,
+                phone
+            )
+        `)
+
+        .eq(
+            "id",
+            id
+        )
+
+        .single();
+
+
+    /* ERROR */
+
+    if (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "detailsTitle"
+        ).innerText =
+            "Unable to load product.";
+
+        return;
+    }
+
+
+    /* PRODUCT IMAGE */
+
+    const image =
+        data.image_url ||
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80";
+
+
+    document.getElementById(
+        "detailsImage"
+    ).src =
+        image;
+
+
+    /* TITLE */
+
+    document.getElementById(
+        "detailsTitle"
+    ).innerText =
+        data.title;
+
+
+    /* PRICE */
+
+    document.getElementById(
+        "detailsPrice"
+    ).innerText =
+        "K" +
+        Number(
+            data.price
+        ).toLocaleString();
+
+
+    /* CATEGORY */
+
+    document.getElementById(
+        "detailsCategory"
+    ).innerText =
+        data.category;
+
+
+    /* LOCATION */
+
+    document.getElementById(
+        "detailsLocation"
+    ).innerText =
+        "📍 " +
+        (
+            data.location ||
+            "Sioma"
+        );
+
+
+    /* DESCRIPTION */
+
+    document.getElementById(
+        "detailsDescription"
+    ).innerText =
+        data.description ||
+        "No description provided.";
+
+
+    /* SELLER */
+
+    const seller =
+        data.profiles;
+
+
+    document.getElementById(
+        "detailsSeller"
+    ).innerText =
+
+        seller &&
+        seller.full_name
+
+        ? seller.full_name
+
+        : "Sioma Seller";
+
+
+    /* PHONE */
+
+    document.getElementById(
+        "detailsPhone"
+    ).innerText =
+
+        seller &&
+        seller.phone
+
+        ? seller.phone
+
+        : "Phone number not provided";
+
+
+    /* WHATSAPP BUTTON */
+
+    const whatsappButton =
+        document.getElementById(
+            "whatsappButton"
+        );
+
+
+    if (
+        seller &&
+        seller.phone
+    ) {
+
+        whatsappButton.style.display =
+            "block";
+
+
+        whatsappButton.onclick =
+            function() {
+
+                contactSeller(
+                    seller.phone,
+                    data.title
+                );
+
+            };
+
+    } else {
+
+        whatsappButton.style.display =
+            "none";
+
+    }
+
+}
 
     </script>
 <!-- PRODUCT DETAILS PAGE -->
