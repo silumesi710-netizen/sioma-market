@@ -355,6 +355,47 @@ Categories
 </h2>
 
 
+<section class="categories">
+
+<div class="container">
+
+<h2>Categories</h2>
+
+<div class="category-grid">
+
+<button onclick="filterCategory('All')">
+🛒<br>All
+</button>
+
+<button onclick="filterCategory('Farm Produce')">
+🌽<br>Farm Produce
+</button>
+
+<button onclick="filterCategory('Livestock')">
+🐐<br>Livestock
+</button>
+
+<button onclick="filterCategory('Fish')">
+🐟<br>Fish
+</button>
+
+<button onclick="filterCategory('Poultry')">
+🐔<br>Poultry
+</button>
+
+<button onclick="filterCategory('Electronics')">
+📱<br>Electronics
+</button>
+
+<button onclick="filterCategory('Services')">
+🔧<br>Services
+</button>
+
+<button onclick="filterCategory('Property')">
+🏠<br>Property
+</button>
+
+</div>
 <div
 class="categories"
 id="categories">
@@ -434,6 +475,7 @@ class="close"
 onclick="closeAuth()">
 ×
 </button>
+
 
 <h2>
 Create / Login Account
