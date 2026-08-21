@@ -332,63 +332,89 @@
     <!-- JAVASCRIPT -->
     <script>
 
-        function searchMarket() {
+    
+const SUPABASE_URL =
+"https://luolbdjonzissgskjupd.supabase.co";
 
-            const search =
-                document.getElementById(
-                    "searchInput"
-                ).value.trim();
+const SUPABASE_KEY =
+"sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
-            if (search === "") {
-
-                alert(
-                    "Please enter something to search."
-                );
-
-                return;
-            }
-
-            alert(
-                "Searching SiomaMarket for: " +
-                search
-            );
-        }
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 
-        function buyNow() {
+async function searchMarket() {
 
-            alert(
-                "Welcome to SiomaMarket! Browse products to buy."
-            );
+const searchInput =
+document.getElementById(
+"searchInput"
+);
 
-        }
-
-
-        function sellNow() {
-
-            alert(
-                "Create your seller account to start selling."
-            );
-
-        }
+const search =
+searchInput.value.trim();
 
 
-        /* SEARCH WHEN ENTER IS PRESSED */
+if (search === "") {
 
-        document
-        .getElementById("searchInput")
-        .addEventListener(
-            "keypress",
-            function(event) {
+alert(
+"Please enter a product to search."
+);
 
-                if (event.key === "Enter") {
+return;
+}
 
-                    searchMarket();
 
-                }
+const {
+data,
+error
+} =
+await supabaseClient
+.from("listings")
+.select("*")
+.eq("status", "active")
+.ilike(
+"title",
+"%" + search + "%"
+);
 
-            }
-        );
+
+if (error) {
+
+console.error(error);
+
+alert(
+"Search failed."
+);
+
+return;
+}
+
+
+console.log(
+"Results:",
+data
+);
+
+
+if (data.length === 0) {
+
+alert(
+"No products found."
+);
+
+return;
+}
+
+
+alert(
+data.length +
+" product(s) found!"
+);
+
+}
 
     </script>
 
