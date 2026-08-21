@@ -790,16 +790,24 @@ function sellNow() {
         return;
     }
 
-    sellPage.classList.add("active");
+    sellPage.style.display = "block";
 
-    document.body.classList.add("selling");
-
-    window.scrollTo({
-        top: 0,
-        behavior: "instant"
-    });
+    document.body.style.overflow = "hidden";
 }
+
+
 function closeSellPage() {
+
+    const sellPage =
+        document.getElementById("sellPage");
+
+    if (!sellPage) return;
+
+    sellPage.style.display = "none";
+
+    document.body.style.overflow = "auto";
+}
+{
 
     const sellPage =
         document.getElementById("sellPage");
