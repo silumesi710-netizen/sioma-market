@@ -321,8 +321,7 @@
 
          <p>
     Buy and sell locally in Sioma.
-      </p>
-        <p>
+         </p>
         <p>
             © 2026 SiomaMarket
         </p>
