@@ -5,22 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Siomamarket</title>
-
-</header>
-
-
-<main>
-
-<!-- HERO -->
-
-<section id="home" class="hero">
-
-<div class="container hero-content">
-
-<div>
-
 <h2>Buy and sell locally in Sioma.</h2>
-
     <style>
         * {
             box-sizing: border-box;
