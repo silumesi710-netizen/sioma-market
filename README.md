@@ -319,7 +319,89 @@ onclick="openSell()">
 
 </div>
 
+<div class="search-box">
+  <input type="text" placeholder="Search products, services..." id="searchInput">
+  <button onclick="searchProducts()">🔍 Search</button>
+</div>
 
+<style>
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 650px;
+  margin: 20px auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.search-box input {
+  flex: 1;
+  height: 50px;
+  padding: 0 18px;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.search-box input:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.15);
+}
+
+.search-box button {
+  height: 50px;
+  padding: 0 25px;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  background: #198754;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-box button:hover {
+  background: #146c43;
+  transform: translateY(-1px);
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .search-box {
+    padding: 0 10px;
+  }
+
+  .search-box input {
+    height: 46px;
+    font-size: 14px;
+  }
+
+  .search-box button {
+    height: 46px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}
+</style>
+
+<script>
+function searchProducts() {
+  const search = document.getElementById("searchInput").value.trim();
+
+  if (search === "") {
+    alert("Please enter something to search.");
+    return;
+  }
+
+  alert("Searching for: " + search);
+}
+</script>
 <div class="search">
 
 <input
