@@ -799,8 +799,6 @@ function sellNow() {
         behavior: "instant"
     });
 }
-
-
 function closeSellPage() {
 
     const sellPage =
@@ -810,11 +808,13 @@ function closeSellPage() {
 
     sellPage.classList.remove("active");
 
-    window.scrollTo(0, 0);
+    document.body.classList.remove("selling");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
 }
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
 
         const sellForm =
             document.getElementById("sellForm");
