@@ -678,6 +678,10 @@ Publish Listing
 </h3>
 
 <p>
+Connecting buyers and sellers in Sioma
+</p>
+
+<p>
 Buy local. Sell local. Grow Sioma.
 </p>
 
@@ -1657,9 +1661,3 @@ async function start(){
 
 
 start();
-
-</script>
-
-</body>
-
-</html>
