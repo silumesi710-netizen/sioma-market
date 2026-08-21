@@ -1,343 +1,832 @@
 
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Buy and Sell locally in Sioma</title>
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #222;
-        }
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-        /* HEADER */
-        header {
-            background: #087f3d;
-            padding: 20px 15px 25px;
-            text-align: center;
-        }
+<title>SiomaMarket - Buy and Sell Locally</title>
 
-        /* LOGO */
-        .logo {
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+<!-- SUPABASE -->
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
 
-        .logo span {
-            color: #ffd166;
-        }
+<style>
 
-        /* SEARCH BAR */
-        .search-container {
-            max-width: 650px;
-            margin: 0 auto 20px;
-            display: flex;
-            background: white;
-            border-radius: 50px;
-            padding: 5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
 
-        .search-container input {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 13px 18px;
-            font-size: 16px;
-            border-radius: 50px;
-        }
+body {
+font-family: Arial, sans-serif;
+background: #f4f6f8;
+color: #222;
+}
 
-        .search-button {
-            border: none;
-            background: #ffb703;
-            color: #222;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+/* HEADER */
 
-        .search-button:hover {
-            background: #f4a900;
-        }
+header {
+background: #087f3d;
+padding: 20px 15px 25px;
+text-align: center;
+}
 
-        /* BUY & SELL BUTTONS */
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
+.logo {
+color: white;
+font-size: 30px;
+font-weight: bold;
+margin-bottom: 20px;
+}
 
-        .action-buttons button {
-            min-width: 130px;
-            padding: 13px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+.logo span {
+color: #ffd166;
+}
 
-        .buy-button {
-            background: white;
-            color: #087f3d;
-        }
+/* SEARCH */
 
-        .sell-button {
-            background: #ffb703;
-            color: #222;
-        }
+.search-container {
+max-width: 650px;
+margin: 0 auto 20px;
 
-        .action-buttons button:hover {
-            transform: translateY(-2px);
-        }
+display: flex;
 
-        /* MAIN */
-        main {
-            max-width: 1100px;
-            margin: auto;
-            padding: 35px 15px;
-            text-align: center;
-        }
+background: white;
 
-        .welcome {
-            margin-bottom: 30px;
-        }
+border-radius: 50px;
 
-        .welcome h1 {
-            color: #087f3d;
-            margin-bottom: 10px;
-        }
+padding: 5px;
 
-        .welcome p {
-            color: #666;
-        }
+box-shadow:
+0 4px 12px rgba(0,0,0,.15);
+}
 
-        /* CATEGORIES */
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(
-                auto-fit,
-                minmax(120px, 1fr)
-            );
-            gap: 15px;
-            margin-top: 25px;
-        }
+.search-container input {
+flex: 1;
 
-        .category {
-            background: white;
-            padding: 20px 10px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            cursor: pointer;
-        }
+border: none;
+outline: none;
 
-        .category-icon {
-            font-size: 30px;
-            display: block;
-            margin-bottom: 8px;
-        }
+padding: 13px 18px;
 
-        .category:hover {
-            transform: translateY(-3px);
-        }
+font-size: 16px;
 
-        /* FOOTER */
-        footer {
-            background: #123524;
-            color: white;
-            text-align: center;
-            padding: 25px 15px;
-            margin-top: 30px;
-        }
+border-radius: 50px;
+}
 
-        /* MOBILE */
-        @media (max-width: 600px) {
+.search-button {
+border: none;
 
-            .logo {
-                font-size: 26px;
-            }
+background: #ffb703;
 
-            .search-container {
-                width: 100%;
-            }
+color: #222;
 
-            .search-container input {
-                min-width: 0;
-            }
+padding: 12px 20px;
 
-            .search-button {
-                padding: 11px 15px;
-            }
+border-radius: 50px;
 
-            .action-buttons {
-                width: 100%;
-            }
+font-weight: bold;
 
-            .action-buttons button {
-                flex: 1;
-                min-width: 0;
-            }
+cursor: pointer;
+}
 
-        }
-    </style>
+/* BUY AND SELL */
+
+.action-buttons {
+display: flex;
+
+justify-content: center;
+
+gap: 15px;
+}
+
+.action-buttons button {
+min-width: 130px;
+
+padding: 13px 25px;
+
+border: none;
+
+border-radius: 8px;
+
+font-size: 16px;
+
+font-weight: bold;
+
+cursor: pointer;
+}
+
+.buy-button {
+background: white;
+color: #087f3d;
+}
+
+.sell-button {
+background: #ffb703;
+color: #222;
+}
+
+/* MAIN */
+
+main {
+max-width: 1100px;
+
+margin: auto;
+
+padding: 35px 15px;
+
+text-align: center;
+}
+
+.welcome {
+margin-bottom: 30px;
+}
+
+.welcome h1 {
+color: #087f3d;
+
+margin-bottom: 10px;
+}
+
+.welcome p {
+color: #666;
+}
+
+/* CATEGORIES */
+
+.categories {
+display: grid;
+
+grid-template-columns:
+repeat(
+auto-fit,
+minmax(120px, 1fr)
+);
+
+gap: 15px;
+
+margin-top: 25px;
+}
+
+.category {
+background: white;
+
+padding: 20px 10px;
+
+border-radius: 10px;
+
+box-shadow:
+0 3px 10px rgba(0,0,0,.08);
+}
+
+.category-icon {
+font-size: 30px;
+
+display: block;
+
+margin-bottom: 8px;
+}
+
+/* SEARCH RESULTS */
+
+#searchResults {
+max-width: 1100px;
+
+margin: 25px auto;
+
+padding: 0 15px;
+}
+
+.results-title {
+color: #087f3d;
+
+margin-bottom: 15px;
+
+text-align: center;
+}
+
+.results-grid {
+display: grid;
+
+grid-template-columns:
+repeat(
+auto-fit,
+minmax(200px, 1fr)
+);
+
+gap: 18px;
+}
+
+.result-card {
+background: white;
+
+border-radius: 12px;
+
+overflow: hidden;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.1);
+
+text-align: left;
+}
+
+.result-card img {
+width: 100%;
+
+height: 180px;
+
+object-fit: cover;
+}
+
+.result-info {
+padding: 15px;
+}
+
+.result-info h3 {
+margin-bottom: 8px;
+}
+
+.result-price {
+color: #087f3d;
+
+font-size: 20px;
+
+font-weight: bold;
+
+margin-bottom: 8px;
+}
+
+.result-location {
+color: #777;
+
+margin-bottom: 12px;
+}
+
+.buy-result {
+width: 100%;
+
+border: none;
+
+background: #087f3d;
+
+color: white;
+
+padding: 12px;
+
+border-radius: 7px;
+
+font-weight: bold;
+
+cursor: pointer;
+}
+
+.no-results {
+background: white;
+
+padding: 25px;
+
+border-radius: 10px;
+
+text-align: center;
+
+color: #666;
+}
+
+/* PRODUCT DETAILS PAGE */
+
+.product-page {
+display: none;
+
+position: fixed;
+
+inset: 0;
+
+background: #f5f7f5;
+
+z-index: 1000;
+
+overflow-y: auto;
+}
+
+.product-page-header {
+background: #087f3d;
+
+color: white;
+
+padding: 15px;
+
+display: flex;
+
+align-items: center;
+
+gap: 20px;
+
+position: sticky;
+
+top: 0;
+
+z-index: 10;
+}
+
+.back-button {
+background: white;
+
+color: #087f3d;
+
+border: none;
+
+padding: 9px 14px;
+
+border-radius: 7px;
+
+font-weight: bold;
+
+cursor: pointer;
+}
+
+.product-details {
+max-width: 1000px;
+
+margin: 30px auto;
+
+background: white;
+
+border-radius: 15px;
+
+overflow: hidden;
+
+box-shadow:
+0 5px 20px rgba(0,0,0,.12);
+}
+
+.details-image {
+width: 100%;
+
+height: 450px;
+
+object-fit: contain;
+
+background: #eee;
+}
+
+.details-content {
+padding: 25px;
+}
+
+.details-category {
+display: inline-block;
+
+background: #e8f5ed;
+
+color: #087f3d;
+
+padding: 6px 10px;
+
+border-radius: 20px;
+
+font-size: 13px;
+
+font-weight: bold;
+
+margin-bottom: 10px;
+}
+
+.details-content h1 {
+font-size: 30px;
+
+margin-bottom: 10px;
+}
+
+.details-price {
+color: #087f3d;
+
+font-size: 28px;
+
+font-weight: bold;
+
+margin-bottom: 10px;
+}
+
+.details-location {
+color: #666;
+
+margin-bottom: 20px;
+}
+
+.details-description {
+color: #555;
+
+line-height: 1.7;
+
+margin-top: 10px;
+}
+
+.seller-box {
+display: flex;
+
+align-items: center;
+
+gap: 12px;
+
+background: #f7f7f7;
+
+padding: 15px;
+
+border-radius: 10px;
+
+margin-top: 12px;
+}
+
+.seller-icon {
+width: 45px;
+
+height: 45px;
+
+border-radius: 50%;
+
+background: #087f3d;
+
+color: white;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-size: 22px;
+}
+
+.whatsapp-button {
+width: 100%;
+
+margin-top: 25px;
+
+padding: 15px;
+
+border: none;
+
+border-radius: 9px;
+
+background: #25D366;
+
+color: white;
+
+font-size: 17px;
+
+font-weight: bold;
+
+cursor: pointer;
+}
+
+/* FOOTER */
+
+footer {
+background: #123524;
+
+color: white;
+
+text-align: center;
+
+padding: 25px 15px;
+
+margin-top: 30px;
+}
+
+/* DESKTOP */
+
+@media (min-width: 700px) {
+
+.product-details {
+display: grid;
+
+grid-template-columns:
+1fr 1fr;
+}
+
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+.logo {
+font-size: 26px;
+}
+
+.action-buttons {
+width: 100%;
+}
+
+.action-buttons button {
+flex: 1;
+
+min-width: 0;
+}
+
+.results-grid {
+grid-template-columns:
+repeat(2, 1fr);
+
+gap: 10px;
+}
+
+.result-card img {
+height: 140px;
+}
+
+.details-image {
+height: 300px;
+}
+
+.details-content h1 {
+font-size: 24px;
+}
+
+.details-price {
+font-size: 24px;
+}
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <header>
+<!-- HEADER -->
 
-        <div class="logo">
-            🛍️ Sioma<span>Market</span>
-        </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <!-- SEARCH BAR -->
-        <div class="search-container">
+<header>
 
-            <input
-                type="search"
-                id="searchInput"
-                placeholder="Search products, services..."
-            >
+<div class="logo">
+🛍️ Sioma<span>Market</span>
+</div>
 
-            <button
-                class="search-button"
-                onclick="searchMarket()">
-                🔍 Search
-            </button>
+<div class="search-container">
 
-        </div>
+<input
+type="search"
+id="searchInput"
+placeholder="Search products, services...">
 
-        <!-- BUY & SELL -->
-        <div class="action-buttons">
+<button
+class="search-button"
+onclick="searchMarket()">
 
-            <button
-                class="buy-button"
-                onclick="buyNow()">
-                🛒 BUY
-            </button>
+🔍 Search
 
-            <button
-                class="sell-button"
-                onclick="sellNow()">
-                🏷️ SELL
-            </button>
+</button>
 
-    </div>
+</div>
 
-    </header>
+<div class="action-buttons">
 
+<button
+class="buy-button"
+onclick="showAllProducts()">
 
-    <!-- MAIN CONTENT -->
-    <main>
+🛒 BUY
 
-        <section class="welcome">
+</button>
 
-            <h1>
-                Welcome to SiomaMarket
-            </h1>
+<button
+class="sell-button"
+onclick="sellNow()">
 
-            <p>
-                Buy local. Sell local. Grow together.
-            </p>
+🏷️ SELL
 
-        </section>
+</button>
+
+</div>
+
+</header>
 
 
-        <h2>
-            Browse Categories
-        </h2>
+<!-- MAIN -->
+
+<main>
+
+<section class="welcome">
+
+<h1>
+Welcome to SiomaMarket
+</h1>
+
+<p>
+Buy local. Sell local. Grow together.
+</p>
+
+</section>
+
+<h2>
+Browse Categories
+</h2>
+
+<div class="categories">
+
+<div class="category">
+<span class="category-icon">🌾</span>
+Agriculture
+</div>
+
+<div class="category">
+<span class="category-icon">🐔</span>
+Livestock
+</div>
+
+<div class="category">
+<span class="category-icon">🐟</span>
+Fish
+</div>
+
+<div class="category">
+<span class="category-icon">📱</span>
+Phones
+</div>
+
+<div class="category">
+<span class="category-icon">🚗</span>
+Vehicles
+</div>
+
+<div class="category">
+<span class="category-icon">🏠</span>
+Houses
+</div>
+
+<div class="category">
+<span class="category-icon">👕</span>
+Clothes
+</div>
+
+<div class="category">
+<span class="category-icon">🛠️</span>
+Services
+</div>
+
+</div>
+
+</main>
 
 
-        <div class="categories">
+<!-- SEARCH RESULTS -->
 
-            <div class="category">
-                <span class="category-icon">🌾</span>
-                Agriculture
-            </div>
-
-            <div class="category">
-                <span class="category-icon">🐔</span>
-                Livestock
-            </div>
-
-            <div class="category">
-                <span class="category-icon">🐟</span>
-                Fish
-            </div>
-
-            <div class="category">
-                <span class="category-icon">📱</span>
-                Phones
-            </div>
-
-            <div class="category">
-                <span class="category-icon">🚗</span>
-                Vehicles
-            </div>
-
-            <div class="category">
-                <span class="category-icon">🏠</span>
-                Houses
-            </div>
-
-            <div class="category">
-                <span class="category-icon">👕</span>
-                Clothes
-            </div>
-
-            <div class="category">
-                <span class="category-icon">🛠️</span>
-                Services
-            </div>
-
-        </div>
-
-    </main>
+<div id="searchResults"></div>
 
 
-    <!-- FOOTER -->
-    <footer>
+<!-- FOOTER -->
 
-        <h3>
-            🛍️ SiomaMarket
-        </h3>
+<footer>
 
-        <p>
-            Your local marketplace in Sioma
-        </p>
+<h3>🛍️ SiomaMarket</h3>
 
-         <p>
-    Buy and sell locally in Sioma.
-         </p>
-        <p>
-            © 2026 SiomaMarket
-        </p>
+<p>
+Your local marketplace in Sioma
+</p>
 
-    </footer>
+<p>
+Buy and sell locally in Sioma.
+</p>
+
+<p>
+© 2026 SiomaMarket
+</p>
+
+</footer>
 
 
-    <!-- JAVASCRIPT -->
-    <script>
+<!-- PRODUCT DETAILS -->
 
-    
+<div
+id="productPage"
+class="product-page">
+
+<div class="product-page-header">
+
+<button
+class="back-button"
+onclick="closeProductPage()">
+
+← Back
+
+</button>
+
+<h2>
+Product Details
+</h2>
+
+</div>
+
+
+<div class="product-details">
+
+<div>
+
+<img
+id="detailsImage"
+src=""
+alt="Product photo"
+class="details-image">
+
+</div>
+
+
+<div class="details-content">
+
+<div
+id="detailsCategory"
+class="details-category">
+</div>
+
+<h1 id="detailsTitle">
+Product
+</h1>
+
+<div
+id="detailsPrice"
+class="details-price">
+K0
+</div>
+
+<div
+id="detailsLocation"
+class="details-location">
+📍 Sioma
+</div>
+
+<hr>
+
+<h3>
+Description
+</h3>
+
+<p
+id="detailsDescription"
+class="details-description">
+</p>
+
+<hr>
+
+<h3>
+Seller
+</h3>
+
+<div class="seller-box">
+
+<div class="seller-icon">
+👤
+</div>
+
+<div>
+
+<strong
+id="detailsSeller">
+Seller
+</strong>
+
+<div
+id="detailsPhone">
+</div>
+
+</div>
+
+</div>
+
+<button
+id="whatsappButton"
+class="whatsapp-button">
+
+💬 Contact Seller on WhatsApp
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+SUPABASE CONNECTION
+========================================= */
+
 const SUPABASE_URL =
 "https://luolbdjonzissgskjupd.supabase.co";
 
 const SUPABASE_KEY =
 "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -346,31 +835,36 @@ SUPABASE_KEY
 );
 
 
+/* =========================================
+SEARCH
+========================================= */
+
 async function searchMarket() {
 
-const searchInput =
-document.getElementById(
-"searchInput"
-);
-
 const search =
-searchInput.value.trim();
+document
+.getElementById("searchInput")
+.value
+.trim();
 
-
-if (search === "") {
-
-alert(
-"Please enter a product to search."
+const resultsBox =
+document.getElementById(
+"searchResults"
 );
+
+
+if (!search) {
+
+resultsBox.innerHTML = &lt;div class="no-results"&gt; Please enter a product to search. &lt;/div&gt;;
 
 return;
 }
 
 
-const {
-data,
-error
-} =
+resultsBox.innerHTML = &lt;div class="no-results"&gt; 🔎 Searching SiomaMarket... &lt;/div&gt;;
+
+
+const { data, error } =
 await supabaseClient
 .from("listings")
 .select("*")
@@ -385,347 +879,371 @@ if (error) {
 
 console.error(error);
 
-alert(
-"Search failed."
-);
+resultsBox.innerHTML = &lt;div class="no-results"&gt; ❌ Search failed. &lt;/div&gt;;
 
 return;
 }
 
 
-console.log(
-"Results:",
-data
-);
+if (!data || data.length === 0) {
 
+resultsBox.innerHTML = `
+<div class="no-results">
 
-if (data.length === 0) {
+🔍 No products found for
+<strong>$`{escapeHTML(search)}</strong>
 
-alert(
-"No products found."
-);
+</div>
+`;
 
 return;
 }
 
 
-alert(
-data.length +
-" product(s) found!"
-);
+let html = `
+
+<h2 class="results-title">
+🔎 Search Results
+</h2>
+
+<div class="results-grid">
+
+`;
+
+
+data.forEach(item => {
+
+const image =
+item.image_url ||
+"https://via.placeholder.com/600x400?text=SiomaMarket";
+
+
+html += `
+
+<div class="result-card">
+
+<img
+src="${image}" alt="${escapeHTML(item.title)}">
+
+<div class="result-info">
+
+<h3>
+`${escapeHTML(item.title)}
+</h3>
+
+<div class="result-price">
+
+K$`{Number(
+item.price || 0
+).toLocaleString()}
+
+</div>
+
+<div class="result-location">
+
+📍 `${escapeHTML(
+item.location ||
+"Sioma"
+)}
+
+</div>
+
+<button
+class="buy-result"
+onclick="viewListing('${item.id}')">
+
+🛒 BUY
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+html += &lt;/div&gt;;
+
+
+resultsBox.innerHTML = html;
 
 }
+
+
+/* =========================================
+OPEN PRODUCT
+========================================= */
+
 async function viewListing(id) {
 
-    /* SHOW LOADING PAGE */
+const productPage =
+document.getElementById(
+"productPage"
+);
 
-    const productPage =
-        document.getElementById(
-            "productPage"
-        );
 
-    productPage.style.display =
-        "block";
+productPage.style.display =
+"block";
 
 
-    document.body.style.overflow =
-        "hidden";
+document.body.style.overflow =
+"hidden";
 
 
-    document.getElementById(
-        "detailsTitle"
-    ).innerText =
-        "Loading product...";
+document.getElementById(
+"detailsTitle"
+).innerText =
+"Loading product...";
 
 
-    /* GET PRODUCT */
+const { data, error } =
+await supabaseClient
+.from("listings")
+.select("*")
+.eq("id", id)
+.single();
 
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
 
-        .from("listings")
+if (error) {
 
-        .select(`
-            id,
-            title,
-            description,
-            price,
-            category,
-            location,
-            image_url,
-            seller_id,
-            profiles (
-                full_name,
-                phone
-            )
-        `)
+console.error(error);
 
-        .eq(
-            "id",
-            id
-        )
+document.getElementById(
+"detailsTitle"
+).innerText =
+"Unable to load product.";
 
-        .single();
+return;
+}
 
 
-    /* ERROR */
+document.getElementById(
+"detailsImage"
+).src =
+data.image_url || "";
 
-    if (error) {
 
-        console.error(error);
+document.getElementById(
+"detailsTitle"
+).innerText =
+data.title || "Product";
 
-        document.getElementById(
-            "detailsTitle"
-        ).innerText =
-            "Unable to load product.";
 
-        return;
-    }
+document.getElementById(
+"detailsPrice"
+).innerText =
+"K" +
+Number(
+data.price || 0
+).toLocaleString();
 
 
-    /* PRODUCT IMAGE */
+document.getElementById(
+"detailsCategory"
+).innerText =
+data.category || "";
 
-    const image =
-        data.image_url ||
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1000&q=80";
 
+document.getElementById(
+"detailsLocation"
+).innerText =
+"📍 " +
+(
+data.location ||
+"Sioma"
+);
 
-    document.getElementById(
-        "detailsImage"
-    ).src =
-        image;
 
+document.getElementById(
+"detailsDescription"
+).innerText =
+data.description ||
+"No description provided.";
 
-    /* TITLE */
 
-    document.getElementById(
-        "detailsTitle"
-    ).innerText =
-        data.title;
+/*
+For now, seller information comes
+directly from the listing if available.
+*/
 
+document.getElementById(
+"detailsSeller"
+).innerText =
+data.seller_name ||
+"Sioma Seller";
 
-    /* PRICE */
 
-    document.getElementById(
-        "detailsPrice"
-    ).innerText =
-        "K" +
-        Number(
-            data.price
-        ).toLocaleString();
+document.getElementById(
+"detailsPhone"
+).innerText =
+data.seller_phone ||
+"Phone number not provided";
 
 
-    /* CATEGORY */
+const whatsapp =
+document.getElementById(
+"whatsappButton"
+);
 
-    document.getElementById(
-        "detailsCategory"
-    ).innerText =
-        data.category;
 
+if (data.seller_phone) {
 
-    /* LOCATION */
+whatsapp.style.display =
+"block";
 
-    document.getElementById(
-        "detailsLocation"
-    ).innerText =
-        "📍 " +
-        (
-            data.location ||
-            "Sioma"
-        );
 
+whatsapp.onclick =
+function () {
 
-    /* DESCRIPTION */
+contactSeller(
+data.seller_phone,
+data.title
+);
 
-    document.getElementById(
-        "detailsDescription"
-    ).innerText =
-        data.description ||
-        "No description provided.";
+};
 
+} else {
 
-    /* SELLER */
+whatsapp.style.display =
+"none";
 
-    const seller =
-        data.profiles;
+}
 
+}
 
-    document.getElementById(
-        "detailsSeller"
-    ).innerText =
 
-        seller &&
-        seller.full_name
-
-        ? seller.full_name
-
-        : "Sioma Seller";
-
-
-    /* PHONE */
-
-    document.getElementById(
-        "detailsPhone"
-    ).innerText =
-
-        seller &&
-        seller.phone
-
-        ? seller.phone
-
-        : "Phone number not provided";
-
-
-    /* WHATSAPP BUTTON */
-
-    const whatsappButton =
-        document.getElementById(
-            "whatsappButton"
-        );
-
-
-    if (
-        seller &&
-        seller.phone
-    ) {
-
-        whatsappButton.style.display =
-            "block";
-
-
-        whatsappButton.onclick =
-            function() {
-
-                contactSeller(
-                    seller.phone,
-                    data.title
-                );
-
-            };
-
-    } else {
-
-        whatsappButton.style.display =
-            "none";
-
-    }
+/* =========================================
+CLOSE PRODUCT PAGE
+========================================= */
 
 function closeProductPage() {
 
-    document.getElementById(
-        "productPage"
-    ).style.display =
-        "none";
+document.getElementById(
+"productPage"
+).style.display =
+"none";
 
 
-    document.body.style.overflow =
-        "auto";
+document.body.style.overflow =
+"auto";
 
 }
 
-    </script>
-<!-- PRODUCT DETAILS PAGE -->
 
-<div id="productPage" class="product-page">
+/* =========================================
+WHATSAPP
+========================================= */
 
-    <div class="product-page-header">
+function contactSeller(
+phone,
+product
+) {
 
-        <button
-            class="back-button"
-            onclick="closeProductPage()">
-            ← Back
-        </button>
-
-        <h2>Product Details</h2>
-
-    </div>
-
-
-    <div class="product-details">
-
-        <div class="details-image-container">
-
-            <img
-                id="detailsImage"
-                src=""
-                alt="Product photo"
-                class="details-image">
-
-        </div>
+let number =
+phone.replace(
+/\D/g,
+""
+);
 
 
-        <div class="details-content">
+if (number.startsWith("0")) {
 
-            <div class="details-category"
-                 id="detailsCategory">
-            </div>
+number =
+"260" +
+number.substring(1);
 
-            <h1 id="detailsTitle">
-                Product
-            </h1>
-
-            <div
-                class="details-price"
-                id="detailsPrice">
-                K0
-            </div>
-
-            <div
-                class="details-location"
-                id="detailsLocation">
-                📍 Sioma
-            </div>
-
-            <hr>
-
-            <h3>Description</h3>
-
-            <p
-                id="detailsDescription"
-                class="details-description">
-            </p>
-
-            <hr>
-
-            <h3>Seller</h3>
-
-            <div class="seller-box">
-
-                <div class="seller-icon">
-                    👤
-                </div>
-
-                <div>
-
-                    <strong
-                        id="detailsSeller">
-                        Seller
-                    </strong>
-
-                    <div
-                        id="detailsPhone">
-                    </div>
-
-                </div>
-
-            </div>
+}
 
 
-            <button
-                id="whatsappButton"
-                class="whatsapp-button">
+const message =
+encodeURIComponent(
+"Hello, I found your " +
+product +
+" on SiomaMarket. Is it still available?"
+);
 
-                💬 Contact Seller on WhatsApp
 
-            </button>
+window.open(
+"https://wa.me/" +
+number +
+"?text=" +
+message,
+"_blank"
+);
 
-        </div>
+}
 
-    </div>
 
-</div>
+/* =========================================
+BUY BUTTON AT TOP
+========================================= */
+
+function showAllProducts() {
+
+document
+.getElementById(
+"searchInput"
+)
+.focus();
+
+}
+
+
+/* =========================================
+SELL BUTTON
+========================================= */
+
+function sellNow() {
+
+alert(
+"Seller registration will be added next."
+);
+
+}
+
+
+/* =========================================
+SECURITY
+========================================= */
+
+function escapeHTML(value) {
+
+return String(value)
+.replace(/&/g, "&")
+.replace(/</g, "<")
+.replace(/>/g, ">")
+.replace(/"/g, """)
+.replace(/'/g, "'");
+
+}
+
+
+/* =========================================
+ENTER KEY SEARCH
+========================================= */
+
+document
+.getElementById("searchInput")
+.addEventListener(
+"keypress",
+function(event) {
+
+if (
+event.key === "Enter"
+) {
+
+searchMarket();
+
+}
+
+}
+);
+
+</script>
+
 </body>
+
 </html>
