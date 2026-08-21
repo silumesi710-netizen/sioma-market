@@ -627,6 +627,105 @@ function closeProductPage() {
 }
 
     </script>
+<!-- PRODUCT DETAILS PAGE -->
 
+<div id="productPage" class="product-page">
+
+    <div class="product-page-header">
+
+        <button
+            class="back-button"
+            onclick="closeProductPage()">
+            ← Back
+        </button>
+
+        <h2>Product Details</h2>
+
+    </div>
+
+
+    <div class="product-details">
+
+        <div class="details-image-container">
+
+            <img
+                id="detailsImage"
+                src=""
+                alt="Product photo"
+                class="details-image">
+
+        </div>
+
+
+        <div class="details-content">
+
+            <div class="details-category"
+                 id="detailsCategory">
+            </div>
+
+            <h1 id="detailsTitle">
+                Product
+            </h1>
+
+            <div
+                class="details-price"
+                id="detailsPrice">
+                K0
+            </div>
+
+            <div
+                class="details-location"
+                id="detailsLocation">
+                📍 Sioma
+            </div>
+
+            <hr>
+
+            <h3>Description</h3>
+
+            <p
+                id="detailsDescription"
+                class="details-description">
+            </p>
+
+            <hr>
+
+            <h3>Seller</h3>
+
+            <div class="seller-box">
+
+                <div class="seller-icon">
+                    👤
+                </div>
+
+                <div>
+
+                    <strong
+                        id="detailsSeller">
+                        Seller
+                    </strong>
+
+                    <div
+                        id="detailsPhone">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="whatsappButton"
+                class="whatsapp-button">
+
+                💬 Contact Seller on WhatsApp
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
