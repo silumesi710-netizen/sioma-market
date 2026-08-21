@@ -371,10 +371,6 @@ Categories
 
 <div class="category-grid">
 
-<button onclick="filterCategory('All')">
-🛒<br>All
-</button>
-
 <button onclick="filterCategory('Farm Produce')">
 🌽<br>Farm Produce
 </button>
