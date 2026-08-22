@@ -1293,7 +1293,7 @@ async function uploadProductImage(file) {
         error
     } = await supabaseClient
         .storage
-        .from("product-images")
+        .from("Product-images")
         .upload(
             filePath,
             file,
@@ -1324,7 +1324,7 @@ async function uploadProductImage(file) {
     } =
         supabaseClient
         .storage
-        .from("product-images")
+        .from("Product-images")
         .getPublicUrl(filePath);
 
 
