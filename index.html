@@ -236,11 +236,6 @@ AUTH MODAL
     cursor: pointer;
 }
 
-.auth-submit:disabled {
-    opacity: .7;
-    cursor: not-allowed;
-}
-
 .auth-close {
     width: 100%;
     margin-top: 10px;
@@ -725,9 +720,9 @@ DESKTOP
 
 <body>
 
-<!-- =========================
+<!-- =====================================================
 AUTH MODAL
-========================= -->
+===================================================== -->
 
 <div id="authModal" class="auth-modal">
 
@@ -763,7 +758,9 @@ AUTH MODAL
 
         <form id="loginForm" class="auth-form">
 
-            <label for="loginEmail">Email</label>
+            <label for="loginEmail">
+                Email
+            </label>
 
             <input
                 type="email"
@@ -771,7 +768,9 @@ AUTH MODAL
                 placeholder="you@example.com"
                 required>
 
-            <label for="loginPassword">Password</label>
+            <label for="loginPassword">
+                Password
+            </label>
 
             <input
                 type="password"
@@ -847,7 +846,6 @@ AUTH MODAL
 
             <button
                 type="submit"
-                id="registerButton"
                 class="auth-submit">
                 📝 CREATE ACCOUNT
             </button>
@@ -867,9 +865,9 @@ AUTH MODAL
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
 SELL PAGE
-========================= -->
+===================================================== -->
 
 <div id="sellPage" class="sell-page">
 
@@ -894,7 +892,9 @@ SELL PAGE
                 🏷️
             </div>
 
-            <h1>Sell Your Product</h1>
+            <h1>
+                Sell Your Product
+            </h1>
 
             <p>
                 Reach buyers in Sioma by listing your product.
@@ -938,7 +938,9 @@ SELL PAGE
                 Category
             </label>
 
-            <select id="sellCategory" required>
+            <select
+                id="sellCategory"
+                required>
 
                 <option value="">
                     Select category
@@ -1046,9 +1048,9 @@ SELL PAGE
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
 HEADER
-========================= -->
+===================================================== -->
 
 <header>
 
@@ -1111,16 +1113,16 @@ HEADER
 </header>
 
 
-<!-- =========================
+<!-- =====================================================
 SEARCH RESULTS
-========================= -->
+===================================================== -->
 
 <div id="searchResults"></div>
 
 
-<!-- =========================
+<!-- =====================================================
 MAIN
-========================= -->
+===================================================== -->
 
 <main>
 
@@ -1145,57 +1147,97 @@ MAIN
         <div
             class="category"
             onclick="searchCategory('Agriculture')">
-            <span class="category-icon">🌾</span>
+
+            <span class="category-icon">
+                🌾
+            </span>
+
             Agriculture
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Livestock')">
-            <span class="category-icon">🐔</span>
+
+            <span class="category-icon">
+                🐔
+            </span>
+
             Livestock
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Fish')">
-            <span class="category-icon">🐟</span>
+
+            <span class="category-icon">
+                🐟
+            </span>
+
             Fish
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Phones')">
-            <span class="category-icon">📱</span>
+
+            <span class="category-icon">
+                📱
+            </span>
+
             Phones
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Vehicles')">
-            <span class="category-icon">🚗</span>
+
+            <span class="category-icon">
+                🚗
+            </span>
+
             Vehicles
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Houses')">
-            <span class="category-icon">🏠</span>
+
+            <span class="category-icon">
+                🏠
+            </span>
+
             Houses
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Clothes')">
-            <span class="category-icon">👕</span>
+
+            <span class="category-icon">
+                👕
+            </span>
+
             Clothes
+
         </div>
 
         <div
             class="category"
             onclick="searchCategory('Services')">
-            <span class="category-icon">🛠️</span>
+
+            <span class="category-icon">
+                🛠️
+            </span>
+
             Services
+
         </div>
 
     </div>
@@ -1203,9 +1245,9 @@ MAIN
 </main>
 
 
-<!-- =========================
+<!-- =====================================================
 PRODUCT DETAILS
-========================= -->
+===================================================== -->
 
 <div id="productPage" class="product-page">
 
@@ -1321,9 +1363,9 @@ PRODUCT DETAILS
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
 FOOTER
-========================= -->
+===================================================== -->
 
 <footer>
 
@@ -1369,6 +1411,18 @@ const supabaseClient =
 EMAIL CONFIRMATION REDIRECT
 ===================================================== */
 
+/*
+    IMPORTANT:
+    This must match the URL configured in:
+
+    Supabase
+    → Authentication
+    → URL Configuration
+    → Redirect URLs
+
+    For your local development:
+*/
+
 const EMAIL_REDIRECT_URL =
     window.location.origin + "/";
 
@@ -1389,12 +1443,147 @@ let currentUser = null;
 
 
 /* =====================================================
+HANDLE EMAIL CONFIRMATION RESULT
+===================================================== */
+
+function handleEmailConfirmation() {
+
+    const hash =
+        window.location.hash;
+
+    if (!hash) {
+        return;
+    }
+
+    const params =
+        new URLSearchParams(
+            hash.substring(1)
+        );
+
+    const error =
+        params.get("error");
+
+    const errorCode =
+        params.get("error_code");
+
+    const errorDescription =
+        params.get("error_description");
+
+
+    /*
+        Supabase can return authentication
+        errors inside the URL fragment.
+    */
+
+    if (error) {
+
+        const message =
+            document.getElementById(
+                "authMessage"
+            );
+
+        if (errorCode === "otp_expired") {
+
+            openAuthModal();
+
+            showLogin();
+
+            message.style.color =
+                "#c62828";
+
+            message.innerHTML =
+                "❌ Your email confirmation link has expired or is invalid.<br><br>" +
+                "Please register again or request a new confirmation email.";
+
+        } else {
+
+            openAuthModal();
+
+            message.style.color =
+                "#c62828";
+
+            message.innerText =
+                "❌ " +
+                (
+                    errorDescription ||
+                    "Email confirmation failed."
+                );
+
+        }
+
+        /*
+            Remove the error from the browser
+            address bar after reading it.
+        */
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname +
+            window.location.search
+        );
+
+        return;
+    }
+
+
+    /*
+        If Supabase successfully returned an
+        access token after email confirmation,
+        let the auth state listener/session
+        handle the login.
+    */
+
+    if (
+        params.get("access_token") ||
+        params.get("type") === "signup"
+    ) {
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+
+        setTimeout(
+            async function() {
+
+                await loadAuthSession();
+
+                if (currentUser) {
+
+                    const message =
+                        document.getElementById(
+                            "authMessage"
+                        );
+
+                    openAuthModal();
+
+                    message.style.color =
+                        "#087f3d";
+
+                    message.innerHTML =
+                        "✅ Email confirmed successfully!<br><br>" +
+                        "Your SiomaMarket account is ready.";
+
+                }
+
+            },
+            500
+        );
+    }
+}
+
+
+/* =====================================================
 AUTH MODAL
 ===================================================== */
 
 function openAuthModal() {
 
-    document.getElementById("authModal").style.display =
+    document.getElementById(
+        "authModal"
+    ).style.display =
         "block";
 
     document.body.style.overflow =
@@ -1404,7 +1593,9 @@ function openAuthModal() {
 
 function closeAuthModal() {
 
-    document.getElementById("authModal").style.display =
+    document.getElementById(
+        "authModal"
+    ).style.display =
         "none";
 
     document.body.style.overflow =
@@ -1414,34 +1605,54 @@ function closeAuthModal() {
 
 function showLogin() {
 
-    document.getElementById("loginForm").style.display =
+    document.getElementById(
+        "loginForm"
+    ).style.display =
         "block";
 
-    document.getElementById("registerForm").style.display =
+    document.getElementById(
+        "registerForm"
+    ).style.display =
         "none";
 
-    document.getElementById("loginTab").classList.add("active");
+    document.getElementById(
+        "loginTab"
+    ).classList.add("active");
 
-    document.getElementById("registerTab").classList.remove("active");
+    document.getElementById(
+        "registerTab"
+    ).classList.remove("active");
 
-    document.getElementById("authMessage").innerText =
+    document.getElementById(
+        "authMessage"
+    ).innerText =
         "";
 }
 
 
 function showRegister() {
 
-    document.getElementById("loginForm").style.display =
+    document.getElementById(
+        "loginForm"
+    ).style.display =
         "none";
 
-    document.getElementById("registerForm").style.display =
+    document.getElementById(
+        "registerForm"
+    ).style.display =
         "block";
 
-    document.getElementById("loginTab").classList.remove("active");
+    document.getElementById(
+        "loginTab"
+    ).classList.remove("active");
 
-    document.getElementById("registerTab").classList.add("active");
+    document.getElementById(
+        "registerTab"
+    ).classList.add("active");
 
-    document.getElementById("authMessage").innerText =
+    document.getElementById(
+        "authMessage"
+    ).innerText =
         "";
 }
 
@@ -1479,34 +1690,35 @@ document
         event.preventDefault();
 
         const message =
-            document.getElementById("authMessage");
-
-        const button =
-            document.getElementById("registerButton");
+            document.getElementById(
+                "authMessage"
+            );
 
         const name =
-            document.getElementById("registerName")
-            .value
-            .trim();
+            document.getElementById(
+                "registerName"
+            ).value.trim();
 
         const phone =
-            document.getElementById("registerPhone")
-            .value
-            .trim();
+            document.getElementById(
+                "registerPhone"
+            ).value.trim();
 
         const location =
-            document.getElementById("registerLocation")
-            .value
-            .trim();
+            document.getElementById(
+                "registerLocation"
+            ).value.trim();
 
         const email =
-            document.getElementById("registerEmail")
-            .value
-            .trim();
+            document.getElementById(
+                "registerEmail"
+            ).value.trim();
 
         const password =
-            document.getElementById("registerPassword")
-            .value;
+            document.getElementById(
+                "registerPassword"
+            ).value;
+
 
         message.style.color =
             "#087f3d";
@@ -1514,15 +1726,15 @@ document
         message.innerText =
             "⏳ Creating your account...";
 
-        button.disabled =
-            true;
 
         try {
 
             /*
-            IMPORTANT:
-            emailRedirectTo sends the user back
-            to the current website after confirmation.
+            IMPORTANT FIX:
+
+            emailRedirectTo tells Supabase
+            where to send the user after
+            confirming their email.
             */
 
             const {
@@ -1538,7 +1750,28 @@ document
                 options: {
 
                     emailRedirectTo:
-                        EMAIL_REDIRECT_URL
+                        EMAIL_REDIRECT_URL,
+
+                    /*
+                    Store seller information
+                    in Supabase user metadata.
+                    This also helps preserve the
+                    information while email
+                    confirmation is pending.
+                    */
+
+                    data: {
+
+                        full_name:
+                            name,
+
+                        phone:
+                            phone,
+
+                        location:
+                            location
+
+                    }
 
                 }
 
@@ -1561,20 +1794,16 @@ document
 
             /*
             If email confirmation is disabled,
-            a session may already exist.
-            In that case create the profile immediately.
+            a session may be returned immediately.
             */
 
             if (data.session) {
-
-                currentUser =
-                    data.user;
 
                 const {
                     error: profileError
                 } =
                 await createSellerProfile(
-                    currentUser.id,
+                    data.user.id,
                     name,
                     phone,
                     location
@@ -1583,6 +1812,11 @@ document
 
                 if (profileError) {
 
+                    console.error(
+                        "Profile error:",
+                        profileError
+                    );
+
                     throw new Error(
                         "Account created, but seller profile could not be saved: " +
                         profileError.message
@@ -1590,8 +1824,8 @@ document
 
                 }
 
-
-                await loadSellerProfile();
+                currentUser =
+                    data.user;
 
                 updateAccountUI();
 
@@ -1601,11 +1835,11 @@ document
                 message.innerHTML =
                     "✅ Account created successfully!";
 
-
                 document
-                    .getElementById("registerForm")
+                    .getElementById(
+                        "registerForm"
+                    )
                     .reset();
-
 
                 setTimeout(
                     function() {
@@ -1618,30 +1852,15 @@ document
                     1000
                 );
 
-
                 return;
             }
 
 
             /*
             Email confirmation is required.
-            The profile information is temporarily stored
-            in the browser until the user confirms and logs in.
+            Supabase normally returns a user
+            but no session in this situation.
             */
-
-            localStorage.setItem(
-                "sioma_pending_profile",
-                JSON.stringify({
-
-                    full_name: name,
-
-                    phone: phone,
-
-                    location: location
-
-                })
-            );
-
 
             message.style.color =
                 "#087f3d";
@@ -1652,20 +1871,19 @@ document
                 "<strong>" +
                 escapeHTML(email) +
                 "</strong><br><br>" +
-                "Open the NEWEST confirmation email and confirm your account.<br><br>" +
-                "After confirmation, return here and login.";
+                "Open the newest email and tap the confirmation link.<br><br>" +
+                "After confirmation, return to SiomaMarket.";
 
             document
-                .getElementById("registerForm")
+                .getElementById(
+                    "registerForm"
+                )
                 .reset();
 
 
         } catch(error) {
 
-            console.error(
-                "Registration error:",
-                error
-            );
+            console.error(error);
 
             message.style.color =
                 "#c62828";
@@ -1674,15 +1892,90 @@ document
                 "❌ " +
                 error.message;
 
-        } finally {
-
-            button.disabled =
-                false;
-
         }
 
     }
 );
+
+
+/* =====================================================
+RESEND CONFIRMATION EMAIL
+===================================================== */
+
+async function resendConfirmationEmail() {
+
+    const email =
+        document.getElementById(
+            "registerEmail"
+        ).value.trim();
+
+
+    const message =
+        document.getElementById(
+            "authMessage"
+        );
+
+
+    if (!email) {
+
+        message.style.color =
+            "#c62828";
+
+        message.innerText =
+            "Please enter your email address first.";
+
+        return;
+    }
+
+
+    message.style.color =
+        "#087f3d";
+
+    message.innerText =
+        "⏳ Sending a new confirmation email...";
+
+
+    const {
+        error
+    } =
+    await supabaseClient.auth.resend({
+
+        type:
+            "signup",
+
+        email:
+            email,
+
+        options: {
+
+            emailRedirectTo:
+                EMAIL_REDIRECT_URL
+
+        }
+
+    });
+
+
+    if (error) {
+
+        message.style.color =
+            "#c62828";
+
+        message.innerText =
+            "❌ " +
+            error.message;
+
+        return;
+    }
+
+
+    message.style.color =
+        "#087f3d";
+
+    message.innerHTML =
+        "✅ A new confirmation email has been sent.<br><br>" +
+        "Please use the newest email.";
+}
 
 
 /* =====================================================
@@ -1696,20 +1989,6 @@ async function createSellerProfile(
     location
 ) {
 
-    if (!userId) {
-
-        return {
-            error:
-                new Error("User ID is missing.")
-        };
-
-    }
-
-
-    /*
-    Check whether the profile exists.
-    */
-
     const {
         data: existingProfile,
         error: checkError
@@ -1717,7 +1996,10 @@ async function createSellerProfile(
     await supabaseClient
         .from("seller_profiles")
         .select("id")
-        .eq("id", userId)
+        .eq(
+            "id",
+            userId
+        )
         .maybeSingle();
 
 
@@ -1729,10 +2011,6 @@ async function createSellerProfile(
 
     }
 
-
-    /*
-    Update existing profile.
-    */
 
     if (existingProfile) {
 
@@ -1766,10 +2044,6 @@ async function createSellerProfile(
 
     }
 
-
-    /*
-    Create new profile.
-    */
 
     const {
         error
@@ -1813,16 +2087,20 @@ document
         event.preventDefault();
 
         const message =
-            document.getElementById("authMessage");
+            document.getElementById(
+                "authMessage"
+            );
 
         const email =
-            document.getElementById("loginEmail")
-            .value
-            .trim();
+            document.getElementById(
+                "loginEmail"
+            ).value.trim();
 
         const password =
-            document.getElementById("loginPassword")
-            .value;
+            document.getElementById(
+                "loginPassword"
+            ).value;
+
 
         message.style.color =
             "#087f3d";
@@ -1857,87 +2135,9 @@ document
             currentUser =
                 data.user;
 
-
-            /*
-            Get saved profile information.
-            */
-
-            const pendingProfile =
-                localStorage.getItem(
-                    "sioma_pending_profile"
-                );
-
-
-            if (pendingProfile) {
-
-                try {
-
-                    const profile =
-                        JSON.parse(
-                            pendingProfile
-                        );
-
-
-                    const {
-                        error:
-                            profileError
-                    } =
-                    await createSellerProfile(
-
-                        currentUser.id,
-
-                        profile.full_name ||
-                            "",
-
-                        profile.phone ||
-                            "",
-
-                        profile.location ||
-                            "Sioma"
-
-                    );
-
-
-                    if (profileError) {
-
-                        console.error(
-                            "Profile creation error:",
-                            profileError
-                        );
-
-                        /*
-                        Do not block login.
-                        The profile can be created
-                        when publishing.
-                        */
-
-                    } else {
-
-                        localStorage.removeItem(
-                            "sioma_pending_profile"
-                        );
-
-                    }
-
-                } catch(profileParseError) {
-
-                    console.error(
-                        profileParseError
-                    );
-
-                }
-
-            }
-
-
-            /*
-            Load profile into the selling form.
-            */
+            updateAccountUI();
 
             await loadSellerProfile();
-
-
-            updateAccountUI();
 
 
             message.style.color =
@@ -1948,7 +2148,9 @@ document
 
 
             document
-                .getElementById("loginForm")
+                .getElementById(
+                    "loginForm"
+                )
                 .reset();
 
 
@@ -1964,10 +2166,7 @@ document
 
         } catch(error) {
 
-            console.error(
-                "Login error:",
-                error
-            );
+            console.error(error);
 
             message.style.color =
                 "#c62828";
@@ -2008,9 +2207,7 @@ async function logoutSeller() {
     currentUser =
         null;
 
-
     updateAccountUI();
-
 
     alert(
         "You have been logged out."
@@ -2041,11 +2238,9 @@ function updateAccountUI() {
             currentUser.email ||
             "Seller";
 
-
         status.innerText =
             "👤 " +
             email;
-
 
         button.innerText =
             "🚪 Logout";
@@ -2054,7 +2249,6 @@ function updateAccountUI() {
 
         status.innerText =
             "👤 Not logged in";
-
 
         button.innerText =
             "🔐 Login";
@@ -2110,67 +2304,52 @@ supabaseClient.auth.onAuthStateChange(
                 ? session.user
                 : null;
 
-
         updateAccountUI();
 
-
         /*
-        After email confirmation,
-        Supabase creates a session.
+        If the user has just confirmed
+        their email and Supabase has created
+        the session, create their seller
+        profile from metadata.
         */
 
         if (
-            event === "SIGNED_IN" &&
-            currentUser
+            session &&
+            session.user
         ) {
 
-            const pendingProfile =
-                localStorage.getItem(
-                    "sioma_pending_profile"
+            const metadata =
+                session.user.user_metadata ||
+                {};
+
+            if (
+                metadata.full_name ||
+                metadata.phone ||
+                metadata.location
+            ) {
+
+                const {
+                    error
+                } =
+                await createSellerProfile(
+
+                    session.user.id,
+
+                    metadata.full_name ||
+                        "",
+
+                    metadata.phone ||
+                        "",
+
+                    metadata.location ||
+                        "Sioma"
+
                 );
 
-
-            if (pendingProfile) {
-
-                try {
-
-                    const profile =
-                        JSON.parse(
-                            pendingProfile
-                        );
-
-
-                    const {
-                        error
-                    } =
-                    await createSellerProfile(
-
-                        currentUser.id,
-
-                        profile.full_name ||
-                            "",
-
-                        profile.phone ||
-                            "",
-
-                        profile.location ||
-                            "Sioma"
-
-                    );
-
-
-                    if (!error) {
-
-                        localStorage.removeItem(
-                            "sioma_pending_profile"
-                        );
-
-                    }
-
-                } catch(error) {
+                if (error) {
 
                     console.error(
-                        "Automatic profile creation error:",
+                        "Profile creation after confirmation failed:",
                         error
                     );
 
@@ -2182,184 +2361,6 @@ supabaseClient.auth.onAuthStateChange(
 
     }
 );
-
-
-/* =====================================================
-HANDLE EMAIL CONFIRMATION
-===================================================== */
-
-async function handleEmailConfirmation() {
-
-    /*
-    Supabase v2 handles the confirmation
-    session from the URL automatically.
-    */
-
-    const hash =
-        window.location.hash;
-
-
-    const search =
-        window.location.search;
-
-
-    /*
-    Detect an expired confirmation link.
-    */
-
-    if (
-        hash.includes(
-            "error=access_denied"
-        ) ||
-        hash.includes(
-            "otp_expired"
-        ) ||
-        search.includes(
-            "otp_expired"
-        )
-    ) {
-
-        openAuthModal();
-
-        showLogin();
-
-
-        const message =
-            document.getElementById(
-                "authMessage"
-            );
-
-
-        message.style.color =
-            "#c62828";
-
-
-        message.innerHTML =
-            "❌ This confirmation link has expired.<br><br>" +
-            "Please register again or request a new confirmation email.";
-
-        return;
-
-    }
-
-
-    /*
-    Wait briefly for Supabase to process
-    the confirmation session.
-    */
-
-    const {
-        data
-    } =
-    await supabaseClient.auth.getSession();
-
-
-    if (
-        data &&
-        data.session
-    ) {
-
-        currentUser =
-            data.session.user;
-
-
-        updateAccountUI();
-
-
-        const pendingProfile =
-            localStorage.getItem(
-                "sioma_pending_profile"
-            );
-
-
-        if (pendingProfile) {
-
-            try {
-
-                const profile =
-                    JSON.parse(
-                        pendingProfile
-                    );
-
-
-                const {
-                    error
-                } =
-                await createSellerProfile(
-
-                    currentUser.id,
-
-                    profile.full_name ||
-                        "",
-
-                    profile.phone ||
-                        "",
-
-                    profile.location ||
-                        "Sioma"
-
-                );
-
-
-                if (!error) {
-
-                    localStorage.removeItem(
-                        "sioma_pending_profile"
-                    );
-
-                }
-
-            } catch(error) {
-
-                console.error(
-                    "Confirmation profile error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /*
-        Remove authentication tokens
-        from the visible browser URL.
-        */
-
-        if (
-            window.location.hash ||
-            window.location.search
-        ) {
-
-            window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-            );
-
-        }
-
-
-        openAuthModal();
-
-        const message =
-            document.getElementById(
-                "authMessage"
-            );
-
-
-        message.style.color =
-            "#087f3d";
-
-
-        message.innerHTML =
-            "✅ Email confirmed successfully!<br><br>" +
-            "Your SiomaMarket account is ready.<br>" +
-            "You can now sell your products.";
-
-    }
-
-}
 
 
 /* =====================================================
@@ -2389,20 +2390,15 @@ async function sellNow() {
 
         showLogin();
 
-
-        const message =
-            document.getElementById(
-                "authMessage"
-            );
-
-
-        message.style.color =
+        document.getElementById(
+            "authMessage"
+        ).style.color =
             "#c62828";
 
-
-        message.innerText =
+        document.getElementById(
+            "authMessage"
+        ).innerText =
             "🔐 Please login or register before selling a product.";
-
 
         return;
     }
@@ -2415,7 +2411,6 @@ async function sellNow() {
         "sellPage"
     ).style.display =
         "block";
-
 
     document.body.style.overflow =
         "hidden";
@@ -2432,7 +2427,6 @@ function closeSellPage() {
         "sellPage"
     ).style.display =
         "none";
-
 
     document.body.style.overflow =
         "auto";
@@ -2525,7 +2519,9 @@ function buyNow() {
     ).innerHTML = `
 
         <div class="no-results">
+
             🛒 Search for a product you want to buy.
+
         </div>
 
     `;
@@ -2541,7 +2537,6 @@ const sellImage =
         "sellImage"
     );
 
-
 const imagePreview =
     document.getElementById(
         "imagePreview"
@@ -2555,10 +2550,8 @@ sellImage.addEventListener(
         const file =
             this.files[0];
 
-
         imagePreview.innerHTML =
             "";
-
 
         if (!file) {
             return;
@@ -2575,10 +2568,8 @@ sellImage.addEventListener(
                 "Please select an image."
             );
 
-
             this.value =
                 "";
-
 
             return;
         }
@@ -2625,9 +2616,7 @@ UPLOAD PRODUCT IMAGE
 async function uploadProductImage(file) {
 
     if (!file) {
-
         return null;
-
     }
 
 
@@ -2692,7 +2681,6 @@ async function uploadProductImage(file) {
 
                 contentType:
                     file.type
-
             }
         );
 
@@ -2703,7 +2691,6 @@ async function uploadProductImage(file) {
             "Image upload error:",
             error
         );
-
 
         throw new Error(
             "Photo upload failed: " +
@@ -2771,7 +2758,6 @@ document
                 "Please login before publishing a product."
             );
 
-
             closeSellPage();
 
             openAuthModal();
@@ -2784,7 +2770,6 @@ document
             document.getElementById(
                 "publishButton"
             );
-
 
         const message =
             document.getElementById(
@@ -2856,9 +2841,6 @@ document
 
         if (!title) {
 
-            message.style.color =
-                "#c62828";
-
             message.innerText =
                 "Please enter a product name.";
 
@@ -2868,9 +2850,6 @@ document
 
         if (!description) {
 
-            message.style.color =
-                "#c62828";
-
             message.innerText =
                 "Please enter a description.";
 
@@ -2879,12 +2858,9 @@ document
 
 
         if (
-            Number.isNaN(price) ||
+            !Number.isFinite(price) ||
             price < 0
         ) {
-
-            message.style.color =
-                "#c62828";
 
             message.innerText =
                 "Please enter a valid price.";
@@ -2895,35 +2871,8 @@ document
 
         if (!category) {
 
-            message.style.color =
-                "#c62828";
-
             message.innerText =
                 "Please select a category.";
-
-            return;
-        }
-
-
-        if (!sellerName) {
-
-            message.style.color =
-                "#c62828";
-
-            message.innerText =
-                "Please enter your name.";
-
-            return;
-        }
-
-
-        if (!sellerPhone) {
-
-            message.style.color =
-                "#c62828";
-
-            message.innerText =
-                "Please enter your phone number.";
 
             return;
         }
@@ -2932,10 +2881,8 @@ document
         publishButton.disabled =
             true;
 
-
         publishButton.innerText =
             "⏳ UPLOADING PHOTO...";
-
 
         message.innerText =
             "";
@@ -2943,19 +2890,11 @@ document
 
         try {
 
-            /*
-            Upload image.
-            */
-
             const imageURL =
                 await uploadProductImage(
                     imageFile
                 );
 
-
-            /*
-            Make sure seller profile exists.
-            */
 
             publishButton.innerText =
                 "⏳ SAVING PROFILE...";
@@ -2965,15 +2904,10 @@ document
                 error: profileError
             } =
             await createSellerProfile(
-
                 currentUser.id,
-
                 sellerName,
-
                 sellerPhone,
-
                 location
-
             );
 
 
@@ -2987,15 +2921,12 @@ document
             }
 
 
-            /*
-            Publish listing.
-            */
-
             publishButton.innerText =
                 "⏳ PUBLISHING...";
 
 
             const {
+                data,
                 error
             } =
             await supabaseClient
@@ -3003,7 +2934,6 @@ document
                 .insert([
 
                     {
-
                         title:
                             title,
 
@@ -3033,7 +2963,8 @@ document
 
                     }
 
-                ]);
+                ])
+                .select();
 
 
             if (error) {
@@ -3042,7 +2973,6 @@ document
                     "Listing error:",
                     error
                 );
-
 
                 throw new Error(
                     "Product could not be published: " +
@@ -3055,11 +2985,11 @@ document
             message.style.color =
                 "#087f3d";
 
-
-            message.innerHTML =
-                "✅ Product published successfully!" +
-                "<br><br>" +
-                "Buyers can now see your product.";
+            message.innerHTML = `
+                ✅ Product published successfully!
+                <br><br>
+                Buyers can now see your product.
+            `;
 
 
             document
@@ -3100,19 +3030,15 @@ document
 
             console.error(error);
 
-
             message.style.color =
                 "#c62828";
-
 
             message.innerText =
                 "❌ " +
                 error.message;
 
-
             publishButton.disabled =
                 false;
-
 
             publishButton.innerText =
                 "🚀 PUBLISH PRODUCT";
@@ -3146,11 +3072,9 @@ async function searchMarket() {
     if (!search) {
 
         resultsBox.innerHTML = `
-
             <div class="no-results">
                 Please enter a product to search.
             </div>
-
         `;
 
         return;
@@ -3158,11 +3082,9 @@ async function searchMarket() {
 
 
     resultsBox.innerHTML = `
-
         <div class="no-results">
             🔎 Searching SiomaMarket...
         </div>
-
     `;
 
 
@@ -3189,7 +3111,8 @@ async function searchMarket() {
         .order(
             "created_at",
             {
-                ascending: false
+                ascending:
+                    false
             }
         );
 
@@ -3198,21 +3121,14 @@ async function searchMarket() {
 
         console.error(error);
 
-
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 ❌ Search failed.
-
                 <br><br>
-
                 ${escapeHTML(
                     error.message
                 )}
-
             </div>
-
         `;
 
         return;
@@ -3225,17 +3141,12 @@ async function searchMarket() {
     ) {
 
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 🔍 No products found for
-
                 <strong>
                     ${escapeHTML(search)}
                 </strong>
-
             </div>
-
         `;
 
         return;
@@ -3253,7 +3164,9 @@ async function searchMarket() {
 CATEGORY SEARCH
 ===================================================== */
 
-async function searchCategory(category) {
+async function searchCategory(
+    category
+) {
 
     const resultsBox =
         document.getElementById(
@@ -3262,15 +3175,11 @@ async function searchCategory(category) {
 
 
     resultsBox.innerHTML = `
-
         <div class="no-results">
-
             🔎 Loading
             ${escapeHTML(category)}
             ...
-
         </div>
-
     `;
 
 
@@ -3292,7 +3201,8 @@ async function searchCategory(category) {
         .order(
             "created_at",
             {
-                ascending: false
+                ascending:
+                    false
             }
         );
 
@@ -3301,21 +3211,14 @@ async function searchCategory(category) {
 
         console.error(error);
 
-
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 ❌ Could not load products.
-
                 <br><br>
-
                 ${escapeHTML(
                     error.message
                 )}
-
             </div>
-
         `;
 
         return;
@@ -3328,15 +3231,11 @@ async function searchCategory(category) {
     ) {
 
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 No
                 ${escapeHTML(category)}
                 products are available yet.
-
             </div>
-
         `;
 
         return;
@@ -3350,8 +3249,10 @@ async function searchCategory(category) {
 
 
     window.scrollTo({
-        top: 250,
-        behavior: "smooth"
+        top:
+            250,
+        behavior:
+            "smooth"
     });
 }
 
@@ -3369,13 +3270,9 @@ async function loadListings() {
 
 
     resultsBox.innerHTML = `
-
         <div class="no-results">
-
             ⏳ Loading SiomaMarket products...
-
         </div>
-
     `;
 
 
@@ -3393,7 +3290,8 @@ async function loadListings() {
         .order(
             "created_at",
             {
-                ascending: false
+                ascending:
+                    false
             }
         );
 
@@ -3405,21 +3303,14 @@ async function loadListings() {
             error
         );
 
-
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 ❌ Could not load products.
-
                 <br><br>
-
                 ${escapeHTML(
                     error.message
                 )}
-
             </div>
-
         `;
 
         return;
@@ -3432,17 +3323,11 @@ async function loadListings() {
     ) {
 
         resultsBox.innerHTML = `
-
             <div class="no-results">
-
                 🛍️ No products have been listed yet.
-
                 <br><br>
-
                 Be the first person to sell on SiomaMarket!
-
             </div>
-
         `;
 
         return;
@@ -3472,15 +3357,11 @@ function renderResults(
 
 
     let html = `
-
         <h2 class="results-title">
-
             ${escapeHTML(heading)}
-
         </h2>
 
         <div class="results-grid">
-
     `;
 
 
@@ -3514,7 +3395,6 @@ function renderResults(
 
 
             html += `
-
                 <div class="result-card">
 
                     <img
@@ -3548,7 +3428,6 @@ function renderResults(
                     </div>
 
                 </div>
-
             `;
 
         }
@@ -3569,7 +3448,9 @@ function renderResults(
 VIEW PRODUCT
 ===================================================== */
 
-async function viewListing(id) {
+async function viewListing(
+    id
+) {
 
     const productPage =
         document.getElementById(
@@ -3579,7 +3460,6 @@ async function viewListing(id) {
 
     productPage.style.display =
         "block";
-
 
     document.body.style.overflow =
         "hidden";
@@ -3612,12 +3492,10 @@ async function viewListing(id) {
 
         console.error(error);
 
-
         document.getElementById(
             "detailsTitle"
         ).innerText =
             "Unable to load product.";
-
 
         return;
     }
@@ -3755,7 +3633,6 @@ function closeProductPage() {
     ).style.display =
         "none";
 
-
     document.body.style.overflow =
         "auto";
 }
@@ -3811,7 +3688,9 @@ function contactSeller(
 CALL
 ===================================================== */
 
-function callSeller(phone) {
+function callSeller(
+    phone
+) {
 
     const number =
         String(phone)
@@ -3843,7 +3722,9 @@ function saveFavorite() {
 SECURITY
 ===================================================== */
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(value)
 
@@ -3874,9 +3755,13 @@ function escapeHTML(value) {
 }
 
 
-function escapeAttribute(value) {
+function escapeAttribute(
+    value
+) {
 
-    return escapeHTML(value);
+    return escapeHTML(
+        value
+    );
 
 }
 
@@ -3886,13 +3771,16 @@ ENTER KEY SEARCH
 ===================================================== */
 
 document
-.getElementById("searchInput")
+.getElementById(
+    "searchInput"
+)
 .addEventListener(
     "keydown",
     function(event) {
 
         if (
-            event.key === "Enter"
+            event.key ===
+            "Enter"
         ) {
 
             event.preventDefault();
@@ -3913,9 +3801,14 @@ document.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        await loadAuthSession();
+        /*
+        First handle any confirmation
+        result/error in the URL.
+        */
 
-        await handleEmailConfirmation();
+        handleEmailConfirmation();
+
+        await loadAuthSession();
 
         await loadListings();
 
@@ -3925,4 +3818,4 @@ document.addEventListener(
 </script>
 
 </body>
-                </html>
+            </html>
