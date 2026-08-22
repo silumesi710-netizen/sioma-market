@@ -954,9 +954,25 @@ class="publish-button">
     onclick="showFavorites()">
     ❤️ Favorites
 </button>
+<div class="account-bar">
+
 <div id="accountStatus" class="account-status">
 👤 Not logged in
 </div>
+
+<div style="
+display:flex;
+gap:8px;
+align-items:center;
+">
+
+<button
+type="button"
+id="favoritesButton"
+class="account-button"
+onclick="showFavorites()">
+❤️ Favorites
+</button>
 
 <button
 type="button"
@@ -965,6 +981,9 @@ class="account-button"
 onclick="openAccount()">
 🔐 Login
 </button>
+
+</div>
+
 
 </div>
 
