@@ -751,10 +751,19 @@ footer {
                 </p>
 
                 <input
-                    type="file"
-                    id="sellImage"
-                    accept="image/*"
-                    capture="environment"
+                    <label>Product Photo</label>
+
+<input
+    type="file"
+    id="sellImage"
+    accept="image/*"
+>
+
+<small style="color:#666;">
+    Choose a photo from your Gallery or Camera.
+</small>
+
+<div id="imagePreview" style="margin-top:15px;"></div>
                 >
 
                 <img
