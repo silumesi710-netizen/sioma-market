@@ -2178,7 +2178,18 @@ async function loadListings() {
         }
     );
 
+/* =========================================
+   LOAD PRODUCTS WHEN PAGE OPENS
+========================================= */
 
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadListings();
+
+    }
+);
 </script>
 
 </body>
