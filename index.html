@@ -2125,7 +2125,41 @@ document.addEventListener(
         }
     }
 );
+document
+    .getElementById("sellImage")
+    .addEventListener("change", function(event) {
 
+        const file = event.target.files[0];
+
+        const previewBox =
+            document.getElementById("imagePreview");
+
+        const previewImage =
+            document.getElementById("previewImage");
+
+        if (!file) {
+            previewBox.style.display = "none";
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image.");
+            event.target.value = "";
+            previewBox.style.display = "none";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+
+            previewImage.src = e.target.result;
+
+            previewBox.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    });
 </script>
 
 </body>
