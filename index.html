@@ -1532,19 +1532,118 @@ async function searchByCategory(category) {
 /* =====================================================
    BUY NOW
 ===================================================== */
+async function buyNow() {
 
-function buyNow() {
+    const resultsBox =
+        document.getElementById("searchResults");
 
-    document.getElementById(
-        "searchInput"
-    ).focus();
+    resultsBox.innerHTML = `
+        <div class="no-results">
+            🔎 Loading products...
+        </div>
+    `;
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+    const { data, error } =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq("status", "active")
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(error);
+
+        resultsBox.innerHTML = `
+            <div class="no-results">
+                ❌ Unable to load products.
+                <br><br>
+                Please try again.
+            </div>
+        `;
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+
+        resultsBox.innerHTML = `
+            <div class="no-results">
+                🛒 No products are available yet.
+                <br><br>
+                Be the first person to sell on SiomaMarket!
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h2 class="results-title">
+            🛒 Products Available in Sioma
+        </h2>
+
+        <div class="results-grid">
+    `;
+
+    data.forEach(item => {
+
+        const image =
+            item.image_url ||
+            "https://via.placeholder.com/600x400?text=SiomaMarket";
+
+        html += `
+            <div class="result-card">
+
+                <img
+                    src="${escapeHTML(image)}"
+                    alt="${escapeHTML(item.title)}"
+                >
+
+                <div class="result-info">
+
+                    <h3>
+                        ${escapeHTML(item.title)}
+                    </h3>
+
+                    <div class="result-price">
+                        K${Number(
+                            item.price || 0
+                        ).toLocaleString()}
+                    </div>
+
+                    <div class="result-location">
+                        📍 ${escapeHTML(
+                            item.location || "Sioma"
+                        )}
+                    </div>
+
+                    <button
+                        class="buy-result"
+                        onclick="viewListing('${item.id}')"
+                    >
+                        👀 VIEW PRODUCT
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    resultsBox.innerHTML = html;
+
+    resultsBox.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
     });
 }
-
 
 /* =====================================================
    OPEN PRODUCT
