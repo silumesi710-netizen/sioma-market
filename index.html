@@ -10,9 +10,9 @@
 
 <style>
 
-/* =========================================
+/* =========================
    RESET
-========================================= */
+========================= */
 
 * {
     box-sizing: border-box;
@@ -37,10 +37,9 @@ textarea {
     font-family: Arial, sans-serif;
 }
 
-
-/* =========================================
+/* =========================
    HEADER
-========================================= */
+========================= */
 
 header {
     background: #087f3d;
@@ -59,10 +58,9 @@ header {
     color: #ffd166;
 }
 
-
-/* =========================================
+/* =========================
    SEARCH
-========================================= */
+========================= */
 
 .search-container {
     max-width: 650px;
@@ -94,10 +92,9 @@ header {
     cursor: pointer;
 }
 
-
-/* =========================================
+/* =========================
    TOP BUTTONS
-========================================= */
+========================= */
 
 .action-buttons {
     max-width: 650px;
@@ -126,10 +123,9 @@ header {
     color: #222;
 }
 
-
-/* =========================================
+/* =========================
    MAIN
-========================================= */
+========================= */
 
 main {
     max-width: 1100px;
@@ -151,10 +147,9 @@ main {
     color: #666;
 }
 
-
-/* =========================================
+/* =========================
    CATEGORIES
-========================================= */
+========================= */
 
 .categories-title {
     text-align: center;
@@ -183,10 +178,9 @@ main {
     margin-bottom: 8px;
 }
 
-
-/* =========================================
+/* =========================
    SEARCH RESULTS
-========================================= */
+========================= */
 
 #searchResults {
     max-width: 1100px;
@@ -261,10 +255,9 @@ main {
     color: #666;
 }
 
-
-/* =========================================
+/* =========================
    SELL PAGE
-========================================= */
+========================= */
 
 .sell-page {
     display: none;
@@ -386,16 +379,20 @@ main {
     cursor: pointer;
 }
 
+.publish-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .sell-message {
     margin-top: 15px;
     text-align: center;
     font-weight: bold;
 }
 
-
-/* =========================================
+/* =========================
    PRODUCT DETAILS
-========================================= */
+========================= */
 
 .product-page {
     display: none;
@@ -539,10 +536,9 @@ main {
     border: none;
 }
 
-
-/* =========================================
+/* =========================
    FOOTER
-========================================= */
+========================= */
 
 footer {
     background: #123524;
@@ -560,10 +556,9 @@ footer p {
     margin-top: 5px;
 }
 
-
-/* =========================================
+/* =========================
    TABLET / DESKTOP
-========================================= */
+========================= */
 
 @media (min-width: 700px) {
 
@@ -592,13 +587,11 @@ footer p {
 </style>
 </head>
 
-
 <body>
 
-
-<!-- =========================================
+<!-- =========================
      SELL PAGE
-========================================= -->
+========================= -->
 
 <div id="sellPage" class="sell-page">
 
@@ -607,15 +600,13 @@ footer p {
         <button
             type="button"
             class="back-button"
-            onclick="closeSellPage()"
-        >
+            onclick="closeSellPage()">
             ← Back
         </button>
 
         <h2>Sell on SiomaMarket</h2>
 
     </div>
-
 
     <div class="sell-container">
 
@@ -633,7 +624,6 @@ footer p {
 
         </div>
 
-
         <form id="sellForm" class="sell-form">
 
             <label for="sellTitle">
@@ -647,7 +637,6 @@ footer p {
                 required
             >
 
-
             <label for="sellDescription">
                 Description
             </label>
@@ -657,7 +646,6 @@ footer p {
                 placeholder="Describe your product..."
                 required
             ></textarea>
-
 
             <label for="sellPrice">
                 Price (K)
@@ -670,7 +658,6 @@ footer p {
                 min="0"
                 required
             >
-
 
             <label for="sellCategory">
                 Category
@@ -694,7 +681,6 @@ footer p {
 
             </select>
 
-
             <label for="sellLocation">
                 Location
             </label>
@@ -705,9 +691,6 @@ footer p {
                 value="Sioma"
                 required
             >
-
-
-            <!-- PHOTO -->
 
             <label for="sellImage">
                 Product Photo
@@ -726,7 +709,6 @@ footer p {
 
             <div id="imagePreview"></div>
 
-
             <label for="sellerName">
                 Your Name
             </label>
@@ -737,7 +719,6 @@ footer p {
                 placeholder="Your name"
                 required
             >
-
 
             <label for="sellerPhone">
                 WhatsApp / Phone Number
@@ -750,19 +731,17 @@ footer p {
                 required
             >
 
-
             <button
                 type="submit"
                 id="publishButton"
-                class="publish-button"
-            >
+                class="publish-button">
                 🚀 PUBLISH PRODUCT
             </button>
 
             <div
                 id="sellMessage"
-                class="sell-message"
-            ></div>
+                class="sell-message">
+            </div>
 
         </form>
 
@@ -770,17 +749,15 @@ footer p {
 
 </div>
 
-
-<!-- =========================================
+<!-- =========================
      HEADER
-========================================= -->
+========================= -->
 
 <header>
 
     <div class="logo">
         🛍️ Sioma<span>Market</span>
     </div>
-
 
     <div class="search-container">
 
@@ -793,29 +770,25 @@ footer p {
         <button
             type="button"
             class="search-button"
-            onclick="searchMarket()"
-        >
+            onclick="searchMarket()">
             🔍 Search
         </button>
 
     </div>
-
 
     <div class="action-buttons">
 
         <button
             type="button"
             class="buy-button"
-            onclick="buyNow()"
-        >
+            onclick="buyNow()">
             🛒 BUY NOW
         </button>
 
         <button
             type="button"
             class="sell-button"
-            onclick="sellNow()"
-        >
+            onclick="sellNow()">
             🏷️ SELL NOW
         </button>
 
@@ -823,17 +796,15 @@ footer p {
 
 </header>
 
-
-<!-- =========================================
+<!-- =========================
      SEARCH RESULTS
-========================================= -->
+========================= -->
 
 <div id="searchResults"></div>
 
-
-<!-- =========================================
+<!-- =========================
      MAIN
-========================================= -->
+========================= -->
 
 <main>
 
@@ -849,106 +820,126 @@ footer p {
 
     </section>
 
-
     <h2 class="categories-title">
         Browse Categories
     </h2>
-
 
     <div class="categories">
 
         <div
             class="category"
-            onclick="searchCategory('Agriculture')"
-        >
-            <span class="category-icon">🌾</span>
+            onclick="searchCategory('Agriculture')">
+
+            <span class="category-icon">
+                🌾
+            </span>
+
             Agriculture
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Livestock')"
-        >
-            <span class="category-icon">🐔</span>
+            onclick="searchCategory('Livestock')">
+
+            <span class="category-icon">
+                🐔
+            </span>
+
             Livestock
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Fish')"
-        >
-            <span class="category-icon">🐟</span>
+            onclick="searchCategory('Fish')">
+
+            <span class="category-icon">
+                🐟
+            </span>
+
             Fish
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Phones')"
-        >
-            <span class="category-icon">📱</span>
+            onclick="searchCategory('Phones')">
+
+            <span class="category-icon">
+                📱
+            </span>
+
             Phones
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Vehicles')"
-        >
-            <span class="category-icon">🚗</span>
+            onclick="searchCategory('Vehicles')">
+
+            <span class="category-icon">
+                🚗
+            </span>
+
             Vehicles
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Houses')"
-        >
-            <span class="category-icon">🏠</span>
+            onclick="searchCategory('Houses')">
+
+            <span class="category-icon">
+                🏠
+            </span>
+
             Houses
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Clothes')"
-        >
-            <span class="category-icon">👕</span>
+            onclick="searchCategory('Clothes')">
+
+            <span class="category-icon">
+                👕
+            </span>
+
             Clothes
-        </div>
 
+        </div>
 
         <div
             class="category"
-            onclick="searchCategory('Services')"
-        >
-            <span class="category-icon">🛠️</span>
+            onclick="searchCategory('Services')">
+
+            <span class="category-icon">
+                🛠️
+            </span>
+
             Services
+
         </div>
 
     </div>
 
 </main>
 
-
-<!-- =========================================
+<!-- =========================
      PRODUCT DETAILS PAGE
-========================================= -->
+========================= -->
 
 <div
     id="productPage"
-    class="product-page"
->
+    class="product-page">
 
     <div class="product-page-header">
 
         <button
             type="button"
             class="back-button"
-            onclick="closeProductPage()"
-        >
+            onclick="closeProductPage()">
             ← Back
         </button>
 
@@ -957,7 +948,6 @@ footer p {
         </h2>
 
     </div>
-
 
     <div class="product-details">
 
@@ -972,57 +962,45 @@ footer p {
 
         </div>
 
-
         <div class="details-content">
 
             <div
                 id="detailsCategory"
-                class="details-category"
-            ></div>
-
+                class="details-category">
+            </div>
 
             <h1 id="detailsTitle">
                 Product
             </h1>
 
-
             <div
                 id="detailsPrice"
-                class="details-price"
-            >
+                class="details-price">
                 K0
             </div>
 
-
             <div
                 id="detailsLocation"
-                class="details-location"
-            >
+                class="details-location">
                 📍 Sioma
             </div>
 
-
             <hr>
-
 
             <h3>
                 Description
             </h3>
 
-
             <p
                 id="detailsDescription"
-                class="details-description"
-            ></p>
-
+                class="details-description">
+            </p>
 
             <hr>
-
 
             <h3>
                 Seller
             </h3>
-
 
             <div class="seller-box">
 
@@ -1036,34 +1014,29 @@ footer p {
                         Seller
                     </strong>
 
-                    <div id="detailsPhone"></div>
+                    <div id="detailsPhone">
+                    </div>
 
                 </div>
 
             </div>
 
-
             <button
                 id="whatsappButton"
-                class="whatsapp-button"
-            >
+                class="whatsapp-button">
                 💬 Contact Seller on WhatsApp
             </button>
 
-
             <button
                 id="callButton"
-                class="call-button"
-            >
+                class="call-button">
                 📞 Call Seller
             </button>
-
 
             <button
                 type="button"
                 class="favorite-button"
-                onclick="saveFavorite()"
-            >
+                onclick="saveFavorite()">
                 ❤️ Save Product
             </button>
 
@@ -1073,10 +1046,9 @@ footer p {
 
 </div>
 
-
-<!-- =========================================
+<!-- =========================
      FOOTER
-========================================= -->
+========================= -->
 
 <footer>
 
@@ -1101,16 +1073,15 @@ footer p {
 
 <script>
 
-/* =========================================
+/* =====================================================
    SUPABASE
-========================================= */
+===================================================== */
 
 const SUPABASE_URL =
     "https://luolbdjonzissgskjupd.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
-
 
 const supabaseClient =
     window.supabase.createClient(
@@ -1119,17 +1090,17 @@ const supabaseClient =
     );
 
 
-/* =========================================
+/* =====================================================
    DEFAULT IMAGE
-========================================= */
+===================================================== */
 
 const DEFAULT_IMAGE =
     "https://via.placeholder.com/600x400?text=SiomaMarket";
 
 
-/* =========================================
+/* =====================================================
    SELL PAGE
-========================================= */
+===================================================== */
 
 function sellNow() {
 
@@ -1151,9 +1122,9 @@ function closeSellPage() {
 }
 
 
-/* =========================================
+/* =====================================================
    BUY NOW
-========================================= */
+===================================================== */
 
 function buyNow() {
 
@@ -1162,19 +1133,26 @@ function buyNow() {
         behavior: "smooth"
     });
 
-    document.getElementById("searchInput").focus();
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.focus();
 
     document.getElementById("searchResults").innerHTML = `
+
         <div class="no-results">
+
             🛒 Search for a product you want to buy.
+
         </div>
+
     `;
 }
 
 
-/* =========================================
+/* =====================================================
    IMAGE PREVIEW
-========================================= */
+===================================================== */
 
 const sellImage =
     document.getElementById("sellImage");
@@ -1187,42 +1165,47 @@ sellImage.addEventListener(
     "change",
     function () {
 
-        const file = this.files[0];
+        const file =
+            this.files[0];
 
-        imagePreview.innerHTML = "";
+        imagePreview.innerHTML =
+            "";
 
         if (!file) {
             return;
         }
 
-
         if (!file.type.startsWith("image/")) {
 
-            alert("Please select an image.");
+            alert(
+                "Please select an image."
+            );
 
             this.value = "";
 
             return;
         }
 
-
         const imageURL =
             URL.createObjectURL(file);
 
-
         imagePreview.innerHTML = `
 
-            <div style="
-                background:#f5f5f5;
-                padding:12px;
-                border-radius:10px;
-                margin-top:10px;
-            ">
+            <div
+                style="
+                    background:#f5f5f5;
+                    padding:12px;
+                    border-radius:10px;
+                    margin-top:10px;
+                "
+            >
 
-                <p style="
-                    font-weight:bold;
-                    margin-bottom:10px;
-                ">
+                <p
+                    style="
+                        font-weight:bold;
+                        margin-bottom:10px;
+                    "
+                >
                     Photo Preview
                 </p>
 
@@ -1232,14 +1215,16 @@ sellImage.addEventListener(
                 >
 
             </div>
+
         `;
+
     }
 );
 
 
-/* =========================================
-   UPLOAD IMAGE
-========================================= */
+/* =====================================================
+   UPLOAD PRODUCT IMAGE
+===================================================== */
 
 async function uploadProductImage(file) {
 
@@ -1247,10 +1232,8 @@ async function uploadProductImage(file) {
         return null;
     }
 
-
     const maxSize =
         6 * 1024 * 1024;
-
 
     if (file.size > maxSize) {
 
@@ -1259,20 +1242,17 @@ async function uploadProductImage(file) {
         );
     }
 
-
     const extension =
         file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
-
+            .split(".")
+            .pop()
+            .toLowerCase();
 
     const safeExtension =
         extension.replace(
             /[^a-z0-9]/g,
             ""
         ) || "jpg";
-
 
     const fileName =
         Date.now() +
@@ -1283,26 +1263,27 @@ async function uploadProductImage(file) {
         "." +
         safeExtension;
 
-
     const filePath =
-        "products/" + fileName;
+        "products/" +
+        fileName;
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .storage
-        .from("Product-images")
-        .upload(
-            filePath,
-            file,
-            {
-                cacheControl: "3600",
-                upsert: false,
-                contentType: file.type
-            }
-        );
+    } =
+        await supabaseClient
+            .storage
+            .from("Product-images")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: file.type
+                }
+            );
 
 
     if (error) {
@@ -1323,13 +1304,17 @@ async function uploadProductImage(file) {
         data: publicData
     } =
         supabaseClient
-        .storage
-        .from("Product-images")
-        .getPublicUrl(filePath);
+            .storage
+            .from("Product-images")
+            .getPublicUrl(
+                filePath
+            );
 
 
-    if (!publicData ||
-        !publicData.publicUrl) {
+    if (
+        !publicData ||
+        !publicData.publicUrl
+    ) {
 
         throw new Error(
             "Could not create photo URL."
@@ -1341,9 +1326,9 @@ async function uploadProductImage(file) {
 }
 
 
-/* =========================================
+/* =====================================================
    PUBLISH PRODUCT
-========================================= */
+===================================================== */
 
 document
     .getElementById("sellForm")
@@ -1367,58 +1352,80 @@ document
 
 
             const title =
-                document.getElementById(
-                    "sellTitle"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "sellTitle"
+                    )
+                    .value
+                    .trim();
 
 
             const description =
-                document.getElementById(
-                    "sellDescription"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "sellDescription"
+                    )
+                    .value
+                    .trim();
 
 
             const price =
                 Number(
-                    document.getElementById(
-                        "sellPrice"
-                    ).value
+                    document
+                        .getElementById(
+                            "sellPrice"
+                        )
+                        .value
                 );
 
 
             const category =
-                document.getElementById(
-                    "sellCategory"
-                ).value;
+                document
+                    .getElementById(
+                        "sellCategory"
+                    )
+                    .value;
 
 
             const location =
-                document.getElementById(
-                    "sellLocation"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "sellLocation"
+                    )
+                    .value
+                    .trim();
 
 
             const sellerName =
-                document.getElementById(
-                    "sellerName"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "sellerName"
+                    )
+                    .value
+                    .trim();
 
 
             const sellerPhone =
-                document.getElementById(
-                    "sellerPhone"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "sellerPhone"
+                    )
+                    .value
+                    .trim();
 
 
             const imageFile =
-                document.getElementById(
-                    "sellImage"
-                ).files[0];
+                document
+                    .getElementById(
+                        "sellImage"
+                    )
+                    .files[0];
 
 
             if (!imageFile) {
 
-                message.style.color = "#c62828";
+                message.style.color =
+                    "#c62828";
 
                 message.innerText =
                     "Please choose a product photo.";
@@ -1427,12 +1434,14 @@ document
             }
 
 
-            publishButton.disabled = true;
+            publishButton.disabled =
+                true;
 
             publishButton.innerText =
                 "⏳ UPLOADING PHOTO...";
 
-            message.innerText = "";
+            message.innerText =
+                "";
 
 
             try {
@@ -1456,21 +1465,38 @@ document
                     error
                 } =
                     await supabaseClient
-                    .from("listings")
-                    .insert([
-                        {
-                            title: title,
-                            description: description,
-                            price: price,
-                            category: category,
-                            location: location,
-                            image_url: imageURL,
-                            seller_name: sellerName,
-                            seller_phone: sellerPhone,
-                            status: "active"
-                        }
-                    ])
-                    .select();
+                        .from("listings")
+                        .insert([
+                            {
+                                title:
+                                    title,
+
+                                description:
+                                    description,
+
+                                price:
+                                    price,
+
+                                category:
+                                    category,
+
+                                location:
+                                    location,
+
+                                image_url:
+                                    imageURL,
+
+                                seller_name:
+                                    sellerName,
+
+                                seller_phone:
+                                    sellerPhone,
+
+                                status:
+                                    "active"
+                            }
+                        ])
+                        .select();
 
 
                 if (error) {
@@ -1490,15 +1516,22 @@ document
                 message.style.color =
                     "#087f3d";
 
+
                 message.innerHTML = `
+
                     ✅ Product published successfully!
+
                     <br>
+
                     Buyers can now see your product.
+
                 `;
 
 
                 document
-                    .getElementById("sellForm")
+                    .getElementById(
+                        "sellForm"
+                    )
                     .reset();
 
 
@@ -1508,6 +1541,11 @@ document
 
                 publishButton.innerText =
                     "✅ PUBLISHED";
+
+
+                /* Refresh products */
+
+                await loadListings();
 
 
                 setTimeout(
@@ -1525,24 +1563,21 @@ document
                     1800
                 );
 
+            }
 
-            } catch(error) {
+            catch(error) {
 
                 console.error(error);
 
-
                 message.style.color =
                     "#c62828";
-
 
                 message.innerText =
                     "❌ " +
                     error.message;
 
-
                 publishButton.disabled =
                     false;
-
 
                 publishButton.innerText =
                     "🚀 PUBLISH PRODUCT";
@@ -1552,17 +1587,19 @@ document
     );
 
 
-/* =========================================
-   SEARCH
-========================================= */
+/* =====================================================
+   SEARCH PRODUCTS
+===================================================== */
 
 async function searchMarket() {
 
     const search =
         document
-        .getElementById("searchInput")
-        .value
-        .trim();
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .trim();
 
 
     const resultsBox =
@@ -1574,9 +1611,13 @@ async function searchMarket() {
     if (!search) {
 
         resultsBox.innerHTML = `
+
             <div class="no-results">
+
                 Please enter a product to search.
+
             </div>
+
         `;
 
         return;
@@ -1584,9 +1625,13 @@ async function searchMarket() {
 
 
     resultsBox.innerHTML = `
+
         <div class="no-results">
+
             🔎 Searching SiomaMarket...
+
         </div>
+
     `;
 
 
@@ -1595,24 +1640,27 @@ async function searchMarket() {
         error
     } =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq("status", "active")
-        .or(
-            "title.ilike.%" +
-            search +
-            "%,description.ilike.%" +
-            search +
-            "%,category.ilike.%" +
-            search +
-            "%"
-        )
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
+            .from("listings")
+            .select("*")
+            .eq(
+                "status",
+                "active"
+            )
+            .or(
+                "title.ilike.%" +
+                search +
+                "%,description.ilike.%" +
+                search +
+                "%,category.ilike.%" +
+                search +
+                "%"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
     if (error) {
@@ -1620,27 +1668,42 @@ async function searchMarket() {
         console.error(error);
 
         resultsBox.innerHTML = `
+
             <div class="no-results">
+
                 ❌ Search failed.
+
                 <br>
-                ${escapeHTML(error.message)}
+
+                ${escapeHTML(
+                    error.message
+                )}
+
             </div>
+
         `;
 
         return;
     }
 
 
-    if (!data ||
-        data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         resultsBox.innerHTML = `
+
             <div class="no-results">
+
                 🔍 No products found for
+
                 <strong>
                     ${escapeHTML(search)}
                 </strong>
+
             </div>
+
         `;
 
         return;
@@ -1654,9 +1717,9 @@ async function searchMarket() {
 }
 
 
-/* =========================================
+/* =====================================================
    CATEGORY SEARCH
-========================================= */
+===================================================== */
 
 async function searchCategory(category) {
 
@@ -1667,9 +1730,15 @@ async function searchCategory(category) {
 
 
     resultsBox.innerHTML = `
+
         <div class="no-results">
-            🔎 Loading ${escapeHTML(category)}...
+
+            🔎 Loading
+            ${escapeHTML(category)}
+            ...
+
         </div>
+
     `;
 
 
@@ -1678,38 +1747,63 @@ async function searchCategory(category) {
         error
     } =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq("status", "active")
-        .eq("category", category)
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
+            .from("listings")
+            .select("*")
+            .eq(
+                "status",
+                "active"
+            )
+            .eq(
+                "category",
+                category
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
     if (error) {
 
+        console.error(error);
+
         resultsBox.innerHTML = `
+
             <div class="no-results">
+
                 ❌ Could not load products.
+
+                <br>
+
+                ${escapeHTML(
+                    error.message
+                )}
+
             </div>
+
         `;
 
         return;
     }
 
 
-    if (!data ||
-        data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         resultsBox.innerHTML = `
+
             <div class="no-results">
-                No ${escapeHTML(category)}
+
+                No
+                ${escapeHTML(category)}
                 products are available yet.
+
             </div>
+
         `;
 
         return;
@@ -1729,9 +1823,109 @@ async function searchCategory(category) {
 }
 
 
-/* =========================================
+/* =====================================================
+   LOAD ALL PRODUCTS
+===================================================== */
+
+async function loadListings() {
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    resultsBox.innerHTML = `
+
+        <div class="no-results">
+
+            ⏳ Loading SiomaMarket products...
+
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq(
+                "status",
+                "active"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Load listings error:",
+            error
+        );
+
+
+        resultsBox.innerHTML = `
+
+            <div class="no-results">
+
+                ❌ Could not load products.
+
+                <br>
+
+                ${escapeHTML(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        resultsBox.innerHTML = `
+
+            <div class="no-results">
+
+                🛍️ No products have been listed yet.
+
+                <br><br>
+
+                Be the first person to sell on SiomaMarket!
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    renderResults(
+        data,
+        "🛍️ Latest Products"
+    );
+}
+
+
+/* =====================================================
    RENDER PRODUCTS
-========================================= */
+===================================================== */
 
 function renderResults(
     data,
@@ -1747,7 +1941,9 @@ function renderResults(
     let html = `
 
         <h2 class="results-title">
-            ${heading}
+
+            ${escapeHTML(heading)}
+
         </h2>
 
         <div class="results-grid">
@@ -1763,42 +1959,57 @@ function renderResults(
                 DEFAULT_IMAGE;
 
 
+            const title =
+                item.title ||
+                "Product";
+
+
+            const price =
+                Number(
+                    item.price || 0
+                ).toLocaleString();
+
+
+            const location =
+                item.location ||
+                "Sioma";
+
+
+            const id =
+                String(
+                    item.id
+                );
+
+
             html += `
 
                 <div class="result-card">
 
                     <img
                         src="${escapeAttribute(image)}"
-                        alt="${escapeAttribute(item.title || "Product")}"
+                        alt="${escapeAttribute(title)}"
                         onerror="this.src='${DEFAULT_IMAGE}'"
                     >
 
                     <div class="result-info">
 
                         <h3>
-                            ${escapeHTML(
-                                item.title ||
-                                "Product"
-                            )}
+                            ${escapeHTML(title)}
                         </h3>
 
                         <div class="result-price">
-                            K${Number(
-                                item.price || 0
-                            ).toLocaleString()}
+                            K${price}
                         </div>
 
                         <div class="result-location">
-                            📍 ${escapeHTML(
-                                item.location ||
-                                "Sioma"
-                            )}
+                            📍
+                            ${escapeHTML(location)}
                         </div>
 
                         <button
                             type="button"
                             class="buy-result"
-                            onclick="viewListing('${escapeAttribute(item.id)}')"
+                            onclick="viewListing('${escapeAttribute(id)}')"
                         >
                             🛒 VIEW PRODUCT
                         </button>
@@ -1808,12 +2019,15 @@ function renderResults(
                 </div>
 
             `;
+
         }
     );
 
 
     html += `
+
         </div>
+
     `;
 
 
@@ -1822,9 +2036,9 @@ function renderResults(
 }
 
 
-/* =========================================
+/* =====================================================
    VIEW PRODUCT
-========================================= */
+===================================================== */
 
 async function viewListing(id) {
 
@@ -1853,14 +2067,19 @@ async function viewListing(id) {
         error
     } =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq("id", id)
-        .single();
+            .from("listings")
+            .select("*")
+            .eq(
+                "id",
+                id
+            )
+            .single();
 
 
-    if (error ||
-        !data) {
+    if (
+        error ||
+        !data
+    ) {
 
         console.error(error);
 
@@ -1956,7 +2175,9 @@ async function viewListing(id) {
 
             };
 
-    } else {
+    }
+
+    else {
 
         whatsapp.style.display =
             "none";
@@ -1984,7 +2205,9 @@ async function viewListing(id) {
 
             };
 
-    } else {
+    }
+
+    else {
 
         callButton.style.display =
             "none";
@@ -1992,9 +2215,9 @@ async function viewListing(id) {
 }
 
 
-/* =========================================
-   CLOSE PRODUCT
-========================================= */
+/* =====================================================
+   CLOSE PRODUCT PAGE
+===================================================== */
 
 function closeProductPage() {
 
@@ -2009,9 +2232,9 @@ function closeProductPage() {
 }
 
 
-/* =========================================
+/* =====================================================
    WHATSAPP
-========================================= */
+===================================================== */
 
 function contactSeller(
     phone,
@@ -2020,10 +2243,15 @@ function contactSeller(
 
     let number =
         String(phone)
-        .replace(/\D/g, "");
+            .replace(
+                /\D/g,
+                ""
+            );
 
 
-    if (number.startsWith("0")) {
+    if (
+        number.startsWith("0")
+    ) {
 
         number =
             "260" +
@@ -2049,25 +2277,29 @@ function contactSeller(
 }
 
 
-/* =========================================
+/* =====================================================
    CALL SELLER
-========================================= */
+===================================================== */
 
 function callSeller(phone) {
 
     const number =
         String(phone)
-        .replace(/[^\d+]/g, "");
+            .replace(
+                /[^\d+]/g,
+                ""
+            );
 
 
     window.location.href =
-        "tel:" + number;
+        "tel:" +
+        number;
 }
 
 
-/* =========================================
+/* =====================================================
    SAVE FAVORITE
-========================================= */
+===================================================== */
 
 function saveFavorite() {
 
@@ -2077,18 +2309,33 @@ function saveFavorite() {
 }
 
 
-/* =========================================
+/* =====================================================
    SECURITY
-========================================= */
+===================================================== */
 
 function escapeHTML(value) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -2098,89 +2345,34 @@ function escapeAttribute(value) {
 }
 
 
-/* =========================================
+/* =====================================================
    ENTER KEY SEARCH
-========================================= */
+===================================================== */
 
 document
-    .getElementById("searchInput")
+    .getElementById(
+        "searchInput"
+    )
     .addEventListener(
         "keydown",
         function(event) {
 
-            if (event.key === "Enter") {
-/* =========================================
-   LOAD ALL PRODUCTS
-========================================= */
+            if (
+                event.key === "Enter"
+            ) {
 
-async function loadListings() {
+                event.preventDefault();
 
-    const resultsBox =
-        document.getElementById("searchResults");
-
-    resultsBox.innerHTML = `
-        <div class="no-results">
-            ⏳ Loading SiomaMarket products...
-        </div>
-    `;
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq("status", "active")
-        .order("created_at", {
-            ascending: false
-        });
-
-    if (error) {
-
-        console.error(
-            "Load listings error:",
-            error
-        );
-
-        resultsBox.innerHTML = `
-            <div class="no-results">
-                ❌ Could not load products.
-                <br>
-                ${escapeHTML(error.message)}
-            </div>
-        `;
-
-        return;
-    }
-
-    if (!data || data.length === 0) {
-
-        resultsBox.innerHTML = `
-            <div class="no-results">
-                🛍️ No products have been listed yet.
-                <br><br>
-                Be the first person to sell on SiomaMarket!
-            </div>
-        `;
-
-        return;
-    }
-
-    renderResults(
-        data,
-        "🛍️ Latest Products"
-    );
-}
                 searchMarket();
-
             }
 
         }
     );
 
-/* =========================================
+
+/* =====================================================
    LOAD PRODUCTS WHEN PAGE OPENS
-========================================= */
+===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -2190,7 +2382,8 @@ document.addEventListener(
 
     }
 );
+
 </script>
 
 </body>
-    </html>
+   </html>
