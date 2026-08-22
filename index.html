@@ -33,7 +33,7 @@ textarea {
 }
 
 /* =========================
-   HEADER
+HEADER
 ========================= */
 
 header {
@@ -54,7 +54,7 @@ header {
 }
 
 /* =========================
-   ACCOUNT
+ACCOUNT
 ========================= */
 
 .account-bar {
@@ -87,7 +87,7 @@ header {
 }
 
 /* =========================
-   SEARCH
+SEARCH
 ========================= */
 
 .search-container {
@@ -121,7 +121,7 @@ header {
 }
 
 /* =========================
-   ACTION BUTTONS
+ACTION BUTTONS
 ========================= */
 
 .action-buttons {
@@ -152,7 +152,7 @@ header {
 }
 
 /* =========================
-   AUTH MODAL
+AUTH MODAL
 ========================= */
 
 .auth-modal {
@@ -236,6 +236,11 @@ header {
     cursor: pointer;
 }
 
+.auth-submit:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
 .auth-close {
     width: 100%;
     margin-top: 10px;
@@ -255,7 +260,7 @@ header {
 }
 
 /* =========================
-   MAIN
+MAIN
 ========================= */
 
 main {
@@ -279,7 +284,7 @@ main {
 }
 
 /* =========================
-   CATEGORIES
+CATEGORIES
 ========================= */
 
 .categories-title {
@@ -310,7 +315,7 @@ main {
 }
 
 /* =========================
-   SEARCH RESULTS
+SEARCH RESULTS
 ========================= */
 
 #searchResults {
@@ -387,7 +392,7 @@ main {
 }
 
 /* =========================
-   SELL PAGE
+SELL PAGE
 ========================= */
 
 .sell-page {
@@ -523,7 +528,7 @@ main {
 }
 
 /* =========================
-   PRODUCT DETAILS
+PRODUCT DETAILS
 ========================= */
 
 .product-page {
@@ -669,7 +674,7 @@ main {
 }
 
 /* =========================
-   FOOTER
+FOOTER
 ========================= */
 
 footer {
@@ -689,7 +694,7 @@ footer p {
 }
 
 /* =========================
-   DESKTOP
+DESKTOP
 ========================= */
 
 @media (min-width: 700px) {
@@ -720,9 +725,9 @@ footer p {
 
 <body>
 
-<!-- =====================================================
+<!-- =========================
 AUTH MODAL
-===================================================== -->
+========================= -->
 
 <div id="authModal" class="auth-modal">
 
@@ -758,9 +763,7 @@ AUTH MODAL
 
         <form id="loginForm" class="auth-form">
 
-            <label for="loginEmail">
-                Email
-            </label>
+            <label for="loginEmail">Email</label>
 
             <input
                 type="email"
@@ -768,9 +771,7 @@ AUTH MODAL
                 placeholder="you@example.com"
                 required>
 
-            <label for="loginPassword">
-                Password
-            </label>
+            <label for="loginPassword">Password</label>
 
             <input
                 type="password"
@@ -846,6 +847,7 @@ AUTH MODAL
 
             <button
                 type="submit"
+                id="registerButton"
                 class="auth-submit">
                 📝 CREATE ACCOUNT
             </button>
@@ -865,9 +867,9 @@ AUTH MODAL
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
 SELL PAGE
-===================================================== -->
+========================= -->
 
 <div id="sellPage" class="sell-page">
 
@@ -892,9 +894,7 @@ SELL PAGE
                 🏷️
             </div>
 
-            <h1>
-                Sell Your Product
-            </h1>
+            <h1>Sell Your Product</h1>
 
             <p>
                 Reach buyers in Sioma by listing your product.
@@ -914,7 +914,6 @@ SELL PAGE
                 placeholder="e.g. Fresh Fish"
                 required>
 
-
             <label for="sellDescription">
                 Description
             </label>
@@ -923,7 +922,6 @@ SELL PAGE
                 id="sellDescription"
                 placeholder="Describe your product..."
                 required></textarea>
-
 
             <label for="sellPrice">
                 Price (K)
@@ -936,14 +934,11 @@ SELL PAGE
                 min="0"
                 required>
 
-
             <label for="sellCategory">
                 Category
             </label>
 
-            <select
-                id="sellCategory"
-                required>
+            <select id="sellCategory" required>
 
                 <option value="">
                     Select category
@@ -987,7 +982,6 @@ SELL PAGE
 
             </select>
 
-
             <label for="sellLocation">
                 Location
             </label>
@@ -997,7 +991,6 @@ SELL PAGE
                 id="sellLocation"
                 value="Sioma"
                 required>
-
 
             <label for="sellImage">
                 Product Photo
@@ -1015,7 +1008,6 @@ SELL PAGE
 
             <div id="imagePreview"></div>
 
-
             <label for="sellerName">
                 Your Name
             </label>
@@ -1026,7 +1018,6 @@ SELL PAGE
                 placeholder="Your name"
                 required>
 
-
             <label for="sellerPhone">
                 WhatsApp / Phone Number
             </label>
@@ -1036,7 +1027,6 @@ SELL PAGE
                 id="sellerPhone"
                 placeholder="0971234567"
                 required>
-
 
             <button
                 type="submit"
@@ -1056,9 +1046,9 @@ SELL PAGE
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
 HEADER
-===================================================== -->
+========================= -->
 
 <header>
 
@@ -1084,7 +1074,6 @@ HEADER
 
     </div>
 
-
     <div class="search-container">
 
         <input
@@ -1100,7 +1089,6 @@ HEADER
         </button>
 
     </div>
-
 
     <div class="action-buttons">
 
@@ -1123,16 +1111,16 @@ HEADER
 </header>
 
 
-<!-- =====================================================
+<!-- =========================
 SEARCH RESULTS
-===================================================== -->
+========================= -->
 
 <div id="searchResults"></div>
 
 
-<!-- =====================================================
+<!-- =========================
 MAIN
-===================================================== -->
+========================= -->
 
 <main>
 
@@ -1148,115 +1136,66 @@ MAIN
 
     </section>
 
-
     <h2 class="categories-title">
         Browse Categories
     </h2>
-
 
     <div class="categories">
 
         <div
             class="category"
             onclick="searchCategory('Agriculture')">
-
-            <span class="category-icon">
-                🌾
-            </span>
-
+            <span class="category-icon">🌾</span>
             Agriculture
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Livestock')">
-
-            <span class="category-icon">
-                🐔
-            </span>
-
+            <span class="category-icon">🐔</span>
             Livestock
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Fish')">
-
-            <span class="category-icon">
-                🐟
-            </span>
-
+            <span class="category-icon">🐟</span>
             Fish
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Phones')">
-
-            <span class="category-icon">
-                📱
-            </span>
-
+            <span class="category-icon">📱</span>
             Phones
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Vehicles')">
-
-            <span class="category-icon">
-                🚗
-            </span>
-
+            <span class="category-icon">🚗</span>
             Vehicles
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Houses')">
-
-            <span class="category-icon">
-                🏠
-            </span>
-
+            <span class="category-icon">🏠</span>
             Houses
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Clothes')">
-
-            <span class="category-icon">
-                👕
-            </span>
-
+            <span class="category-icon">👕</span>
             Clothes
-
         </div>
-
 
         <div
             class="category"
             onclick="searchCategory('Services')">
-
-            <span class="category-icon">
-                🛠️
-            </span>
-
+            <span class="category-icon">🛠️</span>
             Services
-
         </div>
 
     </div>
@@ -1264,9 +1203,9 @@ MAIN
 </main>
 
 
-<!-- =====================================================
+<!-- =========================
 PRODUCT DETAILS
-===================================================== -->
+========================= -->
 
 <div id="productPage" class="product-page">
 
@@ -1285,7 +1224,6 @@ PRODUCT DETAILS
 
     </div>
 
-
     <div class="product-details">
 
         <div>
@@ -1298,7 +1236,6 @@ PRODUCT DETAILS
 
         </div>
 
-
         <div class="details-content">
 
             <div
@@ -1306,11 +1243,9 @@ PRODUCT DETAILS
                 class="details-category">
             </div>
 
-
             <h1 id="detailsTitle">
                 Product
             </h1>
-
 
             <div
                 id="detailsPrice"
@@ -1318,35 +1253,28 @@ PRODUCT DETAILS
                 K0
             </div>
 
-
             <div
                 id="detailsLocation"
                 class="details-location">
                 📍 Sioma
             </div>
 
-
             <hr>
-
 
             <h3>
                 Description
             </h3>
-
 
             <p
                 id="detailsDescription"
                 class="details-description">
             </p>
 
-
             <hr>
-
 
             <h3>
                 Seller
             </h3>
-
 
             <div class="seller-box">
 
@@ -1367,20 +1295,17 @@ PRODUCT DETAILS
 
             </div>
 
-
             <button
                 id="whatsappButton"
                 class="whatsapp-button">
                 💬 Contact Seller on WhatsApp
             </button>
 
-
             <button
                 id="callButton"
                 class="call-button">
                 📞 Call Seller
             </button>
-
 
             <button
                 type="button"
@@ -1396,9 +1321,9 @@ PRODUCT DETAILS
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
 FOOTER
-===================================================== -->
+========================= -->
 
 <footer>
 
@@ -1438,6 +1363,14 @@ const supabaseClient =
         SUPABASE_URL,
         SUPABASE_KEY
     );
+
+
+/* =====================================================
+EMAIL CONFIRMATION REDIRECT
+===================================================== */
+
+const EMAIL_REDIRECT_URL =
+    window.location.origin + "/";
 
 
 /* =====================================================
@@ -1517,9 +1450,10 @@ function openAccount() {
 
     if (currentUser) {
 
-        const choice = confirm(
-            "You are logged in.\n\nPress OK to logout."
-        );
+        const choice =
+            confirm(
+                "You are logged in.\n\nPress OK to logout."
+            );
 
         if (choice) {
             logoutSeller();
@@ -1547,35 +1481,32 @@ document
         const message =
             document.getElementById("authMessage");
 
+        const button =
+            document.getElementById("registerButton");
 
         const name =
             document.getElementById("registerName")
             .value
             .trim();
 
-
         const phone =
             document.getElementById("registerPhone")
             .value
             .trim();
-
 
         const location =
             document.getElementById("registerLocation")
             .value
             .trim();
 
-
         const email =
             document.getElementById("registerEmail")
             .value
             .trim();
 
-
         const password =
             document.getElementById("registerPassword")
             .value;
-
 
         message.style.color =
             "#087f3d";
@@ -1583,8 +1514,16 @@ document
         message.innerText =
             "⏳ Creating your account...";
 
+        button.disabled =
+            true;
 
         try {
+
+            /*
+            IMPORTANT:
+            emailRedirectTo sends the user back
+            to the current website after confirmation.
+            */
 
             const {
                 data,
@@ -1594,7 +1533,14 @@ document
 
                 email: email,
 
-                password: password
+                password: password,
+
+                options: {
+
+                    emailRedirectTo:
+                        EMAIL_REDIRECT_URL
+
+                }
 
             });
 
@@ -1614,18 +1560,21 @@ document
 
 
             /*
-            IMPORTANT:
-            seller_profiles uses id,
-            NOT user_id.
+            If email confirmation is disabled,
+            a session may already exist.
+            In that case create the profile immediately.
             */
 
             if (data.session) {
+
+                currentUser =
+                    data.user;
 
                 const {
                     error: profileError
                 } =
                 await createSellerProfile(
-                    data.user.id,
+                    currentUser.id,
                     name,
                     phone,
                     location
@@ -1634,11 +1583,6 @@ document
 
                 if (profileError) {
 
-                    console.error(
-                        "Profile error:",
-                        profileError
-                    );
-
                     throw new Error(
                         "Account created, but seller profile could not be saved: " +
                         profileError.message
@@ -1646,66 +1590,94 @@ document
 
                 }
 
-            }
 
+                await loadSellerProfile();
 
-            if (!data.session) {
+                updateAccountUI();
 
                 message.style.color =
                     "#087f3d";
 
                 message.innerHTML =
-                    "✅ Account created successfully!<br><br>" +
-                    "Please check your email and confirm your account, then login.";
+                    "✅ Account created successfully!";
+
 
                 document
                     .getElementById("registerForm")
                     .reset();
 
+
+                setTimeout(
+                    function() {
+
+                        closeAuthModal();
+
+                        sellNow();
+
+                    },
+                    1000
+                );
+
+
                 return;
             }
 
 
-            currentUser =
-                data.user;
+            /*
+            Email confirmation is required.
+            The profile information is temporarily stored
+            in the browser until the user confirms and logs in.
+            */
 
+            localStorage.setItem(
+                "sioma_pending_profile",
+                JSON.stringify({
 
-            updateAccountUI();
+                    full_name: name,
+
+                    phone: phone,
+
+                    location: location
+
+                })
+            );
 
 
             message.style.color =
                 "#087f3d";
 
             message.innerHTML =
-                "✅ Account created successfully!";
-
+                "✅ Account created!<br><br>" +
+                "📧 We sent a confirmation email to:<br>" +
+                "<strong>" +
+                escapeHTML(email) +
+                "</strong><br><br>" +
+                "Open the NEWEST confirmation email and confirm your account.<br><br>" +
+                "After confirmation, return here and login.";
 
             document
                 .getElementById("registerForm")
                 .reset();
 
 
-            setTimeout(
-                function() {
-
-                    closeAuthModal();
-
-                    sellNow();
-
-                },
-                1000
-            );
-
-
         } catch(error) {
 
-            console.error(error);
+            console.error(
+                "Registration error:",
+                error
+            );
 
             message.style.color =
                 "#c62828";
 
             message.innerText =
-                "❌ " + error.message;
+                "❌ " +
+                error.message;
+
+        } finally {
+
+            button.disabled =
+                false;
 
         }
 
@@ -1724,8 +1696,18 @@ async function createSellerProfile(
     location
 ) {
 
+    if (!userId) {
+
+        return {
+            error:
+                new Error("User ID is missing.")
+        };
+
+    }
+
+
     /*
-    First check if profile exists.
+    Check whether the profile exists.
     */
 
     const {
@@ -1749,7 +1731,7 @@ async function createSellerProfile(
 
 
     /*
-    If profile exists, update it.
+    Update existing profile.
     */
 
     if (existingProfile) {
@@ -1761,25 +1743,32 @@ async function createSellerProfile(
             .from("seller_profiles")
             .update({
 
-                full_name: name,
+                full_name:
+                    name,
 
-                phone: phone,
+                phone:
+                    phone,
 
-                location: location
+                location:
+                    location
 
             })
-            .eq("id", userId);
+            .eq(
+                "id",
+                userId
+            );
 
 
         return {
-            error: error
+            error:
+                error
         };
 
     }
 
 
     /*
-    Otherwise create it.
+    Create new profile.
     */
 
     const {
@@ -1789,19 +1778,24 @@ async function createSellerProfile(
         .from("seller_profiles")
         .insert({
 
-            id: userId,
+            id:
+                userId,
 
-            full_name: name,
+            full_name:
+                name,
 
-            phone: phone,
+            phone:
+                phone,
 
-            location: location
+            location:
+                location
 
         });
 
 
     return {
-        error: error
+        error:
+            error
     };
 }
 
@@ -1821,17 +1815,14 @@ document
         const message =
             document.getElementById("authMessage");
 
-
         const email =
             document.getElementById("loginEmail")
             .value
             .trim();
 
-
         const password =
             document.getElementById("loginPassword")
             .value;
-
 
         message.style.color =
             "#087f3d";
@@ -1849,9 +1840,11 @@ document
             await supabaseClient.auth
                 .signInWithPassword({
 
-                    email: email,
+                    email:
+                        email,
 
-                    password: password
+                    password:
+                        password
 
                 });
 
@@ -1865,14 +1858,86 @@ document
                 data.user;
 
 
-            updateAccountUI();
+            /*
+            Get saved profile information.
+            */
+
+            const pendingProfile =
+                localStorage.getItem(
+                    "sioma_pending_profile"
+                );
+
+
+            if (pendingProfile) {
+
+                try {
+
+                    const profile =
+                        JSON.parse(
+                            pendingProfile
+                        );
+
+
+                    const {
+                        error:
+                            profileError
+                    } =
+                    await createSellerProfile(
+
+                        currentUser.id,
+
+                        profile.full_name ||
+                            "",
+
+                        profile.phone ||
+                            "",
+
+                        profile.location ||
+                            "Sioma"
+
+                    );
+
+
+                    if (profileError) {
+
+                        console.error(
+                            "Profile creation error:",
+                            profileError
+                        );
+
+                        /*
+                        Do not block login.
+                        The profile can be created
+                        when publishing.
+                        */
+
+                    } else {
+
+                        localStorage.removeItem(
+                            "sioma_pending_profile"
+                        );
+
+                    }
+
+                } catch(profileParseError) {
+
+                    console.error(
+                        profileParseError
+                    );
+
+                }
+
+            }
 
 
             /*
-            Make sure a profile exists.
+            Load profile into the selling form.
             */
 
             await loadSellerProfile();
+
+
+            updateAccountUI();
 
 
             message.style.color =
@@ -1899,13 +1964,17 @@ document
 
         } catch(error) {
 
-            console.error(error);
+            console.error(
+                "Login error:",
+                error
+            );
 
             message.style.color =
                 "#c62828";
 
             message.innerText =
-                "❌ " + error.message;
+                "❌ " +
+                error.message;
 
         }
 
@@ -1960,7 +2029,6 @@ function updateAccountUI() {
             "accountStatus"
         );
 
-
     const button =
         document.getElementById(
             "accountButton"
@@ -1975,7 +2043,8 @@ function updateAccountUI() {
 
 
         status.innerText =
-            "👤 " + email;
+            "👤 " +
+            email;
 
 
         button.innerText =
@@ -2034,17 +2103,263 @@ AUTH STATE
 ===================================================== */
 
 supabaseClient.auth.onAuthStateChange(
-    function(event, session) {
+    async function(event, session) {
 
         currentUser =
             session
                 ? session.user
                 : null;
 
+
         updateAccountUI();
+
+
+        /*
+        After email confirmation,
+        Supabase creates a session.
+        */
+
+        if (
+            event === "SIGNED_IN" &&
+            currentUser
+        ) {
+
+            const pendingProfile =
+                localStorage.getItem(
+                    "sioma_pending_profile"
+                );
+
+
+            if (pendingProfile) {
+
+                try {
+
+                    const profile =
+                        JSON.parse(
+                            pendingProfile
+                        );
+
+
+                    const {
+                        error
+                    } =
+                    await createSellerProfile(
+
+                        currentUser.id,
+
+                        profile.full_name ||
+                            "",
+
+                        profile.phone ||
+                            "",
+
+                        profile.location ||
+                            "Sioma"
+
+                    );
+
+
+                    if (!error) {
+
+                        localStorage.removeItem(
+                            "sioma_pending_profile"
+                        );
+
+                    }
+
+                } catch(error) {
+
+                    console.error(
+                        "Automatic profile creation error:",
+                        error
+                    );
+
+                }
+
+            }
+
+        }
 
     }
 );
+
+
+/* =====================================================
+HANDLE EMAIL CONFIRMATION
+===================================================== */
+
+async function handleEmailConfirmation() {
+
+    /*
+    Supabase v2 handles the confirmation
+    session from the URL automatically.
+    */
+
+    const hash =
+        window.location.hash;
+
+
+    const search =
+        window.location.search;
+
+
+    /*
+    Detect an expired confirmation link.
+    */
+
+    if (
+        hash.includes(
+            "error=access_denied"
+        ) ||
+        hash.includes(
+            "otp_expired"
+        ) ||
+        search.includes(
+            "otp_expired"
+        )
+    ) {
+
+        openAuthModal();
+
+        showLogin();
+
+
+        const message =
+            document.getElementById(
+                "authMessage"
+            );
+
+
+        message.style.color =
+            "#c62828";
+
+
+        message.innerHTML =
+            "❌ This confirmation link has expired.<br><br>" +
+            "Please register again or request a new confirmation email.";
+
+        return;
+
+    }
+
+
+    /*
+    Wait briefly for Supabase to process
+    the confirmation session.
+    */
+
+    const {
+        data
+    } =
+    await supabaseClient.auth.getSession();
+
+
+    if (
+        data &&
+        data.session
+    ) {
+
+        currentUser =
+            data.session.user;
+
+
+        updateAccountUI();
+
+
+        const pendingProfile =
+            localStorage.getItem(
+                "sioma_pending_profile"
+            );
+
+
+        if (pendingProfile) {
+
+            try {
+
+                const profile =
+                    JSON.parse(
+                        pendingProfile
+                    );
+
+
+                const {
+                    error
+                } =
+                await createSellerProfile(
+
+                    currentUser.id,
+
+                    profile.full_name ||
+                        "",
+
+                    profile.phone ||
+                        "",
+
+                    profile.location ||
+                        "Sioma"
+
+                );
+
+
+                if (!error) {
+
+                    localStorage.removeItem(
+                        "sioma_pending_profile"
+                    );
+
+                }
+
+            } catch(error) {
+
+                console.error(
+                    "Confirmation profile error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /*
+        Remove authentication tokens
+        from the visible browser URL.
+        */
+
+        if (
+            window.location.hash ||
+            window.location.search
+        ) {
+
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+        }
+
+
+        openAuthModal();
+
+        const message =
+            document.getElementById(
+                "authMessage"
+            );
+
+
+        message.style.color =
+            "#087f3d";
+
+
+        message.innerHTML =
+            "✅ Email confirmed successfully!<br><br>" +
+            "Your SiomaMarket account is ready.<br>" +
+            "You can now sell your products.";
+
+    }
+
+}
 
 
 /* =====================================================
@@ -2052,10 +2367,6 @@ SELL NOW
 ===================================================== */
 
 async function sellNow() {
-
-    /*
-    Make sure we have the latest session.
-    */
 
     const {
         data
@@ -2079,15 +2390,17 @@ async function sellNow() {
         showLogin();
 
 
-        document.getElementById(
-            "authMessage"
-        ).style.color =
+        const message =
+            document.getElementById(
+                "authMessage"
+            );
+
+
+        message.style.color =
             "#c62828";
 
 
-        document.getElementById(
-            "authMessage"
-        ).innerText =
+        message.innerText =
             "🔐 Please login or register before selling a product.";
 
 
@@ -2163,9 +2476,7 @@ async function loadSellerProfile() {
 
 
     if (!data) {
-
         return;
-
     }
 
 
@@ -2214,9 +2525,7 @@ function buyNow() {
     ).innerHTML = `
 
         <div class="no-results">
-
             🛒 Search for a product you want to buy.
-
         </div>
 
     `;
@@ -2375,9 +2684,15 @@ async function uploadProductImage(file) {
             filePath,
             file,
             {
-                cacheControl: "3600",
-                upsert: false,
-                contentType: file.type
+                cacheControl:
+                    "3600",
+
+                upsert:
+                    false,
+
+                contentType:
+                    file.type
+
             }
         );
 
@@ -2437,10 +2752,6 @@ document
 
         event.preventDefault();
 
-
-        /*
-        Check current session again.
-        */
 
         const {
             data: sessionData
@@ -2536,16 +2847,17 @@ document
             message.style.color =
                 "#c62828";
 
-
             message.innerText =
                 "Please choose a product photo.";
-
 
             return;
         }
 
 
         if (!title) {
+
+            message.style.color =
+                "#c62828";
 
             message.innerText =
                 "Please enter a product name.";
@@ -2556,6 +2868,9 @@ document
 
         if (!description) {
 
+            message.style.color =
+                "#c62828";
+
             message.innerText =
                 "Please enter a description.";
 
@@ -2563,7 +2878,13 @@ document
         }
 
 
-        if (!price || price < 0) {
+        if (
+            Number.isNaN(price) ||
+            price < 0
+        ) {
+
+            message.style.color =
+                "#c62828";
 
             message.innerText =
                 "Please enter a valid price.";
@@ -2574,8 +2895,35 @@ document
 
         if (!category) {
 
+            message.style.color =
+                "#c62828";
+
             message.innerText =
                 "Please select a category.";
+
+            return;
+        }
+
+
+        if (!sellerName) {
+
+            message.style.color =
+                "#c62828";
+
+            message.innerText =
+                "Please enter your name.";
+
+            return;
+        }
+
+
+        if (!sellerPhone) {
+
+            message.style.color =
+                "#c62828";
+
+            message.innerText =
+                "Please enter your phone number.";
 
             return;
         }
@@ -2617,10 +2965,15 @@ document
                 error: profileError
             } =
             await createSellerProfile(
+
                 currentUser.id,
+
                 sellerName,
+
                 sellerPhone,
+
                 location
+
             );
 
 
@@ -2643,7 +2996,6 @@ document
 
 
             const {
-                data,
                 error
             } =
             await supabaseClient
@@ -2651,6 +3003,7 @@ document
                 .insert([
 
                     {
+
                         title:
                             title,
 
@@ -2680,8 +3033,7 @@ document
 
                     }
 
-                ])
-                .select();
+                ]);
 
 
             if (error) {
@@ -2704,15 +3056,10 @@ document
                 "#087f3d";
 
 
-            message.innerHTML = `
-
-                ✅ Product published successfully!
-
-                <br><br>
-
-                Buyers can now see your product.
-
-            `;
+            message.innerHTML =
+                "✅ Product published successfully!" +
+                "<br><br>" +
+                "Buyers can now see your product.";
 
 
             document
@@ -2738,10 +3085,8 @@ document
 
                     closeSellPage();
 
-
                     publishButton.disabled =
                         false;
-
 
                     publishButton.innerText =
                         "🚀 PUBLISH PRODUCT";
@@ -2803,9 +3148,7 @@ async function searchMarket() {
         resultsBox.innerHTML = `
 
             <div class="no-results">
-
                 Please enter a product to search.
-
             </div>
 
         `;
@@ -2817,9 +3160,7 @@ async function searchMarket() {
     resultsBox.innerHTML = `
 
         <div class="no-results">
-
             🔎 Searching SiomaMarket...
-
         </div>
 
     `;
@@ -2874,7 +3215,6 @@ async function searchMarket() {
 
         `;
 
-
         return;
     }
 
@@ -2897,7 +3237,6 @@ async function searchMarket() {
             </div>
 
         `;
-
 
         return;
     }
@@ -2979,7 +3318,6 @@ async function searchCategory(category) {
 
         `;
 
-
         return;
     }
 
@@ -3000,7 +3338,6 @@ async function searchCategory(category) {
             </div>
 
         `;
-
 
         return;
     }
@@ -3085,7 +3422,6 @@ async function loadListings() {
 
         `;
 
-
         return;
     }
 
@@ -3108,7 +3444,6 @@ async function loadListings() {
             </div>
 
         `;
-
 
         return;
     }
@@ -3580,6 +3915,8 @@ document.addEventListener(
 
         await loadAuthSession();
 
+        await handleEmailConfirmation();
+
         await loadListings();
 
     }
@@ -3588,4 +3925,4 @@ document.addEventListener(
 </script>
 
 </body>
-    </html>
+                </html>
