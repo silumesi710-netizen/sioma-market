@@ -1547,10 +1547,7 @@ async function buyNow() {
         await supabaseClient
             .from("listings")
             .select("*")
-            .eq("status", "active")
-            .order("created_at", {
-                ascending: false
-            });
+            .eq("status", "active");
 
     if (error) {
 
@@ -1644,7 +1641,6 @@ async function buyNow() {
         block: "start"
     });
 }
-
 /* =====================================================
    OPEN PRODUCT
 ===================================================== */
