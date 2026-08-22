@@ -3138,7 +3138,186 @@ await loadListings();
 
 }
 );
+function closeFavorites(){
 
+    const page =
+        document.getElementById("favoritesPage");
+
+    if(page){
+        page.style.display = "none";
+    }
+
+    document.body.style.overflow = "auto";
+}
+
+
+async function showFavorites(){
+
+    await loadAuthSession();
+
+    if(!currentUser){
+
+        openAuthModal();
+        showLogin();
+
+        const message =
+            document.getElementById("authMessage");
+
+        message.style.color = "#c62828";
+
+        message.innerText =
+            "🔐 Please login to view your favorites.";
+
+        return;
+    }
+
+    const page =
+        document.getElementById("favoritesPage");
+
+    const box =
+        document.getElementById("favoritesResults");
+
+    if(!page || !box){
+
+        alert("Favorites page is missing from the HTML.");
+
+        return;
+    }
+
+    page.style.display = "block";
+
+    document.body.style.overflow = "hidden";
+
+    box.innerHTML = `
+        <div class="no-results">
+            ⏳ Loading your favorites...
+        </div>
+    `;
+
+    const result =
+        await supabaseClient
+        .from("favorites")
+        .select(`
+            id,
+            created_at,
+            listing_id,
+            listings (
+                id,
+                title,
+                price,
+                category,
+                location,
+                image_url,
+                seller_name,
+                seller_phone,
+                description,
+                status
+            )
+        `)
+        .eq("user_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if(result.error){
+
+        box.innerHTML = `
+            <div class="no-results">
+                ❌ Could not load favorites.<br><br>
+                ${escapeHTML(result.error.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+    const favorites =
+        (result.data || []).filter(function(item){
+
+            return item.listings &&
+                   item.listings.status === "active";
+
+        });
+
+    if(favorites.length === 0){
+
+        box.innerHTML = `
+            <div class="no-results">
+                ❤️ You have no saved products yet.
+                <br><br>
+                Browse SiomaMarket and save products you like.
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h2 class="results-title">
+            ❤️ My Favorites
+        </h2>
+
+        <div class="results-grid">
+    `;
+
+    favorites.forEach(function(item){
+
+        const product = item.listings;
+
+        const image =
+            product.image_url || DEFAULT_IMAGE;
+
+        const title =
+            product.title || "Product";
+
+        const price =
+            Number(product.price || 0)
+            .toLocaleString();
+
+        const location =
+            product.location || "Sioma";
+
+        html += `
+            <div class="result-card">
+
+                <img
+                    src="${escapeAttribute(image)}"
+                    alt="${escapeAttribute(title)}"
+                    onerror="this.src='${DEFAULT_IMAGE}'">
+
+                <div class="result-info">
+
+                    <h3>
+                        ${escapeHTML(title)}
+                    </h3>
+
+                    <div class="result-price">
+                        K${price}
+                    </div>
+
+                    <div class="location">
+                        📍 ${escapeHTML(location)}
+                    </div>
+
+                    <button
+                        type="button"
+                        class="buy-result"
+                        onclick="viewListing('${escapeAttribute(String(product.id))}')">
+                        👀 VIEW PRODUCT
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    html += `
+        </div>
+    `;
+
+    box.innerHTML = html;
+}
 </script>
 
 </body>
