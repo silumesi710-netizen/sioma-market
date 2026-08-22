@@ -2670,10 +2670,92 @@ window.location.href=
 /* =====================================================
 FAVORITE
 ===================================================== */
+let currentListingId = null;
 
-function saveFavorite(){
+async function saveFavorite(){
 
-alert("❤️ Product saved!");
+    if(!currentUser){
+
+        alert("🔐 Please login to save products.");
+
+        openAuthModal();
+        showLogin();
+
+        return;
+    }
+
+    if(!currentListingId){
+
+        alert("❌ Product information is unavailable.");
+
+        return;
+    }
+
+    try{
+
+        const existing =
+        await supabaseClient
+        .from("favorites")
+        .select("id")
+        .eq("user_id", currentUser.id)
+        .eq("listing_id", currentListingId)
+        .maybeSingle();
+
+        if(existing.error){
+
+            throw existing.error;
+
+        }
+
+        if(existing.data){
+
+            const removed =
+            await supabaseClient
+            .from("favorites")
+            .delete()
+            .eq("id", existing.data.id);
+
+            if(removed.error){
+
+                throw removed.error;
+
+            }
+
+            alert("💔 Product removed from your favorites.");
+
+        }else{
+
+            const saved =
+            await supabaseClient
+            .from("favorites")
+            .insert({
+                user_id: currentUser.id,
+                listing_id: currentListingId
+            });
+
+            if(saved.error){
+
+                throw saved.error;
+
+            }
+
+            alert("❤️ Product saved to your favorites!");
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "FAVORITE ERROR:",
+            error
+        );
+
+        alert(
+            "❌ Could not update favorites:\n"+
+            error.message
+        );
+
+    }
 
 }
 
