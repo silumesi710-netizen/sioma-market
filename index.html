@@ -6,13 +6,13 @@
 
 <title>SiomaMarket - Buy and Sell Locally</title>
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
 /* =====================================================
-   SIOMA MARKET - COMPLETE MOBILE FIRST CSS
+   SIOMA MARKET
+   COMPLETE MOBILE-FIRST CSS
 ===================================================== */
 
 * {
@@ -251,10 +251,6 @@ main {
     cursor: pointer;
 }
 
-.category:hover {
-    transform: translateY(-2px);
-}
-
 .category-icon {
     font-size: 30px;
     display: block;
@@ -267,36 +263,25 @@ main {
 
 .product-page {
     display: none;
-
     position: fixed;
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     background: #f4f6f8;
-
     z-index: 5000;
-
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .product-page-header {
     background: #087f3d;
     color: white;
-
     padding: 14px 16px;
-
     display: flex;
     align-items: center;
     gap: 15px;
-
     position: sticky;
     top: 0;
-
     z-index: 20;
-
     box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
 
@@ -307,37 +292,26 @@ main {
 .back-button {
     background: white;
     color: #087f3d;
-
     border: none;
-
     padding: 9px 14px;
-
     border-radius: 7px;
-
     font-weight: bold;
 }
 
 .product-details {
     max-width: 1050px;
     margin: 25px auto;
-
     background: white;
-
     border-radius: 15px;
-
     overflow: hidden;
-
     box-shadow: 0 5px 20px rgba(0,0,0,.10);
 }
 
 .details-image {
     width: 100%;
     height: 350px;
-
     object-fit: contain;
-
     background: #eee;
-
     display: block;
 }
 
@@ -348,17 +322,12 @@ main {
 
 .details-category {
     display: inline-block;
-
     background: #e8f5ed;
     color: #087f3d;
-
     padding: 6px 10px;
-
     border-radius: 20px;
-
     font-size: 13px;
     font-weight: bold;
-
     margin-bottom: 10px;
 }
 
@@ -369,11 +338,8 @@ main {
 
 .details-price {
     color: #087f3d;
-
     font-size: 28px;
-
     font-weight: bold;
-
     margin-bottom: 10px;
 }
 
@@ -400,91 +366,62 @@ main {
 .seller-box {
     display: flex;
     align-items: center;
-
     gap: 12px;
-
     background: #f7f7f7;
-
     padding: 15px;
-
     border-radius: 10px;
-
     margin-top: 12px;
 }
 
 .seller-icon {
     width: 45px;
     height: 45px;
-
     flex-shrink: 0;
-
     border-radius: 50%;
-
     background: #087f3d;
     color: white;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 22px;
 }
 
 /* =====================================================
-   PRODUCT ACTION BUTTONS
+   PRODUCT BUTTONS
 ===================================================== */
 
 .whatsapp-button {
     width: 100%;
-
     margin-top: 20px;
-
     padding: 15px;
-
     border: none;
-
     border-radius: 9px;
-
     background: #25D366;
     color: white;
-
     font-size: 17px;
     font-weight: bold;
 }
 
 .call-button {
     width: 100%;
-
     margin-top: 10px;
-
     padding: 14px;
-
     border: 2px solid #087f3d;
-
     border-radius: 9px;
-
     background: white;
     color: #087f3d;
-
     font-size: 16px;
     font-weight: bold;
 }
 
 .favorite-button {
     width: 100%;
-
     margin-top: 10px;
-
     padding: 13px;
-
     border: none;
-
     border-radius: 9px;
-
     background: #f1f1f1;
-
     color: #333;
-
     font-size: 15px;
     font-weight: bold;
 }
@@ -495,42 +432,25 @@ main {
 
 .sell-page {
     display: none;
-
     position: fixed;
-
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     background: #f4f6f8;
-
     z-index: 6000;
-
     overflow-y: auto;
-
-    -webkit-overflow-scrolling: touch;
 }
 
 .sell-page-header {
     background: #087f3d;
-
     color: white;
-
     padding: 14px 16px;
-
     display: flex;
-
     align-items: center;
-
     gap: 15px;
-
     position: sticky;
-
     top: 0;
-
     z-index: 20;
-
     box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
 
@@ -541,9 +461,7 @@ main {
 .sell-container {
     width: 100%;
     max-width: 650px;
-
     margin: 0 auto;
-
     padding: 25px 16px 80px;
 }
 
@@ -568,20 +486,15 @@ main {
 
 .sell-form {
     background: white;
-
     padding: 22px;
-
     border-radius: 14px;
-
     box-shadow: 0 4px 15px rgba(0,0,0,.08);
 }
 
 .sell-form label {
     display: block;
-
     margin-top: 16px;
     margin-bottom: 7px;
-
     font-weight: bold;
 }
 
@@ -589,17 +502,11 @@ main {
 .sell-form select,
 .sell-form textarea {
     width: 100%;
-
     padding: 14px;
-
     border: 1px solid #ccc;
-
     border-radius: 8px;
-
     font-size: 16px;
-
     background: white;
-
     outline: none;
 }
 
@@ -614,36 +521,48 @@ main {
     resize: vertical;
 }
 
+/* PHOTO */
+
+.photo-help {
+    color: #777;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.image-preview {
+    display: none;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.image-preview img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #eee;
+}
+
 .publish-button {
     width: 100%;
-
     margin-top: 25px;
-
     padding: 15px;
-
     border: none;
-
     border-radius: 9px;
-
     background: #087f3d;
-
     color: white;
-
     font-size: 17px;
-
     font-weight: bold;
 }
 
 .sell-message {
-    margin-top: 15px;
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    text-align: center;
-
     display: none;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    background: #e8f5ed;
+    color: #087f3d;
 }
 
 /* =====================================================
@@ -652,22 +571,14 @@ main {
 
 footer {
     background: #123524;
-
     color: white;
-
     text-align: center;
-
     padding: 25px 15px;
-
     margin-top: 30px;
 }
 
-footer h3 {
-    margin-bottom: 5px;
-}
-
 /* =====================================================
-   TABLET
+   TABLET / DESKTOP
 ===================================================== */
 
 @media (min-width: 600px) {
@@ -685,15 +596,10 @@ footer h3 {
     }
 }
 
-/* =====================================================
-   DESKTOP
-===================================================== */
-
 @media (min-width: 750px) {
 
     .product-details {
         display: grid;
-
         grid-template-columns: 1.1fr 1fr;
     }
 
@@ -706,10 +612,6 @@ footer h3 {
     }
 }
 
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
 @media (max-width: 420px) {
 
     .logo {
@@ -720,10 +622,6 @@ footer h3 {
         padding: 12px 14px;
     }
 
-    .search-container input {
-        font-size: 15px;
-    }
-
     .action-buttons {
         gap: 8px;
     }
@@ -731,15 +629,6 @@ footer h3 {
     .action-buttons button {
         font-size: 14px;
         padding: 12px 8px;
-    }
-
-    .categories {
-        gap: 8px;
-    }
-
-    .category {
-        padding: 16px 6px;
-        font-size: 14px;
     }
 
     .result-card img {
@@ -764,7 +653,7 @@ footer h3 {
      HOME HEADER
 ===================================================== -->
 
-<header id="homeHeader">
+<header>
 
     <div class="logo">
         🛍️ Sioma<span>Market</span>
@@ -817,7 +706,7 @@ footer h3 {
      HOME
 ===================================================== -->
 
-<main id="homePage">
+<main>
 
     <section class="welcome">
 
@@ -833,42 +722,50 @@ footer h3 {
 
     <div class="categories">
 
-        <div class="category" onclick="searchCategory('Agriculture')">
+        <div class="category"
+             onclick="searchCategory('Agriculture')">
             <span class="category-icon">🌾</span>
             Agriculture
         </div>
 
-        <div class="category" onclick="searchCategory('Livestock')">
+        <div class="category"
+             onclick="searchCategory('Livestock')">
             <span class="category-icon">🐔</span>
             Livestock
         </div>
 
-        <div class="category" onclick="searchCategory('Fish')">
+        <div class="category"
+             onclick="searchCategory('Fish')">
             <span class="category-icon">🐟</span>
             Fish
         </div>
 
-        <div class="category" onclick="searchCategory('Phones')">
+        <div class="category"
+             onclick="searchCategory('Phones')">
             <span class="category-icon">📱</span>
             Phones
         </div>
 
-        <div class="category" onclick="searchCategory('Vehicles')">
+        <div class="category"
+             onclick="searchCategory('Vehicles')">
             <span class="category-icon">🚗</span>
             Vehicles
         </div>
 
-        <div class="category" onclick="searchCategory('Houses')">
+        <div class="category"
+             onclick="searchCategory('Houses')">
             <span class="category-icon">🏠</span>
             Houses
         </div>
 
-        <div class="category" onclick="searchCategory('Clothes')">
+        <div class="category"
+             onclick="searchCategory('Clothes')">
             <span class="category-icon">👕</span>
             Clothes
         </div>
 
-        <div class="category" onclick="searchCategory('Services')">
+        <div class="category"
+             onclick="searchCategory('Services')">
             <span class="category-icon">🛠️</span>
             Services
         </div>
@@ -915,6 +812,7 @@ footer h3 {
 
     </div>
 
+
     <div class="sell-container">
 
         <div class="sell-intro">
@@ -926,16 +824,13 @@ footer h3 {
             <h1>Sell Your Product</h1>
 
             <p>
-                Reach buyers in Sioma by listing your product on SiomaMarket.
+                Reach buyers in Sioma by listing your product.
             </p>
 
         </div>
 
 
-        <form
-            id="sellForm"
-            class="sell-form"
-        >
+        <form id="sellForm" class="sell-form">
 
             <label for="sellTitle">
                 Product Name
@@ -977,50 +872,21 @@ footer h3 {
                 Category
             </label>
 
-            <select
-                id="sellCategory"
-                required
-            >
+            <select id="sellCategory" required>
 
                 <option value="">
                     Select category
                 </option>
 
-                <option value="Agriculture">
-                    Agriculture
-                </option>
-
-                <option value="Livestock">
-                    Livestock
-                </option>
-
-                <option value="Fish">
-                    Fish
-                </option>
-
-                <option value="Phones">
-                    Phones
-                </option>
-
-                <option value="Vehicles">
-                    Vehicles
-                </option>
-
-                <option value="Houses">
-                    Houses
-                </option>
-
-                <option value="Clothes">
-                    Clothes
-                </option>
-
-                <option value="Services">
-                    Services
-                </option>
-
-                <option value="Other">
-                    Other
-                </option>
+                <option>Agriculture</option>
+                <option>Livestock</option>
+                <option>Fish</option>
+                <option>Phones</option>
+                <option>Vehicles</option>
+                <option>Houses</option>
+                <option>Clothes</option>
+                <option>Services</option>
+                <option>Other</option>
 
             </select>
 
@@ -1036,37 +902,39 @@ footer h3 {
                 required
             >
 
-<label for="sellImage">
-    Product Photo
-</label>
 
-<input
-    type="file"
-    id="sellImage"
-    accept="image/*"
-    required
->
+            <!-- PHOTO UPLOAD -->
 
-<div id="imagePreview" style="
-    margin-top:12px;
-    text-align:center;
-    display:none;
-">
-    <img
-        id="previewImage"
-        src=""
-        alt="Product preview"
-        style="
-            width:100%;
-            max-height:250px;
-            object-fit:contain;
-            border-radius:10px;
-            background:#eee;
-        "
-    >
-</div>
-         
+            <label for="sellImage">
+                📷 Product Photo
+            </label>
+
+            <input
+                type="file"
+                id="sellImage"
+                accept="image/*"
+                capture="environment"
+                required
             >
+
+            <div class="photo-help">
+                Choose a photo from your phone or take a new photo.
+                Maximum size: 5MB.
+            </div>
+
+
+            <div
+                id="imagePreview"
+                class="image-preview"
+            >
+
+                <img
+                    id="previewImage"
+                    src=""
+                    alt="Product preview"
+                >
+
+            </div>
 
 
             <label for="sellerName">
@@ -1178,7 +1046,6 @@ footer h3 {
 
             <hr>
 
-
             <h3>Description</h3>
 
             <p
@@ -1189,9 +1056,7 @@ footer h3 {
 
             <hr>
 
-
             <h3>Seller</h3>
-
 
             <div class="seller-box">
 
@@ -1205,8 +1070,7 @@ footer h3 {
                         Seller
                     </strong>
 
-                    <div id="detailsPhone">
-                    </div>
+                    <div id="detailsPhone"></div>
 
                 </div>
 
@@ -1266,7 +1130,7 @@ const supabaseClient =
 
 
 /* =====================================================
-   ESCAPE HTML
+   SECURITY
 ===================================================== */
 
 function escapeHTML(value) {
@@ -1281,34 +1145,19 @@ function escapeHTML(value) {
 
 
 /* =====================================================
-   SEARCH
+   BUY NOW
 ===================================================== */
 
-async function searchMarket() {
-
-    const searchInput =
-        document.getElementById("searchInput");
+async function buyNow() {
 
     const resultsBox =
-        document.getElementById("searchResults");
-
-    const search =
-        searchInput.value.trim();
-
-    if (!search) {
-
-        resultsBox.innerHTML = `
-            <div class="no-results">
-                Please enter a product to search.
-            </div>
-        `;
-
-        return;
-    }
+        document.getElementById(
+            "searchResults"
+        );
 
     resultsBox.innerHTML = `
         <div class="no-results">
-            🔎 Searching SiomaMarket...
+            🔎 Loading products...
         </div>
     `;
 
@@ -1317,11 +1166,7 @@ async function searchMarket() {
         await supabaseClient
             .from("listings")
             .select("*")
-            .eq("status", "active")
-            .ilike(
-                "title",
-                "%" + search + "%"
-            );
+            .eq("status", "active");
 
 
     if (error) {
@@ -1330,8 +1175,8 @@ async function searchMarket() {
 
         resultsBox.innerHTML = `
             <div class="no-results">
-                ❌ Search failed.
-                <br>
+                ❌ Unable to load products.
+                <br><br>
                 Please try again.
             </div>
         `;
@@ -1344,8 +1189,9 @@ async function searchMarket() {
 
         resultsBox.innerHTML = `
             <div class="no-results">
-                🔍 No products found for
-                <strong>${escapeHTML(search)}</strong>
+                🛒 No products are available yet.
+                <br><br>
+                Be the first person to sell on SiomaMarket!
             </div>
         `;
 
@@ -1355,7 +1201,7 @@ async function searchMarket() {
 
     let html = `
         <h2 class="results-title">
-            🔎 Search Results
+            🛒 Products Available in Sioma
         </h2>
 
         <div class="results-grid">
@@ -1400,7 +1246,7 @@ async function searchMarket() {
                         class="buy-result"
                         onclick="viewListing('${item.id}')"
                     >
-                        🛒 BUY
+                        👀 VIEW PRODUCT
                     </button>
 
                 </div>
@@ -1411,11 +1257,96 @@ async function searchMarket() {
     });
 
 
-    html += `
+    html += `</div>`;
+
+    resultsBox.innerHTML = html;
+
+
+    resultsBox.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+async function searchMarket() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value.trim();
+
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if (!search) {
+
+        resultsBox.innerHTML = `
+            <div class="no-results">
+                Please enter a product to search.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    resultsBox.innerHTML = `
+        <div class="no-results">
+            🔎 Searching SiomaMarket...
         </div>
     `;
 
-    resultsBox.innerHTML = html;
+
+    const { data, error } =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq("status", "active")
+            .ilike(
+                "title",
+                "%" + search + "%"
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        resultsBox.innerHTML = `
+            <div class="no-results">
+                ❌ Search failed.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if (!data || data.length === 0) {
+
+        resultsBox.innerHTML = `
+            <div class="no-results">
+                🔍 No products found for
+                <strong>
+                    ${escapeHTML(search)}
+                </strong>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    displayProducts(data, "🔎 Search Results");
 }
 
 
@@ -1425,21 +1356,15 @@ async function searchMarket() {
 
 async function searchCategory(category) {
 
-    document.getElementById("searchInput").value =
-        category;
-
-    await searchByCategory(category);
-}
-
-
-async function searchByCategory(category) {
-
     const resultsBox =
-        document.getElementById("searchResults");
+        document.getElementById(
+            "searchResults"
+        );
+
 
     resultsBox.innerHTML = `
         <div class="no-results">
-            🔎 Searching ${escapeHTML(category)}...
+            🔎 Loading ${escapeHTML(category)}...
         </div>
     `;
 
@@ -1479,132 +1404,36 @@ async function searchByCategory(category) {
     }
 
 
-    let html = `
-        <h2 class="results-title">
-            ${escapeHTML(category)}
-        </h2>
-
-        <div class="results-grid">
-    `;
-
-
-    data.forEach(item => {
-
-        const image =
-            item.image_url ||
-            "https://via.placeholder.com/600x400?text=SiomaMarket";
-
-
-        html += `
-
-            <div class="result-card">
-
-                <img
-                    src="${escapeHTML(image)}"
-                    alt="${escapeHTML(item.title)}"
-                >
-
-                <div class="result-info">
-
-                    <h3>
-                        ${escapeHTML(item.title)}
-                    </h3>
-
-                    <div class="result-price">
-                        K${Number(
-                            item.price || 0
-                        ).toLocaleString()}
-                    </div>
-
-                    <div class="result-location">
-                        📍 ${escapeHTML(
-                            item.location || "Sioma"
-                        )}
-                    </div>
-
-                    <button
-                        class="buy-result"
-                        onclick="viewListing('${item.id}')"
-                    >
-                        🛒 BUY
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-    });
-
-
-    html += `</div>`;
-
-    resultsBox.innerHTML = html;
-
-    window.scrollTo({
-        top: document.getElementById(
-            "searchResults"
-        ).offsetTop - 20,
-        behavior: "smooth"
-    });
+    displayProducts(
+        data,
+        "🛍️ " + category
+    );
 }
 
 
 /* =====================================================
-   BUY NOW
+   DISPLAY PRODUCTS
 ===================================================== */
-async function buyNow() {
+
+function displayProducts(
+    data,
+    heading
+) {
 
     const resultsBox =
-        document.getElementById("searchResults");
+        document.getElementById(
+            "searchResults"
+        );
 
-    resultsBox.innerHTML = `
-        <div class="no-results">
-            🔎 Loading products...
-        </div>
-    `;
-
-    const { data, error } =
-        await supabaseClient
-            .from("listings")
-            .select("*")
-            .eq("status", "active");
-
-    if (error) {
-
-        console.error(error);
-
-        resultsBox.innerHTML = `
-            <div class="no-results">
-                ❌ Unable to load products.
-                <br><br>
-                Please try again.
-            </div>
-        `;
-
-        return;
-    }
-
-    if (!data || data.length === 0) {
-
-        resultsBox.innerHTML = `
-            <div class="no-results">
-                🛒 No products are available yet.
-                <br><br>
-                Be the first person to sell on SiomaMarket!
-            </div>
-        `;
-
-        return;
-    }
 
     let html = `
         <h2 class="results-title">
-            🛒 Products Available in Sioma
+            ${escapeHTML(heading)}
         </h2>
 
         <div class="results-grid">
     `;
+
 
     data.forEach(item => {
 
@@ -1612,7 +1441,9 @@ async function buyNow() {
             item.image_url ||
             "https://via.placeholder.com/600x400?text=SiomaMarket";
 
+
         html += `
+
             <div class="result-card">
 
                 <img
@@ -1648,38 +1479,46 @@ async function buyNow() {
                 </div>
 
             </div>
+
         `;
     });
 
-    html += `
-        </div>
-    `;
+
+    html += `</div>`;
 
     resultsBox.innerHTML = html;
+
 
     resultsBox.scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
 }
+
+
 /* =====================================================
-   OPEN PRODUCT
+   VIEW PRODUCT
 ===================================================== */
 
 async function viewListing(id) {
 
     const productPage =
-        document.getElementById("productPage");
+        document.getElementById(
+            "productPage"
+        );
 
 
-    productPage.style.display = "block";
+    productPage.style.display =
+        "block";
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+        "hidden";
 
 
     document.getElementById(
         "detailsTitle"
-    ).innerText = "Loading product...";
+    ).innerText =
+        "Loading product...";
 
 
     const { data, error } =
@@ -1703,13 +1542,9 @@ async function viewListing(id) {
     }
 
 
-    const image =
-        document.getElementById(
-            "detailsImage"
-        );
-
-
-    image.src =
+    document.getElementById(
+        "detailsImage"
+    ).src =
         data.image_url ||
         "https://via.placeholder.com/600x400?text=SiomaMarket";
 
@@ -1787,7 +1622,6 @@ async function viewListing(id) {
                     data.seller_phone,
                     data.title
                 );
-
             };
 
 
@@ -1800,7 +1634,6 @@ async function viewListing(id) {
                 callSeller(
                     data.seller_phone
                 );
-
             };
 
     } else {
@@ -1822,21 +1655,24 @@ function closeProductPage() {
 
     document.getElementById(
         "productPage"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
 }
 
 
 /* =====================================================
-   OPEN SELL PAGE
+   SELL NOW
 ===================================================== */
 
 function sellNow() {
 
     document.getElementById(
         "sellPage"
-    ).style.display = "block";
+    ).style.display =
+        "block";
 
     document.body.style.overflow =
         "hidden";
@@ -1853,10 +1689,361 @@ function closeSellPage() {
 
     document.getElementById(
         "sellPage"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
 }
+
+
+/* =====================================================
+   PHOTO PREVIEW
+===================================================== */
+
+document
+    .getElementById("sellImage")
+    .addEventListener(
+        "change",
+        function(event) {
+
+            const file =
+                event.target.files[0];
+
+
+            const previewBox =
+                document.getElementById(
+                    "imagePreview"
+                );
+
+
+            const previewImage =
+                document.getElementById(
+                    "previewImage"
+                );
+
+
+            if (!file) {
+
+                previewBox.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Please select an image."
+                );
+
+                event.target.value =
+                    "";
+
+                previewBox.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                alert(
+                    "Image must be smaller than 5MB."
+                );
+
+                event.target.value =
+                    "";
+
+                previewBox.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(e) {
+
+                    previewImage.src =
+                        e.target.result;
+
+                    previewBox.style.display =
+                        "block";
+                };
+
+
+            reader.readAsDataURL(file);
+        }
+    );
+
+
+/* =====================================================
+   PUBLISH PRODUCT
+===================================================== */
+
+document
+    .getElementById("sellForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const message =
+                document.getElementById(
+                    "sellMessage"
+                );
+
+
+            const imageFile =
+                document.getElementById(
+                    "sellImage"
+                ).files[0];
+
+
+            if (!imageFile) {
+
+                message.style.display =
+                    "block";
+
+                message.innerText =
+                    "❌ Please select a product photo.";
+
+                return;
+            }
+
+
+            if (
+                imageFile.size >
+                5 * 1024 * 1024
+            ) {
+
+                message.style.display =
+                    "block";
+
+                message.innerText =
+                    "❌ Image must be smaller than 5MB.";
+
+                return;
+            }
+
+
+            message.style.display =
+                "block";
+
+            message.innerText =
+                "⏳ Uploading product photo...";
+
+
+            const title =
+                document.getElementById(
+                    "sellTitle"
+                ).value.trim();
+
+
+            const description =
+                document.getElementById(
+                    "sellDescription"
+                ).value.trim();
+
+
+            const price =
+                Number(
+                    document.getElementById(
+                        "sellPrice"
+                    ).value
+                );
+
+
+            const category =
+                document.getElementById(
+                    "sellCategory"
+                ).value;
+
+
+            const location =
+                document.getElementById(
+                    "sellLocation"
+                ).value.trim();
+
+
+            const sellerName =
+                document.getElementById(
+                    "sellerName"
+                ).value.trim();
+
+
+            const sellerPhone =
+                document.getElementById(
+                    "sellerPhone"
+                ).value.trim();
+
+
+            /* CREATE UNIQUE FILE NAME */
+
+            const extension =
+                imageFile.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const fileName =
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .substring(2) +
+                "." +
+                extension;
+
+
+            /* UPLOAD PHOTO */
+
+            const {
+                error: uploadError
+            } =
+                await supabaseClient.storage
+                    .from("product-images")
+                    .upload(
+                        fileName,
+                        imageFile,
+                        {
+                            cacheControl: "3600",
+                            upsert: false,
+                            contentType:
+                                imageFile.type
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(
+                    uploadError
+                );
+
+                message.innerHTML =
+                    "❌ Photo upload failed.<br><br>" +
+                    escapeHTML(
+                        uploadError.message
+                    );
+
+                return;
+            }
+
+
+            /* GET PHOTO URL */
+
+            const {
+                data: publicImage
+            } =
+                supabaseClient.storage
+                    .from("product-images")
+                    .getPublicUrl(
+                        fileName
+                    );
+
+
+            const imageUrl =
+                publicImage.publicUrl;
+
+
+            message.innerText =
+                "⏳ Publishing product...";
+
+
+            /* SAVE LISTING */
+
+            const listing = {
+
+                title: title,
+
+                description: description,
+
+                price: price,
+
+                category: category,
+
+                location: location,
+
+                image_url: imageUrl,
+
+                seller_name: sellerName,
+
+                seller_phone: sellerPhone,
+
+                status: "active"
+            };
+
+
+            const {
+                error: insertError
+            } =
+                await supabaseClient
+                    .from("listings")
+                    .insert([listing]);
+
+
+            if (insertError) {
+
+                console.error(
+                    insertError
+                );
+
+                message.innerHTML =
+                    "❌ Product could not be published.<br><br>" +
+                    escapeHTML(
+                        insertError.message
+                    );
+
+                return;
+            }
+
+
+            message.innerText =
+                "✅ Product published successfully!";
+
+
+            document
+                .getElementById("sellForm")
+                .reset();
+
+
+            document.getElementById(
+                "sellLocation"
+            ).value =
+                "Sioma";
+
+
+            document.getElementById(
+                "imagePreview"
+            ).style.display =
+                "none";
+
+
+            setTimeout(
+                function() {
+
+                    closeSellPage();
+
+                },
+                1800
+            );
+
+        }
+    );
 
 
 /* =====================================================
@@ -1928,165 +2115,15 @@ function callSeller(phone) {
 
 
 /* =====================================================
-   SAVE FAVORITE
+   FAVORITE
 ===================================================== */
 
 function saveFavorite() {
 
     alert(
-        "❤️ Product saved! Your favourites feature will be connected to your account later."
+        "❤️ Product saved!"
     );
 }
-
-
-/* =====================================================
-   PUBLISH PRODUCT
-===================================================== */
-
-document
-    .getElementById("sellForm")
-    .addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-
-            const message =
-                document.getElementById(
-                    "sellMessage"
-                );
-
-
-            message.style.display =
-                "block";
-
-            message.innerHTML =
-                "⏳ Publishing your product...";
-
-
-            const title =
-                document.getElementById(
-                    "sellTitle"
-                ).value.trim();
-
-
-            const description =
-                document.getElementById(
-                    "sellDescription"
-                ).value.trim();
-
-
-            const price =
-                Number(
-                    document.getElementById(
-                        "sellPrice"
-                    ).value
-                );
-
-
-            const category =
-                document.getElementById(
-                    "sellCategory"
-                ).value;
-
-
-            const location =
-                document.getElementById(
-                    "sellLocation"
-                ).value.trim();
-
-
-            const image =
-                document.getElementById(
-                    "sellImage"
-                ).value.trim();
-
-
-            const sellerName =
-                document.getElementById(
-                    "sellerName"
-                ).value.trim();
-
-
-            const sellerPhone =
-                document.getElementById(
-                    "sellerPhone"
-                ).value.trim();
-
-
-            const listing = {
-
-                title: title,
-
-                description: description,
-
-                price: price,
-
-                category: category,
-
-                location: location,
-
-                image_url: image || null,
-
-                seller_name: sellerName,
-
-                seller_phone: sellerPhone,
-
-                status: "active"
-            };
-
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .from("listings")
-                    .insert([listing])
-                    .select();
-
-
-            if (error) {
-
-                console.error(error);
-
-
-                message.innerHTML =
-                    "❌ Product could not be published.<br><br>" +
-                    escapeHTML(
-                        error.message
-                    );
-
-                return;
-            }
-
-
-            message.innerHTML =
-                "✅ Your product has been published successfully!";
-
-
-            document
-                .getElementById("sellForm")
-                .reset();
-
-
-            document.getElementById(
-                "sellLocation"
-            ).value = "Sioma";
-
-
-            setTimeout(
-                function() {
-
-                    closeSellPage();
-
-                },
-                1800
-            );
-
-        }
-    );
 
 
 /* =====================================================
@@ -2125,42 +2162,8 @@ document.addEventListener(
         }
     }
 );
-document
-    .getElementById("sellImage")
-    .addEventListener("change", function(event) {
 
-        const file = event.target.files[0];
-
-        const previewBox =
-            document.getElementById("imagePreview");
-
-        const previewImage =
-            document.getElementById("previewImage");
-
-        if (!file) {
-            previewBox.style.display = "none";
-            return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-            alert("Please select an image.");
-            event.target.value = "";
-            previewBox.style.display = "none";
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-
-            previewImage.src = e.target.result;
-
-            previewBox.style.display = "block";
-        };
-
-        reader.readAsDataURL(file);
-    });
 </script>
 
 </body>
-                </html>
+   </html>
