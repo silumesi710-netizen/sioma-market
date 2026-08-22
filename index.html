@@ -9,11 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-/* =====================================================
-   RESET
-===================================================== */
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -30,16 +25,15 @@ body{
     color:#222;
 }
 
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
     font-family:Arial,sans-serif;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
+button{
+    cursor:pointer;
+}
+
+/* ================= HEADER ================= */
 
 header{
     background:#087f3d;
@@ -59,7 +53,7 @@ header{
 }
 
 .account-bar{
-    max-width:650px;
+    max-width:700px;
     margin:0 auto 15px;
     display:flex;
     align-items:center;
@@ -79,7 +73,7 @@ header{
 
 .account-actions{
     display:flex;
-    gap:8px;
+    gap:7px;
     align-items:center;
     flex-wrap:wrap;
     justify-content:flex-end;
@@ -89,10 +83,9 @@ header{
     border:none;
     background:white;
     color:#087f3d;
-    padding:9px 13px;
+    padding:9px 12px;
     border-radius:7px;
     font-weight:bold;
-    cursor:pointer;
     white-space:nowrap;
 }
 
@@ -101,8 +94,13 @@ header{
     color:#222;
 }
 
+.dashboard-button{
+    background:#e8f5ed;
+    color:#087f3d;
+}
+
 .search-container{
-    max-width:650px;
+    max-width:700px;
     margin:auto;
     display:flex;
     background:white;
@@ -127,11 +125,10 @@ header{
     padding:12px 18px;
     border-radius:50px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .action-buttons{
-    max-width:650px;
+    max-width:700px;
     margin:18px auto 0;
     display:flex;
     gap:12px;
@@ -144,7 +141,6 @@ header{
     border-radius:8px;
     font-size:16px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .buy-button{
@@ -157,9 +153,7 @@ header{
     color:#222;
 }
 
-/* =====================================================
-   AUTH
-===================================================== */
+/* ================= AUTH ================= */
 
 .auth-modal{
     display:none;
@@ -205,7 +199,6 @@ header{
     border:none;
     border-radius:8px;
     background:#eee;
-    cursor:pointer;
     font-weight:bold;
 }
 
@@ -239,7 +232,6 @@ header{
     color:white;
     font-size:16px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .auth-submit:disabled{
@@ -253,7 +245,6 @@ header{
     border:none;
     border-radius:8px;
     background:#eee;
-    cursor:pointer;
     font-weight:bold;
 }
 
@@ -264,9 +255,7 @@ header{
     line-height:1.5;
 }
 
-/* =====================================================
-   MAIN
-===================================================== */
+/* ================= MAIN ================= */
 
 main{
     max-width:1100px;
@@ -305,7 +294,6 @@ main{
     border-radius:10px;
     box-shadow:0 3px 10px rgba(0,0,0,.08);
     text-align:center;
-    cursor:pointer;
     font-weight:bold;
 }
 
@@ -315,9 +303,7 @@ main{
     margin-bottom:8px;
 }
 
-/* =====================================================
-   RESULTS
-===================================================== */
+/* ================= RESULTS ================= */
 
 #searchResults{
     max-width:1100px;
@@ -381,7 +367,6 @@ main{
     padding:11px;
     border-radius:7px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .no-results{
@@ -392,11 +377,9 @@ main{
     color:#666;
 }
 
-/* =====================================================
-   SELL PAGE
-===================================================== */
+/* ================= GENERAL FULL PAGE ================= */
 
-.sell-page{
+.full-page{
     display:none;
     position:fixed;
     inset:0;
@@ -405,7 +388,7 @@ main{
     overflow-y:auto;
 }
 
-.sell-page-header{
+.page-header{
     background:#087f3d;
     color:white;
     padding:14px 15px;
@@ -414,10 +397,10 @@ main{
     gap:15px;
     position:sticky;
     top:0;
-    z-index:10;
+    z-index:20;
 }
 
-.sell-page-header h2{
+.page-header h2{
     font-size:19px;
 }
 
@@ -428,8 +411,15 @@ main{
     padding:9px 14px;
     border-radius:7px;
     font-weight:bold;
-    cursor:pointer;
 }
+
+.page-container{
+    max-width:1100px;
+    margin:auto;
+    padding:25px 15px 70px;
+}
+
+/* ================= SELL PAGE ================= */
 
 .sell-container{
     max-width:650px;
@@ -508,12 +498,6 @@ main{
     color:white;
     font-size:17px;
     font-weight:bold;
-    cursor:pointer;
-}
-
-.publish-button:disabled{
-    opacity:.7;
-    cursor:not-allowed;
 }
 
 .sell-message{
@@ -523,34 +507,7 @@ main{
     line-height:1.5;
 }
 
-/* =====================================================
-   PRODUCT PAGE
-===================================================== */
-
-.product-page{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:#f4f6f8;
-    z-index:4000;
-    overflow-y:auto;
-}
-
-.product-page-header{
-    background:#087f3d;
-    color:white;
-    padding:14px 15px;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    position:sticky;
-    top:0;
-    z-index:20;
-}
-
-.product-page-header h2{
-    font-size:19px;
-}
+/* ================= PRODUCT PAGE ================= */
 
 .product-details{
     max-width:1050px;
@@ -648,7 +605,6 @@ main{
     border-radius:9px;
     font-size:16px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .whatsapp-button{
@@ -669,59 +625,18 @@ main{
     border:none;
 }
 
-/* =====================================================
-   FAVORITES
-===================================================== */
+/* ================= DASHBOARD ================= */
 
-#favoritesResults{
-    max-width:1100px;
-    margin:25px auto;
-    padding:0 15px 50px;
-}
-
-/* =====================================================
-   SELLER DASHBOARD
-===================================================== */
-
-.seller-dashboard{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:#f4f6f8;
-    z-index:6000;
-    overflow-y:auto;
-}
-
-.dashboard-header{
-    background:#087f3d;
-    color:white;
-    padding:14px 15px;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    position:sticky;
-    top:0;
-    z-index:20;
-}
-
-.dashboard-header h2{
-    font-size:19px;
-}
-
-.dashboard-container{
-    max-width:1100px;
-    margin:auto;
-    padding:25px 15px 70px;
-}
-
-.dashboard-welcome{
+.dashboard-title{
     text-align:center;
-    margin-bottom:25px;
+    color:#087f3d;
+    margin-bottom:8px;
 }
 
-.dashboard-welcome h1{
-    color:#087f3d;
-    margin-bottom:6px;
+.dashboard-subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:25px;
 }
 
 .stats-grid{
@@ -736,7 +651,7 @@ main{
     padding:20px;
     border-radius:12px;
     text-align:center;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
 .stat-icon{
@@ -752,31 +667,34 @@ main{
 
 .stat-label{
     color:#666;
-    font-size:14px;
     margin-top:5px;
 }
 
 .dashboard-section{
     background:white;
-    padding:18px;
-    border-radius:12px;
+    border-radius:14px;
+    padding:20px;
     margin-bottom:20px;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
-.dashboard-section h2{
+.dashboard-section h3{
     color:#087f3d;
     margin-bottom:15px;
 }
 
+/* ================= DASHBOARD LISTING ================= */
+
 .dashboard-listing{
-    border:1px solid #eee;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:12px;
     display:flex;
-    gap:12px;
+    gap:15px;
+    padding:15px 0;
+    border-bottom:1px solid #eee;
     align-items:center;
+}
+
+.dashboard-listing:last-child{
+    border-bottom:none;
 }
 
 .dashboard-listing img{
@@ -792,145 +710,81 @@ main{
     min-width:0;
 }
 
-.dashboard-listing-info h3{
-    font-size:16px;
+.dashboard-listing-info h4{
     margin-bottom:5px;
 }
 
 .dashboard-listing-info p{
-    color:#666;
-    font-size:13px;
-    margin-top:3px;
+    color:#087f3d;
+    font-weight:bold;
 }
 
 .dashboard-actions{
     display:flex;
-    gap:7px;
+    gap:6px;
     flex-wrap:wrap;
-    margin-top:8px;
 }
 
-.dashboard-actions button{
+.small-button{
     border:none;
     padding:8px 10px;
     border-radius:6px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .edit-button{
-    background:#087f3d;
-    color:white;
-}
-
-.delete-button{
-    background:#c62828;
-    color:white;
-}
-
-/* =====================================================
-   ADMIN DASHBOARD
-===================================================== */
-
-.admin-dashboard{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:#f4f6f8;
-    z-index:9000;
-    overflow-y:auto;
-}
-
-.admin-header{
-    background:#123524;
-    color:white;
-    padding:14px 15px;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    position:sticky;
-    top:0;
-    z-index:30;
-}
-
-.admin-header h2{
-    font-size:19px;
-}
-
-.admin-container{
-    max-width:1200px;
-    margin:auto;
-    padding:25px 15px 70px;
-}
-
-.admin-title{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-.admin-title h1{
-    color:#123524;
-    margin-bottom:7px;
-}
-
-.admin-title p{
-    color:#666;
-}
-
-.admin-stats{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-bottom:25px;
-}
-
-.admin-stat{
-    background:white;
-    border-radius:12px;
-    padding:20px;
-    text-align:center;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
-}
-
-.admin-stat-icon{
-    font-size:30px;
-    margin-bottom:8px;
-}
-
-.admin-stat-number{
-    font-size:27px;
-    font-weight:bold;
+    background:#e8f5ed;
     color:#087f3d;
 }
 
-.admin-stat-label{
-    color:#666;
-    margin-top:5px;
+.delete-button{
+    background:#ffebee;
+    color:#c62828;
 }
 
-.admin-section{
-    background:white;
-    border-radius:12px;
-    padding:18px;
+.view-button{
+    background:#eee;
+    color:#333;
+}
+
+/* ================= ADMIN ================= */
+
+.admin-page{
+    z-index:7000;
+}
+
+.admin-badge{
+    display:inline-block;
+    background:#ffd166;
+    color:#222;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.admin-controls{
+    display:flex;
+    gap:10px;
     margin-bottom:20px;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    flex-wrap:wrap;
 }
 
-.admin-section h2{
-    color:#123524;
-    margin-bottom:15px;
-}
-
-.admin-search{
-    width:100%;
-    padding:13px;
-    border:1px solid #ccc;
+.admin-controls button{
+    border:none;
+    padding:11px 15px;
     border-radius:8px;
-    font-size:16px;
-    margin-bottom:15px;
+    background:#087f3d;
+    color:white;
+    font-weight:bold;
 }
 
-.admin-table-wrapper{
+.admin-controls button.secondary{
+    background:#eee;
+    color:#333;
+}
+
+.admin-table-wrap{
     overflow-x:auto;
 }
 
@@ -945,88 +799,114 @@ main{
     padding:11px;
     border-bottom:1px solid #eee;
     text-align:left;
-    font-size:14px;
+    vertical-align:middle;
 }
 
 .admin-table th{
-    background:#f5f7f6;
-    color:#123524;
+    background:#087f3d;
+    color:white;
 }
 
-.admin-product-image{
+.admin-table img{
     width:65px;
     height:50px;
     object-fit:cover;
     border-radius:6px;
 }
 
-.admin-action-button{
-    border:none;
-    padding:7px 9px;
-    border-radius:6px;
-    cursor:pointer;
+.status-active{
+    color:#087f3d;
     font-weight:bold;
-    margin:2px;
 }
 
-.admin-activate{
+.status-inactive{
+    color:#c62828;
+    font-weight:bold;
+}
+
+.admin-actions{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+}
+
+/* ================= EDIT MODAL ================= */
+
+.edit-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:12000;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.edit-box{
+    width:100%;
+    max-width:600px;
+    margin:30px auto;
+    background:white;
+    border-radius:15px;
+    padding:25px;
+}
+
+.edit-box h2{
+    color:#087f3d;
+    margin-bottom:15px;
+}
+
+.edit-box label{
+    display:block;
+    font-weight:bold;
+    margin:12px 0 6px;
+}
+
+.edit-box input,
+.edit-box select,
+.edit-box textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.edit-box textarea{
+    min-height:110px;
+}
+
+.modal-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.modal-buttons button{
+    flex:1;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.save-edit{
     background:#087f3d;
     color:white;
 }
 
-.admin-deactivate{
-    background:#ffb703;
-    color:#222;
+.cancel-edit{
+    background:#eee;
+    color:#333;
 }
 
-.admin-delete{
-    background:#c62828;
-    color:white;
+/* ================= FAVORITES ================= */
+
+#favoritesResults{
+    padding-bottom:50px;
 }
 
-.admin-refresh{
-    background:#123524;
-    color:white;
-    border:none;
-    padding:11px 15px;
-    border-radius:7px;
-    font-weight:bold;
-    cursor:pointer;
-    margin-bottom:15px;
-}
-
-.admin-message{
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:15px;
-    display:none;
-    font-weight:bold;
-}
-
-.admin-seller-card{
-    border:1px solid #eee;
-    border-radius:10px;
-    padding:14px;
-    margin-bottom:10px;
-}
-
-.admin-seller-card strong{
-    color:#123524;
-}
-
-.admin-danger{
-    background:#c62828;
-    color:white;
-    border:none;
-    padding:10px 15px;
-    border-radius:7px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-/* =====================================================
-   FOOTER
-===================================================== */
+/* ================= FOOTER ================= */
 
 footer{
     background:#123524;
@@ -1044,9 +924,7 @@ footer p{
     margin-top:5px;
 }
 
-/* =====================================================
-   DESKTOP
-===================================================== */
+/* ================= DESKTOP ================= */
 
 @media(min-width:700px){
 
@@ -1074,21 +952,38 @@ footer p{
     .stats-grid{
         grid-template-columns:repeat(4,1fr);
     }
-
-    .admin-stats{
-        grid-template-columns:repeat(4,1fr);
-    }
 }
 
+@media(max-width:600px){
+
+    .account-bar{
+        align-items:flex-start;
+    }
+
+    .account-actions{
+        flex-direction:column;
+    }
+
+    .dashboard-listing{
+        align-items:flex-start;
+    }
+
+    .dashboard-listing{
+        flex-wrap:wrap;
+    }
+
+    .dashboard-actions{
+        width:100%;
+    }
+}
 </style>
 </head>
 
 <body>
 
-
-<!-- =====================================================
-     AUTH MODAL
-===================================================== -->
+<!-- =========================================================
+AUTH MODAL
+========================================================= -->
 
 <div id="authModal" class="auth-modal">
 
@@ -1097,7 +992,7 @@ footer p{
         <h2>🔐 SiomaMarket Account</h2>
 
         <p class="auth-subtitle">
-            Create an account to sell your products.
+            Create an account to sell products and save favorites.
         </p>
 
         <div class="auth-tabs">
@@ -1119,7 +1014,6 @@ footer p{
             </button>
 
         </div>
-
 
         <!-- LOGIN -->
 
@@ -1149,7 +1043,6 @@ footer p{
             </button>
 
         </form>
-
 
         <!-- REGISTER -->
 
@@ -1208,10 +1101,7 @@ footer p{
 
         </form>
 
-        <div
-            id="authMessage"
-            class="auth-message">
-        </div>
+        <div id="authMessage" class="auth-message"></div>
 
         <button
             type="button"
@@ -1221,17 +1111,15 @@ footer p{
         </button>
 
     </div>
-
 </div>
 
+<!-- =========================================================
+SELL PAGE
+========================================================= -->
 
-<!-- =====================================================
-     SELL PAGE
-===================================================== -->
+<div id="sellPage" class="full-page">
 
-<div id="sellPage" class="sell-page">
-
-    <div class="sell-page-header">
+    <div class="page-header">
 
         <button
             type="button"
@@ -1244,14 +1132,11 @@ footer p{
 
     </div>
 
-
     <div class="sell-container">
 
         <div class="sell-intro">
 
-            <div class="sell-icon-large">
-                🏷️
-            </div>
+            <div class="sell-icon-large">🏷️</div>
 
             <h1>Sell Your Product</h1>
 
@@ -1260,7 +1145,6 @@ footer p{
             </p>
 
         </div>
-
 
         <form id="sellForm" class="sell-form">
 
@@ -1272,14 +1156,12 @@ footer p{
                 placeholder="e.g. Fresh Fish"
                 required>
 
-
             <label>Description</label>
 
             <textarea
                 id="sellDescription"
                 placeholder="Describe your product..."
                 required></textarea>
-
 
             <label>Price (K)</label>
 
@@ -1289,7 +1171,6 @@ footer p{
                 placeholder="e.g. 80"
                 min="0"
                 required>
-
 
             <label>Category</label>
 
@@ -1311,7 +1192,6 @@ footer p{
 
             </select>
 
-
             <label>Location</label>
 
             <input
@@ -1319,7 +1199,6 @@ footer p{
                 id="sellLocation"
                 value="Sioma"
                 required>
-
 
             <label>Product Photo</label>
 
@@ -1335,7 +1214,6 @@ footer p{
 
             <div id="imagePreview"></div>
 
-
             <label>Your Name</label>
 
             <input
@@ -1344,7 +1222,6 @@ footer p{
                 placeholder="Your name"
                 required>
 
-
             <label>WhatsApp / Phone Number</label>
 
             <input
@@ -1352,7 +1229,6 @@ footer p{
                 id="sellerPhone"
                 placeholder="0971234567"
                 required>
-
 
             <button
                 type="submit"
@@ -1369,213 +1245,273 @@ footer p{
         </form>
 
     </div>
-
 </div>
 
+<!-- =========================================================
+SELLER DASHBOARD
+========================================================= -->
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+<div id="sellerDashboard" class="full-page">
 
-<header>
-
-    <div class="logo">
-        🛍️ Sioma<span>Market</span>
-    </div>
-
-
-    <div class="account-bar">
-
-        <div
-            id="accountStatus"
-            class="account-status">
-            👤 Not logged in
-        </div>
-
-
-        <div class="account-actions">
-
-            <button
-                type="button"
-                id="favoritesButton"
-                class="account-button"
-                onclick="showFavorites()">
-                ❤️ Favorites
-            </button>
-
-
-            <button
-                type="button"
-                id="sellerDashboardButton"
-                class="account-button"
-                onclick="openSellerDashboard()"
-                style="display:none;">
-                📊 My Dashboard
-            </button>
-
-
-            <button
-                type="button"
-                id="adminDashboardButton"
-                class="account-button admin-button"
-                onclick="openAdminDashboard()"
-                style="display:none;">
-                🛡️ Admin
-            </button>
-
-
-            <button
-                type="button"
-                id="accountButton"
-                class="account-button"
-                onclick="openAccount()">
-                🔐 Login
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div class="search-container">
-
-        <input
-            type="search"
-            id="searchInput"
-            placeholder="Search products, services...">
+    <div class="page-header">
 
         <button
             type="button"
-            class="search-button"
-            onclick="searchMarket()">
-            🔍 Search
+            class="back-button"
+            onclick="closeSellerDashboard()">
+            ← Back
         </button>
+
+        <h2>Seller Dashboard</h2>
 
     </div>
 
+    <div class="page-container">
 
-    <div class="action-buttons">
-
-        <button
-            type="button"
-            class="buy-button"
-            onclick="buyNow()">
-            🛒 BUY NOW
-        </button>
-
-        <button
-            type="button"
-            class="sell-button"
-            onclick="sellNow()">
-            🏷️ SELL NOW
-        </button>
-
-    </div>
-
-</header>
-
-
-<!-- =====================================================
-     SEARCH RESULTS
-===================================================== -->
-
-<div id="searchResults"></div>
-
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
-<main>
-
-    <section class="welcome">
-
-        <h1>
-            Welcome to SiomaMarket
+        <h1 class="dashboard-title">
+            🏪 Seller Dashboard
         </h1>
 
-        <p>
-            Buy local. Sell local. Grow together.
+        <p class="dashboard-subtitle">
+            Manage your SiomaMarket products.
         </p>
 
-    </section>
+        <div class="stats-grid">
 
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div
+                    id="sellerTotalListings"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Total Products
+                </div>
+            </div>
 
-    <h2 class="categories-title">
-        Browse Categories
-    </h2>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div
+                    id="sellerActiveListings"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Active
+                </div>
+            </div>
 
+            <div class="stat-card">
+                <div class="stat-icon">❤️</div>
+                <div
+                    id="sellerFavoriteCount"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Favorites
+                </div>
+            </div>
 
-    <div class="categories">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div
+                    id="sellerValue"
+                    class="stat-number">
+                    K0
+                </div>
+                <div class="stat-label">
+                    Listed Value
+                </div>
+            </div>
 
-        <div
-            class="category"
-            onclick="searchCategory('Agriculture')">
-            <span class="category-icon">🌾</span>
-            Agriculture
         </div>
 
-        <div
-            class="category"
-            onclick="searchCategory('Livestock')">
-            <span class="category-icon">🐔</span>
-            Livestock
-        </div>
+        <div class="dashboard-section">
 
-        <div
-            class="category"
-            onclick="searchCategory('Fish')">
-            <span class="category-icon">🐟</span>
-            Fish
-        </div>
+            <h3>📦 My Products</h3>
 
-        <div
-            class="category"
-            onclick="searchCategory('Phones')">
-            <span class="category-icon">📱</span>
-            Phones
-        </div>
+            <div id="sellerListings">
+                <div class="no-results">
+                    Loading your products...
+                </div>
+            </div>
 
-        <div
-            class="category"
-            onclick="searchCategory('Vehicles')">
-            <span class="category-icon">🚗</span>
-            Vehicles
-        </div>
-
-        <div
-            class="category"
-            onclick="searchCategory('Houses')">
-            <span class="category-icon">🏠</span>
-            Houses
-        </div>
-
-        <div
-            class="category"
-            onclick="searchCategory('Clothes')">
-            <span class="category-icon">👕</span>
-            Clothes
-        </div>
-
-        <div
-            class="category"
-            onclick="searchCategory('Services')">
-            <span class="category-icon">🛠️</span>
-            Services
         </div>
 
     </div>
+</div>
 
-</main>
+<!-- =========================================================
+ADMIN DASHBOARD
+========================================================= -->
 
+<div id="adminDashboard" class="full-page admin-page">
 
-<!-- =====================================================
-     PRODUCT PAGE
-===================================================== -->
+    <div class="page-header">
 
-<div id="productPage" class="product-page">
+        <button
+            type="button"
+            class="back-button"
+            onclick="closeAdminDashboard()">
+            ← Back
+        </button>
 
-    <div class="product-page-header">
+        <h2>Admin Dashboard</h2>
+
+    </div>
+
+    <div class="page-container">
+
+        <div style="text-align:center;">
+
+            <div class="admin-badge">
+                🛡️ ADMINISTRATOR
+            </div>
+
+            <h1 class="dashboard-title">
+                SiomaMarket Admin
+            </h1>
+
+            <p class="dashboard-subtitle">
+                Manage marketplace products.
+            </p>
+
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div
+                    id="adminTotalListings"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Total Listings
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div
+                    id="adminActiveListings"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Active
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div
+                    id="adminSellerCount"
+                    class="stat-number">
+                    0
+                </div>
+                <div class="stat-label">
+                    Sellers
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div
+                    id="adminMarketValue"
+                    class="stat-number">
+                    K0
+                </div>
+                <div class="stat-label">
+                    Market Value
+                </div>
+            </div>
+
+        </div>
+
+        <div class="dashboard-section">
+
+            <h3>⚙️ Admin Controls</h3>
+
+            <div class="admin-controls">
+
+                <button
+                    type="button"
+                    onclick="loadAdminListings()">
+                    🔄 Refresh
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary"
+                    onclick="showAllAdminListings()">
+                    📦 All Products
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary"
+                    onclick="showActiveAdminListings()">
+                    ✅ Active Only
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-section">
+
+            <h3>📦 Marketplace Listings</h3>
+
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Photo</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Seller</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="adminListingsBody">
+
+                        <tr>
+                            <td colspan="7" style="text-align:center;">
+                                Loading...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- =========================================================
+PRODUCT PAGE
+========================================================= -->
+
+<div id="productPage" class="full-page">
+
+    <div class="page-header">
 
         <button
             type="button"
@@ -1584,12 +1520,9 @@ footer p{
             ← Back
         </button>
 
-        <h2>
-            Product Details
-        </h2>
+        <h2>Product Details</h2>
 
     </div>
-
 
     <div class="product-details">
 
@@ -1603,7 +1536,6 @@ footer p{
 
         </div>
 
-
         <div class="details-content">
 
             <div
@@ -1611,11 +1543,9 @@ footer p{
                 class="details-category">
             </div>
 
-
             <h1 id="detailsTitle">
                 Product
             </h1>
-
 
             <div
                 id="detailsPrice"
@@ -1623,16 +1553,13 @@ footer p{
                 K0
             </div>
 
-
             <div
                 id="detailsLocation"
                 class="details-location">
                 📍 Sioma
             </div>
 
-
             <hr>
-
 
             <h3>Description</h3>
 
@@ -1641,9 +1568,7 @@ footer p{
                 class="details-description">
             </p>
 
-
             <hr>
-
 
             <h3>Seller</h3>
 
@@ -1665,13 +1590,11 @@ footer p{
 
             </div>
 
-
             <button
                 id="whatsappButton"
                 class="whatsapp-button">
                 💬 Contact Seller on WhatsApp
             </button>
-
 
             <button
                 id="callButton"
@@ -1679,8 +1602,8 @@ footer p{
                 📞 Call Seller
             </button>
 
-
             <button
+                id="favoriteButton"
                 type="button"
                 class="favorite-button"
                 onclick="saveFavorite()">
@@ -1693,14 +1616,13 @@ footer p{
 
 </div>
 
+<!-- =========================================================
+FAVORITES PAGE
+========================================================= -->
 
-<!-- =====================================================
-     FAVORITES PAGE
-===================================================== -->
+<div id="favoritesPage" class="full-page">
 
-<div id="favoritesPage" class="product-page">
-
-    <div class="product-page-header">
+    <div class="page-header">
 
         <button
             type="button"
@@ -1709,342 +1631,318 @@ footer p{
             ← Back
         </button>
 
-        <h2>
-            ❤️ My Favorites
-        </h2>
+        <h2>❤️ My Favorites</h2>
 
     </div>
 
-
-    <div id="favoritesResults"></div>
-
-</div>
-
-
-<!-- =====================================================
-     SELLER DASHBOARD
-===================================================== -->
-
-<div id="sellerDashboard" class="seller-dashboard">
-
-    <div class="dashboard-header">
-
-        <button
-            type="button"
-            class="back-button"
-            onclick="closeSellerDashboard()">
-            ← Back
-        </button>
-
-        <h2>
-            📊 Seller Dashboard
-        </h2>
-
-    </div>
-
-
-    <div class="dashboard-container">
-
-        <div class="dashboard-welcome">
-
-            <h1>
-                My Seller Dashboard
-            </h1>
-
-            <p>
-                Manage your SiomaMarket products.
-            </p>
-
-        </div>
-
-
-        <div class="stats-grid">
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    🛍️
-                </div>
-
-                <div
-                    id="sellerTotalListings"
-                    class="stat-number">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Total Listings
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    ✅
-                </div>
-
-                <div
-                    id="sellerActiveListings"
-                    class="stat-number">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Active Listings
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    ❤️
-                </div>
-
-                <div
-                    id="sellerFavorites"
-                    class="stat-number">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Favorites
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    📍
-                </div>
-
-                <div
-                    id="sellerLocation"
-                    class="stat-number"
-                    style="font-size:18px;">
-                    Sioma
-                </div>
-
-                <div class="stat-label">
-                    Location
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-section">
-
-            <h2>
-                My Products
-            </h2>
-
-            <div id="sellerListingsContainer">
-                <div class="no-results">
-                    Loading your products...
-                </div>
-            </div>
-
-        </div>
-
+    <div
+        id="favoritesResults"
+        class="page-container">
     </div>
 
 </div>
 
+<!-- =========================================================
+EDIT PRODUCT MODAL
+========================================================= -->
 
-<!-- =====================================================
-     ADMIN DASHBOARD
-===================================================== -->
+<div id="editModal" class="edit-modal">
 
-<div id="adminDashboard" class="admin-dashboard">
+    <div class="edit-box">
 
-    <div class="admin-header">
+        <h2>✏️ Edit Product</h2>
 
-        <button
-            type="button"
-            class="back-button"
-            onclick="closeAdminDashboard()">
-            ← Back
-        </button>
+        <input
+            type="hidden"
+            id="editListingId">
 
-        <h2>
-            🛡️ Admin Dashboard
-        </h2>
+        <label>Product Name</label>
 
-    </div>
+        <input
+            type="text"
+            id="editTitle"
+            required>
 
+        <label>Description</label>
 
-    <div class="admin-container">
+        <textarea
+            id="editDescription"
+            required></textarea>
 
-        <div class="admin-title">
+        <label>Price (K)</label>
 
-            <h1>
-                SiomaMarket Administration
-            </h1>
+        <input
+            type="number"
+            id="editPrice"
+            min="0"
+            required>
 
-            <p>
-                Administrator: silumesi710@gmail.com
-            </p>
+        <label>Category</label>
 
-        </div>
+        <select id="editCategory">
 
+            <option>Agriculture</option>
+            <option>Livestock</option>
+            <option>Fish</option>
+            <option>Phones</option>
+            <option>Vehicles</option>
+            <option>Houses</option>
+            <option>Clothes</option>
+            <option>Services</option>
+            <option>Other</option>
 
-        <div
-            id="adminMessage"
-            class="admin-message">
-        </div>
+        </select>
 
+        <label>Location</label>
 
-        <!-- ADMIN STATISTICS -->
+        <input
+            type="text"
+            id="editLocation"
+            required>
 
-        <div class="admin-stats">
+        <label>Seller Name</label>
 
-            <div class="admin-stat">
+        <input
+            type="text"
+            id="editSellerName"
+            required>
 
-                <div class="admin-stat-icon">
-                    🛍️
-                </div>
+        <label>Seller Phone</label>
 
-                <div
-                    id="adminTotalListings"
-                    class="admin-stat-number">
-                    0
-                </div>
+        <input
+            type="tel"
+            id="editSellerPhone"
+            required>
 
-                <div class="admin-stat-label">
-                    Total Listings
-                </div>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <div class="admin-stat-icon">
-                    ✅
-                </div>
-
-                <div
-                    id="adminActiveListings"
-                    class="admin-stat-number">
-                    0
-                </div>
-
-                <div class="admin-stat-label">
-                    Active Listings
-                </div>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <div class="admin-stat-icon">
-                    👥
-                </div>
-
-                <div
-                    id="adminTotalSellers"
-                    class="admin-stat-number">
-                    0
-                </div>
-
-                <div class="admin-stat-label">
-                    Sellers
-                </div>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <div class="admin-stat-icon">
-                    ❤️
-                </div>
-
-                <div
-                    id="adminTotalFavorites"
-                    class="admin-stat-number">
-                    0
-                </div>
-
-                <div class="admin-stat-label">
-                    Favorites
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- PRODUCTS -->
-
-        <div class="admin-section">
-
-            <h2>
-                🛍️ Product Management
-            </h2>
+        <div class="modal-buttons">
 
             <button
                 type="button"
-                class="admin-refresh"
-                onclick="loadAdminDashboard()">
-                🔄 Refresh Dashboard
+                class="save-edit"
+                onclick="saveEditedListing()">
+                💾 SAVE CHANGES
             </button>
 
-            <input
-                type="search"
-                id="adminProductSearch"
-                class="admin-search"
-                placeholder="Search products..."
-                oninput="filterAdminProducts()">
-
-
-            <div
-                id="adminProductsContainer"
-                class="admin-table-wrapper">
-
-                <div class="no-results">
-                    Loading products...
-                </div>
-
-            </div>
+            <button
+                type="button"
+                class="cancel-edit"
+                onclick="closeEditModal()">
+                Cancel
+            </button>
 
         </div>
 
+        <div
+            id="editMessage"
+            class="auth-message">
+        </div>
 
-        <!-- SELLERS -->
+    </div>
+</div>
 
-        <div class="admin-section">
+<!-- =========================================================
+MAIN HEADER
+========================================================= -->
 
-            <h2>
-                👥 Registered Sellers
-            </h2>
+<header>
 
-            <div id="adminSellersContainer">
+    <div class="logo">
+        🛍️ Sioma<span>Market</span>
+    </div>
 
-                <div class="no-results">
-                    Loading sellers...
-                </div>
+    <div class="account-bar">
 
-            </div>
+        <div
+            id="accountStatus"
+            class="account-status">
+            👤 Not logged in
+        </div>
+
+        <div class="account-actions">
+
+            <button
+                type="button"
+                id="dashboardButton"
+                class="account-button dashboard-button"
+                onclick="openSellerDashboard()"
+                style="display:none;">
+                🏪 Dashboard
+            </button>
+
+            <button
+                type="button"
+                id="adminButton"
+                class="account-button admin-button"
+                onclick="openAdminDashboard()"
+                style="display:none;">
+                🛡️ Admin
+            </button>
+
+            <button
+                type="button"
+                id="favoritesButton"
+                class="account-button"
+                onclick="showFavorites()">
+                ❤️ Favorites
+            </button>
+
+            <button
+                type="button"
+                id="accountButton"
+                class="account-button"
+                onclick="openAccount()">
+                🔐 Login
+            </button>
 
         </div>
 
     </div>
 
-</div>
+    <div class="search-container">
 
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search products, services...">
 
-<!-- =====================================================
-     FOOTER
-===================================================== -->
+        <button
+            type="button"
+            class="search-button"
+            onclick="searchMarket()">
+            🔍 Search
+        </button>
+
+    </div>
+
+    <div class="action-buttons">
+
+        <button
+            type="button"
+            class="buy-button"
+            onclick="buyNow()">
+            🛒 BUY NOW
+        </button>
+
+        <button
+            type="button"
+            class="sell-button"
+            onclick="sellNow()">
+            🏷️ SELL NOW
+        </button>
+
+    </div>
+
+</header>
+
+<!-- =========================================================
+SEARCH RESULTS
+========================================================= -->
+
+<div id="searchResults"></div>
+
+<!-- =========================================================
+MAIN
+========================================================= -->
+
+<main>
+
+    <section class="welcome">
+
+        <h1>
+            Welcome to SiomaMarket
+        </h1>
+
+        <p>
+            Buy local. Sell local. Grow together.
+        </p>
+
+    </section>
+
+    <h2 class="categories-title">
+        Browse Categories
+    </h2>
+
+    <div class="categories">
+
+        <div
+            class="category"
+            onclick="searchCategory('Agriculture')">
+
+            <span class="category-icon">🌾</span>
+            Agriculture
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Livestock')">
+
+            <span class="category-icon">🐔</span>
+            Livestock
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Fish')">
+
+            <span class="category-icon">🐟</span>
+            Fish
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Phones')">
+
+            <span class="category-icon">📱</span>
+            Phones
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Vehicles')">
+
+            <span class="category-icon">🚗</span>
+            Vehicles
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Houses')">
+
+            <span class="category-icon">🏠</span>
+            Houses
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Clothes')">
+
+            <span class="category-icon">👕</span>
+            Clothes
+
+        </div>
+
+        <div
+            class="category"
+            onclick="searchCategory('Services')">
+
+            <span class="category-icon">🛠️</span>
+            Services
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- =========================================================
+FOOTER
+========================================================= -->
 
 <footer>
 
@@ -2066,12 +1964,11 @@ footer p{
 
 </footer>
 
-
 <script>
 
-/* =====================================================
-   SUPABASE CONFIGURATION
-===================================================== */
+/* =========================================================
+SUPABASE CONFIGURATION
+========================================================= */
 
 const SUPABASE_URL =
 "https://luolbdjonzissgskjupd.supabase.co";
@@ -2086,42 +1983,43 @@ window.supabase.createClient(
 );
 
 
-/* =====================================================
-   EMAIL REDIRECT
-===================================================== */
-
-const EMAIL_REDIRECT_URL =
-"https://silumesi710-netizen.github.io/sioma-market/";
-
-
-/* =====================================================
-   ADMIN CONFIGURATION
-===================================================== */
+/* =========================================================
+ADMIN EMAIL
+========================================================= */
 
 const ADMIN_EMAIL =
 "silumesi710@gmail.com";
 
 
-/* =====================================================
-   DEFAULT IMAGE
-===================================================== */
+/* =========================================================
+EMAIL REDIRECT
+========================================================= */
+
+const EMAIL_REDIRECT_URL =
+"https://silumesi710-netizen.github.io/sioma-market/";
+
+
+/* =========================================================
+DEFAULT IMAGE
+========================================================= */
 
 const DEFAULT_IMAGE =
 "https://via.placeholder.com/600x400?text=SiomaMarket";
 
 
-/* =====================================================
-   CURRENT USER
-===================================================== */
+/* =========================================================
+CURRENT USER / LISTING
+========================================================= */
 
 let currentUser = null;
 let currentListingId = null;
-let adminProductsCache = [];
+let adminListingsCache = [];
+let sellerListingsCache = [];
 
 
-/* =====================================================
-   AUTH MODAL
-===================================================== */
+/* =========================================================
+AUTH MODAL
+========================================================= */
 
 function openAuthModal(){
 
@@ -2183,12 +2081,9 @@ function openAccount(){
 
     if(currentUser){
 
-        if(
-            confirm(
-                "You are logged in.\n\nDo you want to logout?"
-            )
-        ){
-
+        if(confirm(
+            "You are logged in.\n\nDo you want to logout?"
+        )){
             logoutSeller();
         }
 
@@ -2200,9 +2095,40 @@ function openAccount(){
 }
 
 
-/* =====================================================
-   REGISTER
-===================================================== */
+/* =========================================================
+ADMIN CHECK
+========================================================= */
+
+async function isAdmin(){
+
+    if(!currentUser){
+        return false;
+    }
+
+    const result =
+        await supabaseClient
+            .from("admin_users")
+            .select("user_id,email")
+            .eq("user_id",currentUser.id)
+            .maybeSingle();
+
+    if(result.error){
+
+        console.error(
+            "ADMIN CHECK ERROR:",
+            result.error
+        );
+
+        return false;
+    }
+
+    return !!result.data;
+}
+
+
+/* =========================================================
+REGISTER
+========================================================= */
 
 document.getElementById("registerForm")
 .addEventListener(
@@ -2237,7 +2163,6 @@ async function(event){
         document.getElementById("registerPassword")
         .value;
 
-
     if(password.length < 6){
 
         message.style.color = "#c62828";
@@ -2248,17 +2173,12 @@ async function(event){
         return;
     }
 
-
     button.disabled = true;
-
-    button.innerText =
-        "⏳ CREATING ACCOUNT...";
+    button.innerText = "⏳ CREATING ACCOUNT...";
 
     message.style.color = "#087f3d";
-
     message.innerText =
         "⏳ Creating your account...";
-
 
     try{
 
@@ -2270,7 +2190,6 @@ async function(event){
                 password:password,
 
                 options:{
-
                     emailRedirectTo:
                         EMAIL_REDIRECT_URL,
 
@@ -2280,14 +2199,12 @@ async function(event){
                         location:location
                     }
                 }
+
             });
 
-
         if(result.error){
-
             throw result.error;
         }
-
 
         if(!result.data.user){
 
@@ -2296,12 +2213,10 @@ async function(event){
             );
         }
 
-
         if(result.data.session){
 
             currentUser =
                 result.data.user;
-
 
             const profile =
                 await createSellerProfile(
@@ -2311,7 +2226,6 @@ async function(event){
                     location
                 );
 
-
             if(profile.error){
 
                 console.error(
@@ -2320,9 +2234,7 @@ async function(event){
                 );
             }
 
-
             updateAccountUI();
-
 
             message.style.color =
                 "#087f3d";
@@ -2330,12 +2242,10 @@ async function(event){
             message.innerHTML =
                 "✅ Account created successfully!";
 
-
             setTimeout(
                 function(){
 
                     closeAuthModal();
-
                     sellNow();
 
                 },
@@ -2357,7 +2267,6 @@ async function(event){
                 "After confirming your email, return to SiomaMarket.";
         }
 
-
     }catch(error){
 
         console.error(
@@ -2375,7 +2284,6 @@ async function(event){
     }finally{
 
         button.disabled = false;
-
         button.innerText =
             "📝 CREATE ACCOUNT";
     }
@@ -2383,9 +2291,9 @@ async function(event){
 });
 
 
-/* =====================================================
-   CREATE SELLER PROFILE
-===================================================== */
+/* =========================================================
+CREATE SELLER PROFILE
+========================================================= */
 
 async function createSellerProfile(
     userId,
@@ -2396,28 +2304,26 @@ async function createSellerProfile(
 
     if(!userId){
 
-        return{
+        return {
             error:
                 new Error("Missing user ID.")
         };
     }
 
-
     const result =
         await supabaseClient
-        .from("seller_profiles")
-        .upsert(
-            {
-                id:userId,
-                full_name:name || "",
-                phone:phone || "",
-                location:location || "Sioma"
-            },
-            {
-                onConflict:"id"
-            }
-        );
-
+            .from("seller_profiles")
+            .upsert(
+                {
+                    id:userId,
+                    full_name:name || "",
+                    phone:phone || "",
+                    location:location || "Sioma"
+                },
+                {
+                    onConflict:"id"
+                }
+            );
 
     if(result.error){
 
@@ -2427,14 +2333,13 @@ async function createSellerProfile(
         );
     }
 
-
     return result;
 }
 
 
-/* =====================================================
-   LOGIN
-===================================================== */
+/* =========================================================
+LOGIN
+========================================================= */
 
 document.getElementById("loginForm")
 .addEventListener(
@@ -2457,45 +2362,31 @@ async function(event){
         document.getElementById("loginPassword")
         .value;
 
-
     button.disabled = true;
+    button.innerText = "⏳ LOGGING IN...";
 
-    button.innerText =
-        "⏳ LOGGING IN...";
-
-    message.style.color =
-        "#087f3d";
-
-    message.innerText =
-        "⏳ Logging in...";
-
+    message.style.color = "#087f3d";
+    message.innerText = "⏳ Logging in...";
 
     try{
 
         const result =
             await supabaseClient.auth
             .signInWithPassword({
-
                 email:email,
                 password:password
-
             });
 
-
         if(result.error){
-
             throw result.error;
         }
-
 
         currentUser =
             result.data.user;
 
-
         updateAccountUI();
 
         await loadSellerProfile();
-
 
         message.style.color =
             "#087f3d";
@@ -2503,20 +2394,15 @@ async function(event){
         message.innerText =
             "✅ Login successful!";
 
-
         document.getElementById("loginForm")
             .reset();
 
-
         setTimeout(
             function(){
-
                 closeAuthModal();
-
             },
             800
         );
-
 
     }catch(error){
 
@@ -2532,21 +2418,18 @@ async function(event){
             "❌ " +
             escapeHTML(error.message);
 
-
     }finally{
 
         button.disabled = false;
-
-        button.innerText =
-            "🔐 LOGIN";
+        button.innerText = "🔐 LOGIN";
     }
 
 });
 
 
-/* =====================================================
-   AUTH STATE
-===================================================== */
+/* =========================================================
+AUTH STATE
+========================================================= */
 
 supabaseClient.auth.onAuthStateChange(
 async function(event,session){
@@ -2555,7 +2438,6 @@ async function(event,session){
         session ? session.user : null;
 
     updateAccountUI();
-
 
     if(
         session &&
@@ -2568,7 +2450,6 @@ async function(event,session){
 
         const metadata =
             session.user.user_metadata || {};
-
 
         if(
             metadata.full_name ||
@@ -2584,7 +2465,6 @@ async function(event,session){
                     metadata.location || "Sioma"
                 );
 
-
             if(profile.error){
 
                 console.error(
@@ -2598,17 +2478,17 @@ async function(event,session){
 });
 
 
-/* =====================================================
-   LOAD SESSION
-===================================================== */
+/* =========================================================
+LOAD SESSION
+========================================================= */
 
 async function loadAuthSession(){
 
     try{
 
         const result =
-            await supabaseClient.auth.getSession();
-
+            await supabaseClient.auth
+                .getSession();
 
         if(result.error){
 
@@ -2620,15 +2500,12 @@ async function loadAuthSession(){
             return;
         }
 
-
         currentUser =
             result.data.session
-            ? result.data.session.user
-            : null;
-
+                ? result.data.session.user
+                : null;
 
         updateAccountUI();
-
 
     }catch(error){
 
@@ -2640,66 +2517,31 @@ async function loadAuthSession(){
 }
 
 
-/* =====================================================
-   CHECK ADMIN
-===================================================== */
-
-async function isAdmin(){
-
-    if(!currentUser){
-
-        return false;
-    }
-
-
-    const result =
-        await supabaseClient
-        .from("admin_users")
-        .select("user_id,email")
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-
-    if(result.error){
-
-        console.error(
-            "ADMIN CHECK ERROR:",
-            result.error
-        );
-
-        return false;
-    }
-
-
-    return !!result.data;
-}
-
-
-/* =====================================================
-   ACCOUNT UI
-===================================================== */
+/* =========================================================
+ACCOUNT UI
+========================================================= */
 
 async function updateAccountUI(){
 
     const status =
-        document.getElementById("accountStatus");
+        document.getElementById(
+            "accountStatus"
+        );
 
     const button =
-        document.getElementById("accountButton");
-
-    const sellerButton =
         document.getElementById(
-            "sellerDashboardButton"
+            "accountButton"
+        );
+
+    const dashboardButton =
+        document.getElementById(
+            "dashboardButton"
         );
 
     const adminButton =
         document.getElementById(
-            "adminDashboardButton"
+            "adminButton"
         );
-
 
     if(currentUser){
 
@@ -2713,14 +2555,11 @@ async function updateAccountUI(){
         button.innerText =
             "🚪 Logout";
 
-
-        sellerButton.style.display =
+        dashboardButton.style.display =
             "block";
-
 
         const admin =
             await isAdmin();
-
 
         if(admin){
 
@@ -2733,7 +2572,6 @@ async function updateAccountUI(){
                 "none";
         }
 
-
     }else{
 
         status.innerText =
@@ -2742,7 +2580,7 @@ async function updateAccountUI(){
         button.innerText =
             "🔐 Login";
 
-        sellerButton.style.display =
+        dashboardButton.style.display =
             "none";
 
         adminButton.style.display =
@@ -2751,15 +2589,14 @@ async function updateAccountUI(){
 }
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+/* =========================================================
+LOGOUT
+========================================================= */
 
 async function logoutSeller(){
 
     const result =
         await supabaseClient.auth.signOut();
-
 
     if(result.error){
 
@@ -2771,14 +2608,12 @@ async function logoutSeller(){
         return;
     }
 
-
     currentUser = null;
 
-    updateAccountUI();
-
     closeSellerDashboard();
-
     closeAdminDashboard();
+
+    updateAccountUI();
 
     alert(
         "You have been logged out."
@@ -2786,31 +2621,26 @@ async function logoutSeller(){
 }
 
 
-/* =====================================================
-   SELL NOW
-===================================================== */
+/* =========================================================
+SELL NOW
+========================================================= */
 
 async function sellNow(){
 
     await loadAuthSession();
 
-
     if(!currentUser){
 
         openAuthModal();
-
         showLogin();
-
 
         const message =
             document.getElementById(
                 "authMessage"
             );
 
-
         message.style.color =
             "#c62828";
-
 
         message.innerText =
             "🔐 Please login or register before selling a product.";
@@ -2818,23 +2648,16 @@ async function sellNow(){
         return;
     }
 
-
     await loadSellerProfile();
-
 
     document.getElementById(
         "sellPage"
     ).style.display = "block";
 
-
     document.body.style.overflow =
         "hidden";
 }
 
-
-/* =====================================================
-   CLOSE SELL PAGE
-===================================================== */
 
 function closeSellPage(){
 
@@ -2847,28 +2670,22 @@ function closeSellPage(){
 }
 
 
-/* =====================================================
-   LOAD SELLER PROFILE
-===================================================== */
+/* =========================================================
+LOAD SELLER PROFILE
+========================================================= */
 
 async function loadSellerProfile(){
 
     if(!currentUser){
-
         return;
     }
 
-
     const result =
         await supabaseClient
-        .from("seller_profiles")
-        .select("*")
-        .eq(
-            "id",
-            currentUser.id
-        )
-        .maybeSingle();
-
+            .from("seller_profiles")
+            .select("*")
+            .eq("id",currentUser.id)
+            .maybeSingle();
 
     if(result.error){
 
@@ -2880,24 +2697,19 @@ async function loadSellerProfile(){
         return;
     }
 
-
     if(!result.data){
-
         return;
     }
-
 
     document.getElementById(
         "sellerName"
     ).value =
         result.data.full_name || "";
 
-
     document.getElementById(
         "sellerPhone"
     ).value =
         result.data.phone || "";
-
 
     document.getElementById(
         "sellLocation"
@@ -2906,9 +2718,9 @@ async function loadSellerProfile(){
 }
 
 
-/* =====================================================
-   IMAGE PREVIEW
-===================================================== */
+/* =========================================================
+IMAGE PREVIEW
+========================================================= */
 
 const sellImage =
     document.getElementById(
@@ -2920,7 +2732,6 @@ const imagePreview =
         "imagePreview"
     );
 
-
 sellImage.addEventListener(
 "change",
 function(){
@@ -2928,20 +2739,13 @@ function(){
     const file =
         this.files[0];
 
-
-    imagePreview.innerHTML =
-        "";
-
+    imagePreview.innerHTML = "";
 
     if(!file){
-
         return;
     }
 
-
-    if(
-        !file.type.startsWith("image/")
-    ){
+    if(!file.type.startsWith("image/")){
 
         alert(
             "Please select an image."
@@ -2952,20 +2756,16 @@ function(){
         return;
     }
 
-
     const url =
         URL.createObjectURL(file);
 
-
     imagePreview.innerHTML = `
-
         <div style="
             background:#f5f5f5;
             padding:12px;
             border-radius:10px;
             margin-top:10px;
         ">
-
             <p style="
                 font-weight:bold;
                 margin-bottom:10px;
@@ -2976,16 +2776,14 @@ function(){
             <img
                 src="${escapeAttribute(url)}"
                 alt="Product preview">
-
         </div>
-
     `;
 });
 
 
-/* =====================================================
-   UPLOAD PRODUCT IMAGE
-===================================================== */
+/* =========================================================
+UPLOAD IMAGE
+========================================================= */
 
 async function uploadProductImage(file){
 
@@ -2996,23 +2794,16 @@ async function uploadProductImage(file){
         );
     }
 
-
-    if(
-        file.size >
-        6 * 1024 * 1024
-    ){
+    if(file.size > 6 * 1024 * 1024){
 
         throw new Error(
             "Please choose an image smaller than 6MB."
         );
     }
 
-
     const extension =
         (
-            file.name
-            .split(".")
-            .pop() ||
+            file.name.split(".").pop() ||
             "jpg"
         )
         .toLowerCase()
@@ -3021,36 +2812,32 @@ async function uploadProductImage(file){
             ""
         ) || "jpg";
 
-
     const fileName =
         Date.now() +
         "-" +
         Math.random()
-        .toString(36)
-        .substring(2) +
+            .toString(36)
+            .substring(2) +
         "." +
         extension;
-
 
     const filePath =
         "products/" +
         fileName;
 
-
     const upload =
         await supabaseClient
-        .storage
-        .from("Product-images")
-        .upload(
-            filePath,
-            file,
-            {
-                cacheControl:"3600",
-                upsert:false,
-                contentType:file.type
-            }
-        );
-
+            .storage
+            .from("Product-images")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl:"3600",
+                    upsert:false,
+                    contentType:file.type
+                }
+            );
 
     if(upload.error){
 
@@ -3060,15 +2847,11 @@ async function uploadProductImage(file){
         );
     }
 
-
     const publicURL =
         supabaseClient
-        .storage
-        .from("Product-images")
-        .getPublicUrl(
-            filePath
-        );
-
+            .storage
+            .from("Product-images")
+            .getPublicUrl(filePath);
 
     if(
         !publicURL.data ||
@@ -3080,14 +2863,13 @@ async function uploadProductImage(file){
         );
     }
 
-
     return publicURL.data.publicUrl;
 }
 
 
-/* =====================================================
-   PUBLISH PRODUCT
-===================================================== */
+/* =========================================================
+PUBLISH PRODUCT
+========================================================= */
 
 document.getElementById("sellForm")
 .addEventListener(
@@ -3096,45 +2878,36 @@ async function(event){
 
     event.preventDefault();
 
-
     await loadAuthSession();
-
 
     if(!currentUser){
 
         closeSellPage();
-
         openAuthModal();
-
         showLogin();
 
         return;
     }
-
 
     const button =
         document.getElementById(
             "publishButton"
         );
 
-
     const message =
         document.getElementById(
             "sellMessage"
         );
-
 
     const title =
         document.getElementById(
             "sellTitle"
         ).value.trim();
 
-
     const description =
         document.getElementById(
             "sellDescription"
         ).value.trim();
-
 
     const price =
         Number(
@@ -3143,36 +2916,30 @@ async function(event){
             ).value
         );
 
-
     const category =
         document.getElementById(
             "sellCategory"
         ).value;
-
 
     const location =
         document.getElementById(
             "sellLocation"
         ).value.trim();
 
-
     const sellerName =
         document.getElementById(
             "sellerName"
         ).value.trim();
-
 
     const sellerPhone =
         document.getElementById(
             "sellerPhone"
         ).value.trim();
 
-
     const imageFile =
         document.getElementById(
             "sellImage"
         ).files[0];
-
 
     if(!imageFile){
 
@@ -3185,19 +2952,15 @@ async function(event){
         return;
     }
 
-
     button.disabled = true;
-
     button.innerText =
         "⏳ UPLOADING PHOTO...";
-
 
     message.style.color =
         "#087f3d";
 
     message.innerText =
         "Please wait...";
-
 
     try{
 
@@ -3206,10 +2969,8 @@ async function(event){
                 imageFile
             );
 
-
         button.innerText =
             "⏳ SAVING PROFILE...";
-
 
         const profile =
             await createSellerProfile(
@@ -3219,7 +2980,6 @@ async function(event){
                 location
             );
 
-
         if(profile.error){
 
             throw new Error(
@@ -3228,30 +2988,27 @@ async function(event){
             );
         }
 
-
         button.innerText =
             "⏳ PUBLISHING...";
 
-
         const listing =
             await supabaseClient
-            .from("listings")
-            .insert([
-                {
-                    title:title,
-                    description:description,
-                    price:price,
-                    category:category,
-                    location:location,
-                    image_url:imageURL,
-                    seller_name:sellerName,
-                    seller_phone:sellerPhone,
-                    status:"active",
-                    user_id:currentUser.id
-                }
-            ])
-            .select();
-
+                .from("listings")
+                .insert([
+                    {
+                        title:title,
+                        description:description,
+                        price:price,
+                        category:category,
+                        location:location,
+                        image_url:imageURL,
+                        seller_name:sellerName,
+                        seller_phone:sellerPhone,
+                        status:"active",
+                        user_id:currentUser.id
+                    }
+                ])
+                .select();
 
         if(listing.error){
 
@@ -3261,31 +3018,23 @@ async function(event){
             );
         }
 
-
         message.style.color =
             "#087f3d";
-
 
         message.innerHTML =
             "✅ Product published successfully!<br><br>" +
             "Buyers can now see your product.";
 
-
         document.getElementById(
             "sellForm"
         ).reset();
 
-
-        imagePreview.innerHTML =
-            "";
-
+        imagePreview.innerHTML = "";
 
         button.innerText =
             "✅ PUBLISHED";
 
-
         await loadListings();
-
 
         setTimeout(
             function(){
@@ -3302,7 +3051,6 @@ async function(event){
             1500
         );
 
-
     }catch(error){
 
         console.error(
@@ -3310,21 +3058,15 @@ async function(event){
             error
         );
 
-
         message.style.color =
             "#c62828";
 
-
         message.innerHTML =
             "❌ " +
-            escapeHTML(
-                error.message
-            );
-
+            escapeHTML(error.message);
 
         button.disabled =
             false;
-
 
         button.innerText =
             "🚀 PUBLISH PRODUCT";
@@ -3333,9 +3075,523 @@ async function(event){
 });
 
 
-/* =====================================================
-   BUY NOW
-===================================================== */
+/* =========================================================
+SELLER DASHBOARD
+========================================================= */
+
+async function openSellerDashboard(){
+
+    await loadAuthSession();
+
+    if(!currentUser){
+
+        openAuthModal();
+        showLogin();
+
+        return;
+    }
+
+    document.getElementById(
+        "sellerDashboard"
+    ).style.display = "block";
+
+    document.body.style.overflow =
+        "hidden";
+
+    await loadSellerDashboard();
+}
+
+
+function closeSellerDashboard(){
+
+    document.getElementById(
+        "sellerDashboard"
+    ).style.display = "none";
+
+    document.body.style.overflow =
+        "auto";
+}
+
+
+async function loadSellerDashboard(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const result =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+    if(result.error){
+
+        document.getElementById(
+            "sellerListings"
+        ).innerHTML = `
+            <div class="no-results">
+                ❌ Could not load your products.<br><br>
+                ${escapeHTML(result.error.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+    sellerListingsCache =
+        result.data || [];
+
+    const listings =
+        sellerListingsCache;
+
+    const total =
+        listings.length;
+
+    const active =
+        listings.filter(
+            item =>
+                item.status === "active"
+        ).length;
+
+    const value =
+        listings.reduce(
+            (sum,item) =>
+                sum + Number(item.price || 0),
+            0
+        );
+
+    document.getElementById(
+        "sellerTotalListings"
+    ).innerText = total;
+
+    document.getElementById(
+        "sellerActiveListings"
+    ).innerText = active;
+
+    document.getElementById(
+        "sellerValue"
+    ).innerText =
+        "K" + value.toLocaleString();
+
+    await loadSellerFavoriteCount();
+
+    renderSellerListings(
+        listings
+    );
+}
+
+
+async function loadSellerFavoriteCount(){
+
+    if(!currentUser){
+        return;
+    }
+
+    const listings =
+        sellerListingsCache
+        .map(item => item.id);
+
+    if(listings.length === 0){
+
+        document.getElementById(
+            "sellerFavoriteCount"
+        ).innerText = "0";
+
+        return;
+    }
+
+    const result =
+        await supabaseClient
+            .from("favorites")
+            .select("id,listing_id")
+            .in(
+                "listing_id",
+                listings
+            );
+
+    if(result.error){
+
+        console.error(
+            "SELLER FAVORITE COUNT:",
+            result.error
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "sellerFavoriteCount"
+    ).innerText =
+        (result.data || []).length;
+}
+
+
+function renderSellerListings(listings){
+
+    const box =
+        document.getElementById(
+            "sellerListings"
+        );
+
+    if(!listings.length){
+
+        box.innerHTML = `
+            <div class="no-results">
+                📦 You have not listed any products yet.<br><br>
+                Tap SELL NOW to add your first product.
+            </div>
+        `;
+
+        return;
+    }
+
+    let html = "";
+
+    listings.forEach(
+        function(item){
+
+            const image =
+                item.image_url ||
+                DEFAULT_IMAGE;
+
+            const status =
+                item.status || "active";
+
+            html += `
+
+                <div class="dashboard-listing">
+
+                    <img
+                        src="${escapeAttribute(image)}"
+                        alt="${escapeAttribute(item.title || "Product")}"
+                        onerror="this.src='${DEFAULT_IMAGE}'">
+
+                    <div class="dashboard-listing-info">
+
+                        <h4>
+                            ${escapeHTML(item.title || "Product")}
+                        </h4>
+
+                        <p>
+                            K${Number(item.price || 0).toLocaleString()}
+                        </p>
+
+                        <small>
+                            ${escapeHTML(item.location || "Sioma")}
+                            •
+                            ${escapeHTML(status)}
+                        </small>
+
+                    </div>
+
+                    <div class="dashboard-actions">
+
+                        <button
+                            type="button"
+                            class="small-button view-button"
+                            onclick="viewListing('${escapeAttribute(String(item.id))}')">
+                            👀 View
+                        </button>
+
+                        <button
+                            type="button"
+                            class="small-button edit-button"
+                            onclick="openEditModal('${escapeAttribute(String(item.id))}')">
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            class="small-button delete-button"
+                            onclick="deleteSellerListing('${escapeAttribute(String(item.id))}')">
+                            🗑️ Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+        }
+    );
+
+    box.innerHTML = html;
+}
+
+
+/* =========================================================
+EDIT PRODUCT
+========================================================= */
+
+function openEditModal(id){
+
+    const item =
+        sellerListingsCache.find(
+            listing =>
+                String(listing.id) === String(id)
+        );
+
+    if(!item){
+
+        alert(
+            "Product could not be found."
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "editListingId"
+    ).value = item.id;
+
+    document.getElementById(
+        "editTitle"
+    ).value =
+        item.title || "";
+
+    document.getElementById(
+        "editDescription"
+    ).value =
+        item.description || "";
+
+    document.getElementById(
+        "editPrice"
+    ).value =
+        item.price || 0;
+
+    document.getElementById(
+        "editCategory"
+    ).value =
+        item.category || "Other";
+
+    document.getElementById(
+        "editLocation"
+    ).value =
+        item.location || "Sioma";
+
+    document.getElementById(
+        "editSellerName"
+    ).value =
+        item.seller_name || "";
+
+    document.getElementById(
+        "editSellerPhone"
+    ).value =
+        item.seller_phone || "";
+
+    document.getElementById(
+        "editMessage"
+    ).innerText = "";
+
+    document.getElementById(
+        "editModal"
+    ).style.display = "block";
+}
+
+
+function closeEditModal(){
+
+    document.getElementById(
+        "editModal"
+    ).style.display = "none";
+}
+
+
+async function saveEditedListing(){
+
+    await loadAuthSession();
+
+    if(!currentUser){
+
+        closeEditModal();
+
+        openAuthModal();
+        showLogin();
+
+        return;
+    }
+
+    const id =
+        document.getElementById(
+            "editListingId"
+        ).value;
+
+    const title =
+        document.getElementById(
+            "editTitle"
+        ).value.trim();
+
+    const description =
+        document.getElementById(
+            "editDescription"
+        ).value.trim();
+
+    const price =
+        Number(
+            document.getElementById(
+                "editPrice"
+            ).value
+        );
+
+    const category =
+        document.getElementById(
+            "editCategory"
+        ).value;
+
+    const location =
+        document.getElementById(
+            "editLocation"
+        ).value.trim();
+
+    const sellerName =
+        document.getElementById(
+            "editSellerName"
+        ).value.trim();
+
+    const sellerPhone =
+        document.getElementById(
+            "editSellerPhone"
+        ).value.trim();
+
+    const message =
+        document.getElementById(
+            "editMessage"
+        );
+
+    message.style.color =
+        "#087f3d";
+
+    message.innerText =
+        "⏳ Saving changes...";
+
+    const result =
+        await supabaseClient
+            .from("listings")
+            .update({
+                title:title,
+                description:description,
+                price:price,
+                category:category,
+                location:location,
+                seller_name:sellerName,
+                seller_phone:sellerPhone
+            })
+            .eq("id",id)
+            .eq(
+                "user_id",
+                currentUser.id
+            );
+
+    if(result.error){
+
+        message.style.color =
+            "#c62828";
+
+        message.innerText =
+            "❌ " +
+            result.error.message;
+
+        return;
+    }
+
+    message.style.color =
+        "#087f3d";
+
+    message.innerText =
+        "✅ Product updated successfully!";
+
+    await loadSellerDashboard();
+    await loadListings();
+
+    setTimeout(
+        function(){
+            closeEditModal();
+        },
+        800
+    );
+}
+
+
+/* =========================================================
+DELETE SELLER LISTING
+========================================================= */
+
+async function deleteSellerListing(id){
+
+    await loadAuthSession();
+
+    if(!currentUser){
+
+        alert(
+            "Please login first."
+        );
+
+        return;
+    }
+
+    const item =
+        sellerListingsCache.find(
+            listing =>
+                String(listing.id) === String(id)
+        );
+
+    if(!item){
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Delete this product?\n\n" +
+            item.title +
+            "\n\nThis action cannot be undone."
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    const result =
+        await supabaseClient
+            .from("listings")
+            .delete()
+            .eq("id",id)
+            .eq(
+                "user_id",
+                currentUser.id
+            );
+
+    if(result.error){
+
+        alert(
+            "❌ Could not delete product:\n\n" +
+            result.error.message
+        );
+
+        return;
+    }
+
+    alert(
+        "✅ Product deleted successfully."
+    );
+
+    await loadSellerDashboard();
+    await loadListings();
+}
+
+
+/* =========================================================
+BUY NOW
+========================================================= */
 
 function buyNow(){
 
@@ -3344,31 +3600,26 @@ function buyNow(){
         behavior:"smooth"
     });
 
-
     const input =
         document.getElementById(
             "searchInput"
         );
 
-
     input.focus();
-
 
     document.getElementById(
         "searchResults"
     ).innerHTML = `
-
         <div class="no-results">
             🛒 Search for a product you want to buy.
         </div>
-
     `;
 }
 
 
-/* =====================================================
-   SEARCH
-===================================================== */
+/* =========================================================
+SEARCH
+========================================================= */
 
 async function searchMarket(){
 
@@ -3377,79 +3628,62 @@ async function searchMarket(){
             "searchInput"
         ).value.trim();
 
-
     const box =
         document.getElementById(
             "searchResults"
         );
 
-
     if(!search){
 
         box.innerHTML = `
-
             <div class="no-results">
                 Please enter a product to search.
             </div>
-
         `;
 
         return;
     }
 
-
     box.innerHTML = `
-
         <div class="no-results">
             🔎 Searching SiomaMarket...
         </div>
-
     `;
-
 
     const result =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "status",
-            "active"
-        )
-        .or(
-            "title.ilike.%" +
-            search +
-            "%," +
-            "description.ilike.%" +
-            search +
-            "%," +
-            "category.ilike.%" +
-            search +
-            "%"
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
+            .from("listings")
+            .select("*")
+            .eq("status","active")
+            .or(
+                "title.ilike.%" +
+                search +
+                "%," +
+                "description.ilike.%" +
+                search +
+                "%," +
+                "category.ilike.%" +
+                search +
+                "%"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
     if(result.error){
 
         box.innerHTML = `
-
             <div class="no-results">
                 ❌ Search failed.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
+                ${escapeHTML(result.error.message)}
             </div>
-
         `;
 
         return;
     }
-
 
     if(
         !result.data ||
@@ -3457,19 +3691,16 @@ async function searchMarket(){
     ){
 
         box.innerHTML = `
-
             <div class="no-results">
                 🔍 No products found for
                 <strong>
                     ${escapeHTML(search)}
                 </strong>
             </div>
-
         `;
 
         return;
     }
-
 
     renderResults(
         result.data,
@@ -3478,9 +3709,9 @@ async function searchMarket(){
 }
 
 
-/* =====================================================
-   CATEGORY SEARCH
-===================================================== */
+/* =========================================================
+CATEGORY SEARCH
+========================================================= */
 
 async function searchCategory(category){
 
@@ -3489,53 +3720,37 @@ async function searchCategory(category){
             "searchResults"
         );
 
-
     box.innerHTML = `
-
         <div class="no-results">
             🔎 Loading
             ${escapeHTML(category)}...
         </div>
-
     `;
-
 
     const result =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "status",
-            "active"
-        )
-        .eq(
-            "category",
-            category
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
+            .from("listings")
+            .select("*")
+            .eq("status","active")
+            .eq("category",category)
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
     if(result.error){
 
         box.innerHTML = `
-
             <div class="no-results">
                 ❌ Could not load products.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
+                ${escapeHTML(result.error.message)}
             </div>
-
         `;
 
         return;
     }
-
 
     if(
         !result.data ||
@@ -3543,24 +3758,20 @@ async function searchCategory(category){
     ){
 
         box.innerHTML = `
-
             <div class="no-results">
                 No
                 ${escapeHTML(category)}
                 products are available yet.
             </div>
-
         `;
 
         return;
     }
 
-
     renderResults(
         result.data,
         "🛍️ " + category
     );
-
 
     window.scrollTo({
         top:250,
@@ -3569,9 +3780,9 @@ async function searchCategory(category){
 }
 
 
-/* =====================================================
-   LOAD LISTINGS
-===================================================== */
+/* =========================================================
+LOAD LISTINGS
+========================================================= */
 
 async function loadListings(){
 
@@ -3580,31 +3791,23 @@ async function loadListings(){
             "searchResults"
         );
 
-
     box.innerHTML = `
-
         <div class="no-results">
             ⏳ Loading SiomaMarket products...
         </div>
-
     `;
-
 
     const result =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "status",
-            "active"
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
+            .from("listings")
+            .select("*")
+            .eq("status","active")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
     if(result.error){
 
@@ -3613,21 +3816,15 @@ async function loadListings(){
             result.error
         );
 
-
         box.innerHTML = `
-
             <div class="no-results">
                 ❌ Could not load products.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
+                ${escapeHTML(result.error.message)}
             </div>
-
         `;
 
         return;
     }
-
 
     if(
         !result.data ||
@@ -3635,17 +3832,14 @@ async function loadListings(){
     ){
 
         box.innerHTML = `
-
             <div class="no-results">
                 🛍️ No products have been listed yet.<br><br>
                 Be the first person to sell on SiomaMarket!
             </div>
-
         `;
 
         return;
     }
-
 
     renderResults(
         result.data,
@@ -3654,9 +3848,9 @@ async function loadListings(){
 }
 
 
-/* =====================================================
-   RENDER PRODUCTS
-===================================================== */
+/* =========================================================
+RENDER PRODUCTS
+========================================================= */
 
 function renderResults(
     data,
@@ -3668,17 +3862,13 @@ function renderResults(
             "searchResults"
         );
 
-
     let html = `
-
         <h2 class="results-title">
             ${escapeHTML(heading)}
         </h2>
 
         <div class="results-grid">
-
     `;
-
 
     data.forEach(
         function(item){
@@ -3687,26 +3877,20 @@ function renderResults(
                 item.image_url ||
                 DEFAULT_IMAGE;
 
-
             const title =
                 item.title ||
                 "Product";
 
-
             const price =
-                Number(
-                    item.price || 0
-                ).toLocaleString();
-
+                Number(item.price || 0)
+                .toLocaleString();
 
             const location =
                 item.location ||
                 "Sioma";
 
-
             const id =
                 String(item.id);
-
 
             html += `
 
@@ -3716,7 +3900,6 @@ function renderResults(
                         src="${escapeAttribute(image)}"
                         alt="${escapeAttribute(title)}"
                         onerror="this.src='${DEFAULT_IMAGE}'">
-
 
                     <div class="result-info">
 
@@ -3736,9 +3919,7 @@ function renderResults(
                             type="button"
                             class="buy-result"
                             onclick="viewListing('${escapeAttribute(id)}')">
-
                             🛒 VIEW PRODUCT
-
                         </button>
 
                     </div>
@@ -3749,20 +3930,18 @@ function renderResults(
         }
     );
 
-
     html += `
         </div>
     `;
-
 
     box.innerHTML =
         html;
 }
 
 
-/* =====================================================
-   VIEW LISTING
-===================================================== */
+/* =========================================================
+VIEW LISTING
+========================================================= */
 
 async function viewListing(id){
 
@@ -3771,31 +3950,23 @@ async function viewListing(id){
             "productPage"
         );
 
-
     page.style.display =
         "block";
 
-
     document.body.style.overflow =
         "hidden";
-
 
     document.getElementById(
         "detailsTitle"
     ).innerText =
         "Loading product...";
 
-
     const result =
         await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "id",
-            id
-        )
-        .single();
-
+            .from("listings")
+            .select("*")
+            .eq("id",id)
+            .single();
 
     if(
         result.error ||
@@ -3810,14 +3981,11 @@ async function viewListing(id){
         return;
     }
 
-
     const data =
         result.data;
 
-
     currentListingId =
         data.id;
-
 
     document.getElementById(
         "detailsImage"
@@ -3825,38 +3993,29 @@ async function viewListing(id){
         data.image_url ||
         DEFAULT_IMAGE;
 
-
     document.getElementById(
         "detailsTitle"
     ).innerText =
         data.title ||
         "Product";
 
-
     document.getElementById(
         "detailsPrice"
     ).innerText =
         "K" +
-        Number(
-            data.price || 0
-        ).toLocaleString();
-
+        Number(data.price || 0)
+        .toLocaleString();
 
     document.getElementById(
         "detailsCategory"
     ).innerText =
         data.category || "";
 
-
     document.getElementById(
         "detailsLocation"
     ).innerText =
         "📍 " +
-        (
-            data.location ||
-            "Sioma"
-        );
-
+        (data.location || "Sioma");
 
     document.getElementById(
         "detailsDescription"
@@ -3864,13 +4023,11 @@ async function viewListing(id){
         data.description ||
         "No description provided.";
 
-
     document.getElementById(
         "detailsSeller"
     ).innerText =
         data.seller_name ||
         "Sioma Seller";
-
 
     document.getElementById(
         "detailsPhone"
@@ -3878,18 +4035,15 @@ async function viewListing(id){
         data.seller_phone ||
         "Phone number not provided";
 
-
     const whatsapp =
         document.getElementById(
             "whatsappButton"
         );
 
-
     const call =
         document.getElementById(
             "callButton"
         );
-
 
     if(data.seller_phone){
 
@@ -3898,7 +4052,6 @@ async function viewListing(id){
 
         call.style.display =
             "block";
-
 
         whatsapp.onclick =
             function(){
@@ -3909,7 +4062,6 @@ async function viewListing(id){
                 );
             };
 
-
         call.onclick =
             function(){
 
@@ -3917,7 +4069,6 @@ async function viewListing(id){
                     data.seller_phone
                 );
             };
-
 
     }else{
 
@@ -3927,12 +4078,10 @@ async function viewListing(id){
         call.style.display =
             "none";
     }
+
+    await updateFavoriteButton();
 }
 
-
-/* =====================================================
-   CLOSE PRODUCT PAGE
-===================================================== */
 
 function closeProductPage(){
 
@@ -3941,15 +4090,14 @@ function closeProductPage(){
     ).style.display =
         "none";
 
-
     document.body.style.overflow =
         "auto";
 }
 
 
-/* =====================================================
-   WHATSAPP
-===================================================== */
+/* =========================================================
+WHATSAPP
+========================================================= */
 
 function contactSeller(
     phone,
@@ -3960,7 +4108,6 @@ function contactSeller(
         String(phone)
         .replace(/\D/g,"");
 
-
     if(number.startsWith("0")){
 
         number =
@@ -3968,14 +4115,12 @@ function contactSeller(
             number.substring(1);
     }
 
-
     const message =
         encodeURIComponent(
             "Hello, I found your " +
             product +
             " on SiomaMarket. Is it still available?"
         );
-
 
     window.open(
         "https://wa.me/" +
@@ -3987,9 +4132,9 @@ function contactSeller(
 }
 
 
-/* =====================================================
-   CALL
-===================================================== */
+/* =========================================================
+CALL
+========================================================= */
 
 function callSeller(phone){
 
@@ -3997,51 +4142,26 @@ function callSeller(phone){
         String(phone)
         .replace(/[^\d+]/g,"");
 
-
     window.location.href =
         "tel:" +
         number;
 }
 
 
-/* =====================================================
-   FAVORITE
-===================================================== */
+/* =========================================================
+CHECK FAVORITE
+========================================================= */
 
-async function saveFavorite(){
+async function checkFavorite(){
 
-    await loadAuthSession();
+    if(!currentUser ||
+       !currentListingId){
 
-
-    if(!currentUser){
-
-        alert(
-            "🔐 Please login to save products."
-        );
-
-
-        openAuthModal();
-
-        showLogin();
-
-        return;
+        return false;
     }
 
-
-    if(!currentListingId){
-
-        alert(
-            "❌ Product information is unavailable."
-        );
-
-        return;
-    }
-
-
-    try{
-
-        const existing =
-            await supabaseClient
+    const result =
+        await supabaseClient
             .from("favorites")
             .select("id")
             .eq(
@@ -4054,62 +4174,152 @@ async function saveFavorite(){
             )
             .maybeSingle();
 
+    if(result.error){
+
+        console.error(
+            "CHECK FAVORITE ERROR:",
+            result.error
+        );
+
+        return false;
+    }
+
+    return !!result.data;
+}
+
+
+/* =========================================================
+UPDATE FAVORITE BUTTON
+========================================================= */
+
+async function updateFavoriteButton(){
+
+    const button =
+        document.getElementById(
+            "favoriteButton"
+        );
+
+    if(!currentUser){
+
+        button.innerText =
+            "❤️ Save Product";
+
+        return;
+    }
+
+    const saved =
+        await checkFavorite();
+
+    if(saved){
+
+        button.innerText =
+            "💔 Remove Favorite";
+
+    }else{
+
+        button.innerText =
+            "❤️ Save Product";
+    }
+}
+
+
+/* =========================================================
+SAVE / REMOVE FAVORITE
+========================================================= */
+
+async function saveFavorite(){
+
+    await loadAuthSession();
+
+    if(!currentUser){
+
+        alert(
+            "🔐 Please login to save products."
+        );
+
+        openAuthModal();
+        showLogin();
+
+        return;
+    }
+
+    if(!currentListingId){
+
+        alert(
+            "❌ Product information is unavailable."
+        );
+
+        return;
+    }
+
+    try{
+
+        const existing =
+            await supabaseClient
+                .from("favorites")
+                .select("id")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .eq(
+                    "listing_id",
+                    currentListingId
+                )
+                .maybeSingle();
 
         if(existing.error){
 
             throw existing.error;
         }
 
-
         if(existing.data){
 
             const removed =
                 await supabaseClient
-                .from("favorites")
-                .delete()
-                .eq(
-                    "id",
-                    existing.data.id
-                );
-
+                    .from("favorites")
+                    .delete()
+                    .eq(
+                        "id",
+                        existing.data.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
 
             if(removed.error){
 
                 throw removed.error;
             }
 
-
             alert(
                 "💔 Product removed from your favorites."
             );
-
 
         }else{
 
             const saved =
                 await supabaseClient
-                .from("favorites")
-                .insert({
-
-                    user_id:
-                        currentUser.id,
-
-                    listing_id:
-                        currentListingId
-                });
-
+                    .from("favorites")
+                    .insert({
+                        user_id:
+                            currentUser.id,
+                        listing_id:
+                            currentListingId
+                    });
 
             if(saved.error){
 
                 throw saved.error;
             }
 
-
             alert(
                 "❤️ Product saved to your favorites!"
             );
         }
 
+        await updateFavoriteButton();
 
     }catch(error){
 
@@ -4117,7 +4327,6 @@ async function saveFavorite(){
             "FAVORITE ERROR:",
             error
         );
-
 
         alert(
             "❌ Could not update favorites:\n" +
@@ -4127,31 +4336,26 @@ async function saveFavorite(){
 }
 
 
-/* =====================================================
-   SHOW FAVORITES
-===================================================== */
+/* =========================================================
+SHOW FAVORITES
+========================================================= */
 
 async function showFavorites(){
 
     await loadAuthSession();
 
-
     if(!currentUser){
 
         openAuthModal();
-
         showLogin();
-
 
         const message =
             document.getElementById(
                 "authMessage"
             );
 
-
         message.style.color =
             "#c62828";
-
 
         message.innerText =
             "🔐 Please login to view your favorites.";
@@ -4159,67 +4363,58 @@ async function showFavorites(){
         return;
     }
 
-
     const page =
         document.getElementById(
             "favoritesPage"
         );
-
 
     const box =
         document.getElementById(
             "favoritesResults"
         );
 
-
     page.style.display =
         "block";
-
 
     document.body.style.overflow =
         "hidden";
 
-
     box.innerHTML = `
-
         <div class="no-results">
             ⏳ Loading your favorites...
         </div>
-
     `;
-
 
     const result =
         await supabaseClient
-        .from("favorites")
-        .select(`
-            id,
-            created_at,
-            listing_id,
-            listings (
+            .from("favorites")
+            .select(`
                 id,
-                title,
-                price,
-                category,
-                location,
-                image_url,
-                seller_name,
-                seller_phone,
-                description,
-                status
+                created_at,
+                listing_id,
+                listings (
+                    id,
+                    title,
+                    price,
+                    category,
+                    location,
+                    image_url,
+                    seller_name,
+                    seller_phone,
+                    description,
+                    status
+                )
+            `)
+            .eq(
+                "user_id",
+                currentUser.id
             )
-        `)
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
     if(result.error){
 
@@ -4228,62 +4423,48 @@ async function showFavorites(){
             result.error
         );
 
-
         box.innerHTML = `
-
             <div class="no-results">
                 ❌ Could not load favorites.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
+                ${escapeHTML(result.error.message)}
             </div>
-
         `;
 
         return;
     }
-
 
     const favorites =
         (result.data || [])
         .filter(
             function(item){
 
-                return(
+                return (
                     item.listings &&
-                    item.listings.status ===
-                    "active"
+                    item.listings.status === "active"
                 );
             }
         );
 
-
     if(favorites.length === 0){
 
         box.innerHTML = `
-
             <div class="no-results">
                 ❤️ You have no saved products yet.
                 <br><br>
                 Browse SiomaMarket and save products you like.
             </div>
-
         `;
 
         return;
     }
 
-
     let html = `
-
         <h2 class="results-title">
             ❤️ My Favorites
         </h2>
 
         <div class="results-grid">
-
     `;
-
 
     favorites.forEach(
         function(item){
@@ -4291,27 +4472,21 @@ async function showFavorites(){
             const product =
                 item.listings;
 
-
             const image =
                 product.image_url ||
                 DEFAULT_IMAGE;
-
 
             const title =
                 product.title ||
                 "Product";
 
-
             const price =
-                Number(
-                    product.price || 0
-                ).toLocaleString();
-
+                Number(product.price || 0)
+                .toLocaleString();
 
             const location =
                 product.location ||
                 "Sioma";
-
 
             html += `
 
@@ -4321,7 +4496,6 @@ async function showFavorites(){
                         src="${escapeAttribute(image)}"
                         alt="${escapeAttribute(title)}"
                         onerror="this.src='${DEFAULT_IMAGE}'">
-
 
                     <div class="result-info">
 
@@ -4341,9 +4515,15 @@ async function showFavorites(){
                             type="button"
                             class="buy-result"
                             onclick="viewListing('${escapeAttribute(String(product.id))}')">
-
                             👀 VIEW PRODUCT
+                        </button>
 
+                        <button
+                            type="button"
+                            class="small-button delete-button"
+                            style="width:100%;margin-top:7px;"
+                            onclick="removeFavoriteFromPage('${escapeAttribute(String(product.id))}')">
+                            💔 REMOVE FAVORITE
                         </button>
 
                     </div>
@@ -4354,514 +4534,116 @@ async function showFavorites(){
         }
     );
 
-
     html += `
         </div>
     `;
-
 
     box.innerHTML =
         html;
 }
 
 
-/* =====================================================
-   CLOSE FAVORITES
-===================================================== */
+/* =========================================================
+REMOVE FAVORITE FROM FAVORITES PAGE
+========================================================= */
 
-function closeFavorites(){
-
-    const page =
-        document.getElementById(
-            "favoritesPage"
-        );
-
-
-    page.style.display =
-        "none";
-
-
-    document.body.style.overflow =
-        "auto";
-}
-
-
-/* =====================================================
-   SELLER DASHBOARD
-===================================================== */
-
-async function openSellerDashboard(){
+async function removeFavoriteFromPage(
+    listingId
+){
 
     await loadAuthSession();
 
-
     if(!currentUser){
-
-        openAuthModal();
-
-        showLogin();
 
         return;
     }
 
-
-    const dashboard =
-        document.getElementById(
-            "sellerDashboard"
+    const confirmed =
+        confirm(
+            "Remove this product from your favorites?"
         );
 
+    if(!confirmed){
+        return;
+    }
 
-    dashboard.style.display =
-        "block";
+    const result =
+        await supabaseClient
+            .from("favorites")
+            .delete()
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .eq(
+                "listing_id",
+                listingId
+            );
 
+    if(result.error){
 
-    document.body.style.overflow =
-        "hidden";
+        alert(
+            "❌ Could not remove favorite:\n\n" +
+            result.error.message
+        );
 
+        return;
+    }
 
-    await loadSellerDashboard();
+    await showFavorites();
 }
 
 
-function closeSellerDashboard(){
+function closeFavorites(){
 
     document.getElementById(
-        "sellerDashboard"
+        "favoritesPage"
     ).style.display =
         "none";
-
 
     document.body.style.overflow =
         "auto";
 }
 
 
-async function loadSellerDashboard(){
-
-    if(!currentUser){
-
-        return;
-    }
-
-
-    const listings =
-        await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(listings.error){
-
-        document.getElementById(
-            "sellerListingsContainer"
-        ).innerHTML = `
-
-            <div class="no-results">
-                ❌ ${escapeHTML(
-                    listings.error.message
-                )}
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    const products =
-        listings.data || [];
-
-
-    document.getElementById(
-        "sellerTotalListings"
-    ).innerText =
-        products.length;
-
-
-    document.getElementById(
-        "sellerActiveListings"
-    ).innerText =
-        products.filter(
-            p => p.status === "active"
-        ).length;
-
-
-    const favorites =
-        await supabaseClient
-        .from("favorites")
-        .select(
-            "id",
-            {
-                count:"exact",
-                head:true
-            }
-        );
-
-
-    document.getElementById(
-        "sellerFavorites"
-    ).innerText =
-        favorites.count || 0;
-
-
-    const profile =
-        await supabaseClient
-        .from("seller_profiles")
-        .select("location")
-        .eq(
-            "id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-
-    document.getElementById(
-        "sellerLocation"
-    ).innerText =
-        profile.data?.location ||
-        "Sioma";
-
-
-    renderSellerListings(
-        products
-    );
-}
-
-
-function renderSellerListings(
-    products
-){
-
-    const container =
-        document.getElementById(
-            "sellerListingsContainer"
-        );
-
-
-    if(products.length === 0){
-
-        container.innerHTML = `
-
-            <div class="no-results">
-                🛍️ You have not listed any products yet.
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    let html = "";
-
-
-    products.forEach(
-        function(product){
-
-            const image =
-                product.image_url ||
-                DEFAULT_IMAGE;
-
-
-            html += `
-
-                <div class="dashboard-listing">
-
-                    <img
-                        src="${escapeAttribute(image)}"
-                        alt="${escapeAttribute(product.title || "Product")}">
-
-
-                    <div class="dashboard-listing-info">
-
-                        <h3>
-                            ${escapeHTML(
-                                product.title ||
-                                "Product"
-                            )}
-                        </h3>
-
-                        <p>
-                            💰 K${Number(
-                                product.price || 0
-                            ).toLocaleString()}
-                        </p>
-
-                        <p>
-                            📍 ${escapeHTML(
-                                product.location ||
-                                "Sioma"
-                            )}
-                        </p>
-
-                        <p>
-                            Status:
-                            <strong>
-                                ${escapeHTML(
-                                    product.status ||
-                                    "active"
-                                )}
-                            </strong>
-                        </p>
-
-
-                        <div class="dashboard-actions">
-
-                            <button
-                                class="edit-button"
-                                onclick="editSellerListing('${escapeAttribute(String(product.id))}')">
-                                ✏️ Edit
-                            </button>
-
-
-                            <button
-                                class="delete-button"
-                                onclick="deleteSellerListing('${escapeAttribute(String(product.id))}')">
-                                🗑️ Delete
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-        }
-    );
-
-
-    container.innerHTML =
-        html;
-}
-
-
-/* =====================================================
-   EDIT SELLER LISTING
-===================================================== */
-
-async function editSellerListing(id){
-
-    const result =
-        await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-            "id",
-            id
-        )
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .single();
-
-
-    if(result.error){
-
-        alert(
-            "❌ Could not load product: " +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    const product =
-        result.data;
-
-
-    const title =
-        prompt(
-            "Product name:",
-            product.title
-        );
-
-
-    if(title === null){
-
-        return;
-    }
-
-
-    const price =
-        prompt(
-            "Price (K):",
-            product.price
-        );
-
-
-    if(price === null){
-
-        return;
-    }
-
-
-    const description =
-        prompt(
-            "Description:",
-            product.description
-        );
-
-
-    if(description === null){
-
-        return;
-    }
-
-
-    const update =
-        await supabaseClient
-        .from("listings")
-        .update({
-
-            title:title.trim(),
-
-            price:Number(price),
-
-            description:
-                description.trim()
-
-        })
-        .eq(
-            "id",
-            id
-        )
-        .eq(
-            "user_id",
-            currentUser.id
-        );
-
-
-    if(update.error){
-
-        alert(
-            "❌ Update failed: " +
-            update.error.message
-        );
-
-        return;
-    }
-
-
-    alert(
-        "✅ Product updated successfully."
-    );
-
-
-    await loadSellerDashboard();
-
-    await loadListings();
-}
-
-
-/* =====================================================
-   DELETE SELLER LISTING
-===================================================== */
-
-async function deleteSellerListing(id){
-
-    if(
-        !confirm(
-            "Are you sure you want to delete this product?"
-        )
-    ){
-
-        return;
-    }
-
-
-    const result =
-        await supabaseClient
-        .from("listings")
-        .delete()
-        .eq(
-            "id",
-            id
-        )
-        .eq(
-            "user_id",
-            currentUser.id
-        );
-
-
-    if(result.error){
-
-        alert(
-            "❌ Delete failed: " +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    alert(
-        "✅ Product deleted."
-    );
-
-
-    await loadSellerDashboard();
-
-    await loadListings();
-}
-
-
-/* =====================================================
-   ADMIN DASHBOARD ACCESS
-===================================================== */
+/* =========================================================
+ADMIN DASHBOARD
+========================================================= */
 
 async function openAdminDashboard(){
 
     await loadAuthSession();
 
-
     if(!currentUser){
 
         openAuthModal();
-
         showLogin();
 
         return;
     }
 
-
     const admin =
         await isAdmin();
-
 
     if(!admin){
 
         alert(
-            "❌ Access denied. Administrator access required."
+            "⛔ Access denied.\n\n" +
+            "This account is not an administrator."
         );
 
         return;
     }
-
 
     document.getElementById(
         "adminDashboard"
     ).style.display =
         "block";
 
-
     document.body.style.overflow =
         "hidden";
 
-
-    await loadAdminDashboard();
+    await loadAdminListings();
 }
 
 
@@ -4872,752 +4654,433 @@ function closeAdminDashboard(){
     ).style.display =
         "none";
 
-
     document.body.style.overflow =
         "auto";
 }
 
 
-/* =====================================================
-   ADMIN MESSAGE
-===================================================== */
+/* =========================================================
+ADMIN LISTINGS
+========================================================= */
 
-function showAdminMessage(
-    text,
-    success=true
-){
+async function loadAdminListings(){
 
-    const box =
+    const body =
         document.getElementById(
-            "adminMessage"
+            "adminListingsBody"
         );
 
+    body.innerHTML = `
+        <tr>
+            <td colspan="7" style="text-align:center;">
+                ⏳ Loading listings...
+            </td>
+        </tr>
+    `;
 
-    box.style.display =
-        "block";
+    const result =
+        await supabaseClient
+            .from("listings")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
+    if(result.error){
 
-    box.style.background =
-        success
-        ? "#e8f5ed"
-        : "#ffebee";
-
-
-    box.style.color =
-        success
-        ? "#087f3d"
-        : "#c62828";
-
-
-    box.innerText =
-        text;
-
-
-    setTimeout(
-        function(){
-
-            box.style.display =
-                "none";
-
-        },
-        3500
-    );
-}
-
-
-/* =====================================================
-   LOAD ADMIN DASHBOARD
-===================================================== */
-
-async function loadAdminDashboard(){
-
-    const admin =
-        await isAdmin();
-
-
-    if(!admin){
-
-        alert(
-            "❌ Admin access denied."
-        );
-
-        closeAdminDashboard();
+        body.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;color:#c62828;">
+                    ❌ ${escapeHTML(result.error.message)}
+                </td>
+            </tr>
+        `;
 
         return;
     }
 
+    adminListingsCache =
+        result.data || [];
 
-    await loadAdminStatistics();
+    updateAdminStats(
+        adminListingsCache
+    );
 
-    await loadAdminProducts();
-
-    await loadAdminSellers();
+    renderAdminListings(
+        adminListingsCache
+    );
 }
 
 
-/* =====================================================
-   ADMIN STATISTICS
-===================================================== */
+function updateAdminStats(
+    listings
+){
 
-async function loadAdminStatistics(){
+    const total =
+        listings.length;
 
-    const totalListings =
-        await supabaseClient
-        .from("listings")
-        .select(
-            "id",
-            {
-                count:"exact",
-                head:true
-            }
-        );
-
-
-    const activeListings =
-        await supabaseClient
-        .from("listings")
-        .select(
-            "id",
-            {
-                count:"exact",
-                head:true
-            }
-        )
-        .eq(
-            "status",
-            "active"
-        );
-
+    const active =
+        listings.filter(
+            item =>
+                item.status === "active"
+        ).length;
 
     const sellers =
-        await supabaseClient
-        .from("seller_profiles")
-        .select(
-            "id",
-            {
-                count:"exact",
-                head:true
-            }
+        new Set(
+            listings
+            .map(item => item.user_id)
+            .filter(Boolean)
+        ).size;
+
+    const value =
+        listings.reduce(
+            (sum,item) =>
+                sum +
+                Number(item.price || 0),
+            0
         );
-
-
-    const favorites =
-        await supabaseClient
-        .from("favorites")
-        .select(
-            "id",
-            {
-                count:"exact",
-                head:true
-            }
-        );
-
 
     document.getElementById(
         "adminTotalListings"
     ).innerText =
-        totalListings.count || 0;
-
+        total;
 
     document.getElementById(
         "adminActiveListings"
     ).innerText =
-        activeListings.count || 0;
-
-
-    document.getElementById(
-        "adminTotalSellers"
-    ).innerText =
-        sellers.count || 0;
-
+        active;
 
     document.getElementById(
-        "adminTotalFavorites"
+        "adminSellerCount"
     ).innerText =
-        favorites.count || 0;
+        sellers;
+
+    document.getElementById(
+        "adminMarketValue"
+    ).innerText =
+        "K" +
+        value.toLocaleString();
 }
 
 
-/* =====================================================
-   ADMIN PRODUCTS
-===================================================== */
-
-async function loadAdminProducts(){
-
-    const container =
-        document.getElementById(
-            "adminProductsContainer"
-        );
-
-
-    container.innerHTML = `
-
-        <div class="no-results">
-            ⏳ Loading products...
-        </div>
-
-    `;
-
-
-    const result =
-        await supabaseClient
-        .from("listings")
-        .select("*")
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(result.error){
-
-        container.innerHTML = `
-
-            <div class="no-results">
-                ❌ Could not load products.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    adminProductsCache =
-        result.data || [];
-
-
-    renderAdminProducts(
-        adminProductsCache
-    );
-}
-
-
-/* =====================================================
-   RENDER ADMIN PRODUCTS
-===================================================== */
-
-function renderAdminProducts(
-    products
+function renderAdminListings(
+    listings
 ){
 
-    const container =
+    const body =
         document.getElementById(
-            "adminProductsContainer"
+            "adminListingsBody"
         );
 
+    if(!listings.length){
 
-    if(products.length === 0){
-
-        container.innerHTML = `
-
-            <div class="no-results">
-                🛍️ No products found.
-            </div>
-
+        body.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    No listings found.
+                </td>
+            </tr>
         `;
 
         return;
     }
-
-
-    let html = `
-
-        <table class="admin-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Photo</th>
-
-                    <th>Product</th>
-
-                    <th>Price</th>
-
-                    <th>Seller</th>
-
-                    <th>Location</th>
-
-                    <th>Status</th>
-
-                    <th>Actions</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-    `;
-
-
-    products.forEach(
-        function(product){
-
-            const image =
-                product.image_url ||
-                DEFAULT_IMAGE;
-
-
-            const status =
-                product.status ||
-                "active";
-
-
-            html += `
-
-                <tr>
-
-                    <td>
-
-                        <img
-                            class="admin-product-image"
-                            src="${escapeAttribute(image)}"
-                            alt="${escapeAttribute(product.title || "Product")}">
-
-                    </td>
-
-
-                    <td>
-                        <strong>
-                            ${escapeHTML(
-                                product.title ||
-                                "Product"
-                            )}
-                        </strong>
-
-                        <br>
-
-                        <small>
-                            ${escapeHTML(
-                                product.category ||
-                                ""
-                            )}
-                        </small>
-                    </td>
-
-
-                    <td>
-                        K${Number(
-                            product.price || 0
-                        ).toLocaleString()}
-                    </td>
-
-
-                    <td>
-                        ${escapeHTML(
-                            product.seller_name ||
-                            "Seller"
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHTML(
-                            product.location ||
-                            "Sioma"
-                        )}
-                    </td>
-
-
-                    <td>
-                        <strong>
-                            ${escapeHTML(status)}
-                        </strong>
-                    </td>
-
-
-                    <td>
-
-                        ${
-                            status === "active"
-
-                            ?
-
-                            `
-                            <button
-                                class="admin-action-button admin-deactivate"
-                                onclick="adminChangeListingStatus('${escapeAttribute(String(product.id))}','inactive')">
-                                ⏸️ Deactivate
-                            </button>
-                            `
-
-                            :
-
-                            `
-                            <button
-                                class="admin-action-button admin-activate"
-                                onclick="adminChangeListingStatus('${escapeAttribute(String(product.id))}','active')">
-                                ✅ Activate
-                            </button>
-                            `
-                        }
-
-
-                        <button
-                            class="admin-action-button admin-delete"
-                            onclick="adminDeleteListing('${escapeAttribute(String(product.id))}')">
-                            🗑️ Delete
-                        </button>
-
-                    </td>
-
-                </tr>
-
-            `;
-        }
-    );
-
-
-    html += `
-
-            </tbody>
-
-        </table>
-
-    `;
-
-
-    container.innerHTML =
-        html;
-}
-
-
-/* =====================================================
-   FILTER ADMIN PRODUCTS
-===================================================== */
-
-function filterAdminProducts(){
-
-    const search =
-        document.getElementById(
-            "adminProductSearch"
-        ).value
-        .trim()
-        .toLowerCase();
-
-
-    if(!search){
-
-        renderAdminProducts(
-            adminProductsCache
-        );
-
-        return;
-    }
-
-
-    const filtered =
-        adminProductsCache.filter(
-            function(product){
-
-                return(
-
-                    String(
-                        product.title || ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(
-                        product.category || ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(
-                        product.seller_name || ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(
-                        product.location || ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-                );
-            }
-        );
-
-
-    renderAdminProducts(
-        filtered
-    );
-}
-
-
-/* =====================================================
-   ADMIN CHANGE STATUS
-===================================================== */
-
-async function adminChangeListingStatus(
-    id,
-    status
-){
-
-    const admin =
-        await isAdmin();
-
-
-    if(!admin){
-
-        alert(
-            "❌ Admin access denied."
-        );
-
-        return;
-    }
-
-
-    const result =
-        await supabaseClient
-        .from("listings")
-        .update({
-            status:status
-        })
-        .eq(
-            "id",
-            id
-        );
-
-
-    if(result.error){
-
-        alert(
-            "❌ Could not change listing status:\n" +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    showAdminMessage(
-        status === "active"
-        ? "✅ Product activated."
-        : "⏸️ Product deactivated."
-    );
-
-
-    await loadAdminDashboard();
-
-    await loadListings();
-}
-
-
-/* =====================================================
-   ADMIN DELETE LISTING
-===================================================== */
-
-async function adminDeleteListing(id){
-
-    const admin =
-        await isAdmin();
-
-
-    if(!admin){
-
-        alert(
-            "❌ Admin access denied."
-        );
-
-        return;
-    }
-
-
-    if(
-        !confirm(
-            "Are you sure you want to permanently delete this listing?"
-        )
-    ){
-
-        return;
-    }
-
-
-    const result =
-        await supabaseClient
-        .from("listings")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
-
-
-    if(result.error){
-
-        alert(
-            "❌ Could not delete listing:\n" +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    showAdminMessage(
-        "🗑️ Product deleted successfully."
-    );
-
-
-    await loadAdminDashboard();
-
-    await loadListings();
-}
-
-
-/* =====================================================
-   ADMIN SELLERS
-===================================================== */
-
-async function loadAdminSellers(){
-
-    const container =
-        document.getElementById(
-            "adminSellersContainer"
-        );
-
-
-    container.innerHTML = `
-
-        <div class="no-results">
-            ⏳ Loading sellers...
-        </div>
-
-    `;
-
-
-    const result =
-        await supabaseClient
-        .from("seller_profiles")
-        .select("*")
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(result.error){
-
-        container.innerHTML = `
-
-            <div class="no-results">
-                ❌ Could not load sellers.<br><br>
-                ${escapeHTML(
-                    result.error.message
-                )}
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    const sellers =
-        result.data || [];
-
-
-    if(sellers.length === 0){
-
-        container.innerHTML = `
-
-            <div class="no-results">
-                👥 No sellers registered yet.
-            </div>
-
-        `;
-
-        return;
-    }
-
 
     let html = "";
 
+    listings.forEach(
+        function(item){
 
-    sellers.forEach(
-        function(seller){
+            const image =
+                item.image_url ||
+                DEFAULT_IMAGE;
+
+            const status =
+                item.status ||
+                "active";
 
             html += `
 
-                <div class="admin-seller-card">
+                <tr>
 
-                    <strong>
-                        👤 ${escapeHTML(
-                            seller.full_name ||
-                            "Seller"
-                        )}
-                    </strong>
+                    <td>
+                        <img
+                            src="${escapeAttribute(image)}"
+                            alt="Product"
+                            onerror="this.src='${DEFAULT_IMAGE}'">
+                    </td>
 
-                    <br>
+                    <td>
+                        <strong>
+                            ${escapeHTML(item.title || "Product")}
+                        </strong>
+                    </td>
 
-                    📞 ${escapeHTML(
-                        seller.phone ||
-                        "No phone"
-                    )}
+                    <td>
+                        K${Number(item.price || 0).toLocaleString()}
+                    </td>
 
-                    <br>
+                    <td>
+                        ${escapeHTML(item.seller_name || "Unknown")}
+                    </td>
 
-                    📍 ${escapeHTML(
-                        seller.location ||
-                        "Sioma"
-                    )}
+                    <td>
+                        ${escapeHTML(item.location || "Sioma")}
+                    </td>
 
-                </div>
+                    <td>
+                        <span class="${
+                            status === "active"
+                            ? "status-active"
+                            : "status-inactive"
+                        }">
+                            ${escapeHTML(status)}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <div class="admin-actions">
+
+                            <button
+                                type="button"
+                                class="small-button view-button"
+                                onclick="viewListing('${escapeAttribute(String(item.id))}')">
+                                👀
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-button edit-button"
+                                onclick="adminEditListing('${escapeAttribute(String(item.id))}')">
+                                ✏️
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-button edit-button"
+                                onclick="toggleListingStatus('${escapeAttribute(String(item.id))}')">
+                                ${
+                                    status === "active"
+                                    ? "⏸️"
+                                    : "▶️"
+                                }
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-button delete-button"
+                                onclick="adminDeleteListing('${escapeAttribute(String(item.id))}')">
+                                🗑️
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
 
             `;
         }
     );
 
-
-    container.innerHTML =
+    body.innerHTML =
         html;
 }
 
 
-/* =====================================================
-   SECURITY / ESCAPE
-===================================================== */
+function showAllAdminListings(){
+
+    renderAdminListings(
+        adminListingsCache
+    );
+}
+
+
+function showActiveAdminListings(){
+
+    const active =
+        adminListingsCache.filter(
+            item =>
+                item.status === "active"
+        );
+
+    renderAdminListings(
+        active
+    );
+}
+
+
+/* =========================================================
+ADMIN EDIT
+========================================================= */
+
+function adminEditListing(id){
+
+    const item =
+        adminListingsCache.find(
+            listing =>
+                String(listing.id) === String(id)
+        );
+
+    if(!item){
+
+        alert(
+            "Product could not be found."
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "editListingId"
+    ).value = item.id;
+
+    document.getElementById(
+        "editTitle"
+    ).value =
+        item.title || "";
+
+    document.getElementById(
+        "editDescription"
+    ).value =
+        item.description || "";
+
+    document.getElementById(
+        "editPrice"
+    ).value =
+        item.price || 0;
+
+    document.getElementById(
+        "editCategory"
+    ).value =
+        item.category || "Other";
+
+    document.getElementById(
+        "editLocation"
+    ).value =
+        item.location || "Sioma";
+
+    document.getElementById(
+        "editSellerName"
+    ).value =
+        item.seller_name || "";
+
+    document.getElementById(
+        "editSellerPhone"
+    ).value =
+        item.seller_phone || "";
+
+    document.getElementById(
+        "editMessage"
+    ).innerText = "";
+
+    document.getElementById(
+        "editModal"
+    ).style.display =
+        "block";
+}
+
+
+/* =========================================================
+ADMIN DELETE
+========================================================= */
+
+async function adminDeleteListing(id){
+
+    const confirmed =
+        confirm(
+            "Delete this marketplace listing?\n\n" +
+            "This action cannot be undone."
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    const result =
+        await supabaseClient
+            .from("listings")
+            .delete()
+            .eq("id",id);
+
+    if(result.error){
+
+        alert(
+            "❌ Could not delete listing:\n\n" +
+            result.error.message
+        );
+
+        return;
+    }
+
+    alert(
+        "✅ Listing deleted successfully."
+    );
+
+    await loadAdminListings();
+    await loadListings();
+}
+
+
+/* =========================================================
+ADMIN TOGGLE STATUS
+========================================================= */
+
+async function toggleListingStatus(id){
+
+    const item =
+        adminListingsCache.find(
+            listing =>
+                String(listing.id) === String(id)
+        );
+
+    if(!item){
+        return;
+    }
+
+    const newStatus =
+        item.status === "active"
+            ? "inactive"
+            : "active";
+
+    const result =
+        await supabaseClient
+            .from("listings")
+            .update({
+                status:newStatus
+            })
+            .eq("id",id);
+
+    if(result.error){
+
+        alert(
+            "❌ Could not update status:\n\n" +
+            result.error.message
+        );
+
+        return;
+    }
+
+    await loadAdminListings();
+    await loadListings();
+}
+
+
+/* =========================================================
+ESCAPE HTML
+========================================================= */
 
 function escapeHTML(value){
 
     return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
 
@@ -5627,9 +5090,9 @@ function escapeAttribute(value){
 }
 
 
-/* =====================================================
-   ENTER SEARCH
-===================================================== */
+/* =========================================================
+ENTER SEARCH
+========================================================= */
 
 document.getElementById(
     "searchInput"
@@ -5644,58 +5107,49 @@ document.getElementById(
 
             searchMarket();
         }
+
     }
 );
 
 
-/* =====================================================
-   EMAIL CONFIRMATION
-===================================================== */
+/* =========================================================
+EMAIL CONFIRMATION
+========================================================= */
 
 function checkEmailConfirmation(){
 
     const hash =
         window.location.hash;
 
-
     if(!hash){
-
         return;
     }
-
 
     const params =
         new URLSearchParams(
             hash.substring(1)
         );
 
-
     const error =
         params.get("error");
-
 
     const errorDescription =
         params.get(
             "error_description"
         );
 
-
     if(error){
 
         openAuthModal();
-
         showLogin();
-
 
         const message =
             document.getElementById(
                 "authMessage"
             );
 
-
         message.style.color =
             "#c62828";
-
 
         message.innerHTML =
             "❌ " +
@@ -5704,17 +5158,14 @@ function checkEmailConfirmation(){
                 "Email confirmation failed."
             );
 
-
         window.history.replaceState(
             {},
             document.title,
             EMAIL_REDIRECT_URL
         );
 
-
         return;
     }
-
 
     if(
         params.get("access_token") ||
@@ -5727,27 +5178,22 @@ function checkEmailConfirmation(){
             EMAIL_REDIRECT_URL
         );
 
-
         setTimeout(
             async function(){
 
                 await loadAuthSession();
 
-
                 if(currentUser){
 
                     openAuthModal();
-
 
                     const message =
                         document.getElementById(
                             "authMessage"
                         );
 
-
                     message.style.color =
                         "#087f3d";
-
 
                     message.innerHTML =
                         "✅ Email confirmed successfully!<br><br>" +
@@ -5761,9 +5207,9 @@ function checkEmailConfirmation(){
 }
 
 
-/* =====================================================
-   PAGE START
-===================================================== */
+/* =========================================================
+PAGE START
+========================================================= */
 
 document.addEventListener(
 "DOMContentLoaded",
@@ -5781,4 +5227,4 @@ async function(){
 </script>
 
 </body>
-  </html>
+   </html>
