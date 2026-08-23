@@ -1,6 +1,10 @@
-/* =========================
+/* =========================================================
    SIOMA MARKET
-   MOBILE-FIRST CSS
+   MOBILE-FIRST STYLE.CSS
+   ========================================================= */
+
+/* =========================
+   RESET
    ========================= */
 
 * {
@@ -21,6 +25,17 @@ body {
     overflow-x: hidden;
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: Arial, sans-serif;
+}
+
+button {
+    cursor: pointer;
+}
+
 .container {
     width: 100%;
     max-width: 1100px;
@@ -29,12 +44,12 @@ body {
 }
 
 
-/* =========================
+/* =========================================================
    HEADER
-   ========================= */
+   ========================================================= */
 
 .header {
-    background: white;
+    background: #fff;
     border-bottom: 1px solid #ddd;
     position: sticky;
     top: 0;
@@ -48,6 +63,8 @@ body {
     justify-content: space-between;
 }
 
+/* LOGO */
+
 .logo {
     display: flex;
     align-items: center;
@@ -58,7 +75,7 @@ body {
     width: 40px;
     height: 40px;
     background: #087f5b;
-    color: white;
+    color: #fff;
     border-radius: 8px;
 
     display: flex;
@@ -78,7 +95,19 @@ body {
 }
 
 
-/* MOBILE MENU */
+/* SITE IMAGE LOGO */
+
+.site-logo {
+    max-width: 70px;
+    max-height: 70px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+
+/* MOBILE MENU BUTTON */
 
 .menu-btn {
     border: none;
@@ -88,6 +117,9 @@ body {
     cursor: pointer;
 }
 
+
+/* NAVIGATION */
+
 nav {
     display: none;
 
@@ -96,7 +128,7 @@ nav {
     left: 0;
     right: 0;
 
-    background: white;
+    background: #fff;
     padding: 15px;
 
     border-bottom: 1px solid #ddd;
@@ -116,13 +148,13 @@ nav a {
 }
 
 
-/* =========================
+/* =========================================================
    HERO
-   ========================= */
+   ========================================================= */
 
 .hero {
     background: #087f5b;
-    color: white;
+    color: #fff;
     padding: 50px 0;
 }
 
@@ -144,9 +176,9 @@ nav a {
 }
 
 
-/* =========================
+/* =========================================================
    BUTTONS
-   ========================= */
+   ========================================================= */
 
 .btn {
     display: block;
@@ -168,21 +200,21 @@ nav a {
 
 .primary {
     background: #087f5b;
-    color: white;
+    color: #fff;
 }
 
 .secondary {
-    background: white;
+    background: #fff;
     color: #087f5b;
 }
 
 
-/* =========================
+/* =========================================================
    SEARCH
-   ========================= */
+   ========================================================= */
 
 .search-section {
-    background: white;
+    background: #fff;
     padding: 15px 0;
 
     position: sticky;
@@ -208,9 +240,9 @@ nav a {
 }
 
 
-/* =========================
+/* =========================================================
    CATEGORIES
-   ========================= */
+   ========================================================= */
 
 .categories {
     padding: 30px 0;
@@ -222,16 +254,14 @@ nav a {
 
 .category-grid {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 10px;
 }
 
 .category-grid button {
     min-height: 80px;
 
-    background: white;
+    background: #fff;
 
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -246,9 +276,9 @@ nav a {
 }
 
 
-/* =========================
+/* =========================================================
    PRODUCTS
-   ========================= */
+   ========================================================= */
 
 .products-section {
     padding: 30px 0 50px;
@@ -281,13 +311,13 @@ nav a {
 /* PRODUCT CARD */
 
 .product-card {
-    background: white;
+    background: #fff;
 
     border-radius: 12px;
 
     overflow: hidden;
 
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
 }
 
 .product-image {
@@ -300,6 +330,13 @@ nav a {
     justify-content: center;
 
     font-size: 55px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .product-content {
@@ -329,13 +366,16 @@ nav a {
     margin-bottom: 8px;
 }
 
+
+/* WHATSAPP PRODUCT BUTTON */
+
 .whatsapp {
     display: block;
 
     width: 100%;
 
     background: #25D366;
-    color: white;
+    color: #fff;
 
     text-align: center;
 
@@ -351,12 +391,12 @@ nav a {
 }
 
 
-/* =========================
+/* =========================================================
    SELL SECTION
-   ========================= */
+   ========================================================= */
 
 .sell-section {
-    background: white;
+    background: #fff;
     padding: 50px 0;
 }
 
@@ -375,7 +415,7 @@ nav a {
 }
 
 
-/* FORM */
+/* GENERAL FORM */
 
 form {
     display: flex;
@@ -401,7 +441,7 @@ form textarea {
 
     font-size: 16px;
 
-    background: white;
+    background: #fff;
 }
 
 form textarea {
@@ -413,9 +453,9 @@ form button {
 }
 
 
-/* =========================
+/* =========================================================
    ABOUT
-   ========================= */
+   ========================================================= */
 
 .about-section {
     padding: 50px 0;
@@ -437,7 +477,7 @@ form button {
 }
 
 .how-grid div {
-    background: white;
+    background: #fff;
 
     padding: 20px;
 
@@ -450,13 +490,702 @@ form button {
 }
 
 
-/* =========================
+/* =========================================================
+   SEARCH RESULTS
+   ========================================================= */
+
+#searchResults {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 15px;
+    text-align: center;
+}
+
+#searchResults h2 {
+    color: #087f3d;
+    margin-bottom: 15px;
+}
+
+.results-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 18px;
+}
+
+.result-card {
+    background: #fff;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+
+    text-align: left;
+}
+
+.result-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.result-info {
+    padding: 15px;
+}
+
+.result-price {
+    color: #087f3d;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin: 8px 0;
+}
+
+.buy-result {
+    width: 100%;
+
+    border: none;
+
+    background: #087f3d;
+    color: #fff;
+
+    padding: 12px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   PRODUCT DETAILS PAGE
+   ========================================================= */
+
+.product-page {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: #f4f6f8;
+
+    z-index: 10000;
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* PRODUCT PAGE HEADER */
+
+.product-page-header {
+    background: #087f3d;
+
+    color: #fff;
+
+    padding: 14px 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 20;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+
+.product-page-header h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+
+/* BACK BUTTON */
+
+.back-button {
+    border: none;
+
+    background: #fff;
+
+    color: #087f3d;
+
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* PRODUCT DETAILS CONTAINER */
+
+.product-details {
+    max-width: 1050px;
+
+    margin: 25px auto;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, .10);
+}
+
+
+/* PRODUCT DETAIL IMAGE */
+
+.details-image-container {
+    width: 100%;
+    background: #f0f0f0;
+    text-align: center;
+}
+
+.details-image {
+    width: 100%;
+
+    height: 450px;
+
+    object-fit: contain;
+
+    display: block;
+
+    margin: auto;
+}
+
+
+/* PRODUCT DETAIL CONTENT */
+
+.details-content {
+    padding: 28px;
+
+    text-align: left;
+}
+
+.details-category {
+    display: inline-block;
+
+    background: #e8f5ed;
+
+    color: #087f3d;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+.details-content h1 {
+    font-size: 32px;
+
+    color: #222;
+
+    margin-bottom: 10px;
+}
+
+.details-price {
+    color: #087f3d;
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+.details-location {
+    color: #666;
+
+    font-size: 15px;
+
+    margin-bottom: 22px;
+}
+
+.details-content hr {
+    border: none;
+
+    border-top: 1px solid #eee;
+
+    margin: 22px 0;
+}
+
+.details-content h3 {
+    margin-bottom: 10px;
+
+    color: #222;
+}
+
+.details-description {
+    color: #555;
+
+    line-height: 1.7;
+
+    margin-bottom: 5px;
+}
+
+
+/* =========================================================
+   SELLER INFORMATION
+   ========================================================= */
+
+.seller-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    background: #f7f8f8;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    margin-top: 12px;
+}
+
+.seller-icon {
+    width: 48px;
+
+    height: 48px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #087f3d;
+
+    color: #fff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+}
+
+#detailsSeller {
+    font-size: 17px;
+}
+
+#detailsPhone {
+    color: #666;
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   PRODUCT CONTACT BUTTONS
+   ========================================================= */
+
+.whatsapp-button {
+    width: 100%;
+
+    margin-top: 22px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #25D366;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.whatsapp-button:hover {
+    opacity: .9;
+}
+
+.call-button {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 14px;
+
+    border: 2px solid #087f3d;
+
+    border-radius: 9px;
+
+    background: #fff;
+
+    color: #087f3d;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   FAVORITES
+   ========================================================= */
+
+.favorite-button {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #f1f1f1;
+
+    color: #333;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* FAVORITES NAVIGATION BUTTON */
+
+.favorites-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    border: none;
+
+    background: #fff;
+
+    color: #087f3d;
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.favorites-button:active {
+    transform: scale(.97);
+}
+
+
+/* FAVORITES PAGE */
+
+#favoritesPage {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: #f4f6f8;
+
+    z-index: 11000;
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+#favoritesResults {
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 25px 15px 60px;
+}
+
+#favoritesResults .results-title {
+    color: #087f3d;
+
+    text-align: center;
+
+    margin-bottom: 20px;
+}
+
+#favoritesResults .results-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 15px;
+}
+
+#favoritesResults .result-card {
+    background: #fff;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+}
+
+#favoritesResults .result-card img {
+    width: 100%;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+#favoritesResults .result-info {
+    padding: 15px;
+}
+
+#favoritesResults .result-price {
+    color: #087f3d;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin: 8px 0;
+}
+
+#favoritesResults .buy-result {
+    width: 100%;
+
+    border: none;
+
+    background: #087f3d;
+
+    color: #fff;
+
+    padding: 12px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SELL PAGE
+   ========================================================= */
+
+.sell-page {
+    display: none;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: #f4f6f8;
+
+    z-index: 9999;
+
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* SELL PAGE HEADER */
+
+.sell-page-header {
+    background: #087f3d;
+
+    color: #fff;
+
+    padding: 15px 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+}
+
+.sell-page-header h2 {
+    font-size: 20px;
+
+    margin: 0;
+}
+
+
+/* SELL CONTAINER */
+
+.sell-container {
+    width: 100%;
+
+    max-width: 650px;
+
+    margin: 0 auto;
+
+    padding: 25px 16px 80px;
+}
+
+
+/* SELL INTRO */
+
+.sell-intro {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.sell-icon-large {
+    font-size: 45px;
+
+    margin-bottom: 10px;
+}
+
+.sell-intro h1 {
+    color: #087f3d;
+
+    margin-bottom: 8px;
+}
+
+.sell-intro p {
+    color: #666;
+}
+
+
+/* SELL FORM */
+
+.sell-form {
+    background: #fff;
+
+    padding: 22px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, .08);
+}
+
+.sell-form label {
+    display: block;
+
+    margin-top: 16px;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
+}
+
+.sell-form input,
+.sell-form select,
+.sell-form textarea {
+    width: 100%;
+
+    padding: 14px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-family: Arial, sans-serif;
+}
+
+.sell-form textarea {
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+
+/* PUBLISH BUTTON */
+
+.publish-button {
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #087f3d;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
    FOOTER
-   ========================= */
+   ========================================================= */
 
 footer {
     background: #222;
-    color: white;
+
+    color: #fff;
 
     text-align: center;
 
@@ -468,9 +1197,9 @@ footer h3 {
 }
 
 
-/* =========================
+/* =========================================================
    TABLETS
-   ========================= */
+   ========================================================= */
 
 @media (min-width: 600px) {
 
@@ -490,12 +1219,15 @@ footer h3 {
         grid-template-columns: repeat(3, 1fr);
     }
 
+    .favorites-button {
+        width: auto;
+    }
 }
 
 
-/* =========================
+/* =========================================================
    DESKTOP
-   ========================= */
+   ========================================================= */
 
 @media (min-width: 850px) {
 
@@ -540,832 +1272,89 @@ footer h3 {
     .category-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-
-  }/* =================================
-   PRODUCT DETAILS PAGE
-================================= */
-
-.product-page {
-    display: none;
-
-    position: fixed;
-    inset: 0;
-
-    background: #f5f7f5;
-
-    z-index: 500;
-
-    overflow-y: auto;
 }
 
 
-/* HEADER */
-
-.product-page-header {
-    background: #087f3d;
-    color: white;
-
-    padding: 15px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 20px;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 10;
-}
-
-
-.product-page-header h2 {
-    margin: 0;
-}
-
-
-/* BACK BUTTON */
-
-.back-button {
-    background: white;
-
-    color: #087f3d;
-
-    border: none;
-
-    padding: 9px 14px;
-
-    border-radius: 7px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-
-/* DETAILS CONTAINER */
-
-.product-details {
-
-    max-width: 1000px;
-
-    margin: 30px auto;
-
-    background: white;
-
-    border-radius: 15px;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 5px 20px rgba(0,0,0,.12);
-}
-
-
-/* IMAGE */
-
-.details-image-container {
-    width: 100%;
-
-    background: #eee;
-
-    text-align: center;
-}
-
-
-.details-image {
-    width: 100%;
-
-    max-height: 500px;
-
-    object-fit: contain;
-
-    display: block;
-
-    margin: auto;
-}
-
-
-/* CONTENT */
-
-.details-content {
-
-    padding: 25px;
-}
-
-
-.details-category {
-
-    display: inline-block;
-
-    background: #e8f5ed;
-
-    color: #087f3d;
-
-    padding: 6px 10px;
-
-    border-radius: 20px;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    margin-bottom: 10px;
-}
-
-
-.details-content h1 {
-
-    font-size: 30px;
-
-    margin-bottom: 10px;
-}
-
-
-.details-price {
-
-    color: #087f3d;
-
-    font-size: 28px;
-
-    font-weight: bold;
-
-    margin-bottom: 10px;
-}
-
-
-.details-location {
-
-    color: #666;
-
-    margin-bottom: 20px;
-}
-
-
-.details-content hr {
-
-    border: none;
-
-    border-top: 1px solid #eee;
-
-    margin: 20px 0;
-}
-
-
-.details-description {
-
-    color: #555;
-
-    line-height: 1.7;
-
-    margin-top: 10px;
-}
-
-
-/* SELLER */
-
-.seller-box {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    background: #f7f7f7;
-
-    padding: 15px;
-
-    border-radius: 10px;
-
-    margin-top: 12px;
-}
-
-
-.seller-icon {
-
-    width: 45px;
-
-    height: 45px;
-
-    border-radius: 50%;
-
-    background: #087f3d;
-
-    color: white;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 22px;
-}
-
-
-/* WHATSAPP */
-
-.whatsapp-button {
-
-    width: 100%;
-
-    margin-top: 25px;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 9px;
-
-    background: #25D366;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-
-.whatsapp-button:hover {
-
-    opacity: .9;
-
-}
-
-
-/* DESKTOP */
-
-@media (min-width: 700px) {
-
-    .product-details {
-
-        display: grid;
-
-        grid-template-columns:
-            1fr 1fr;
-    }
-
-}
-
-
-/* MOBILE */
-
-@media (max-width: 699px) {
-
-    .details-image {
-
-        height: 300px;
-    }
-
-    .details-content h1 {
-
-        font-size: 24px;
-    }
-
-    .details-price {
-
-        font-size: 24px;
-    }
-
-}
-
-#searchResults {
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 15px;
-    text-align: center;
-}
-
-#searchResults h2 {
-    color: #087f3d;
-    margin-bottom: 15px;
-}
-
-.results-grid {
-    display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(200px, 1fr)
-    );
-    gap: 18px;
-}
-
-.result-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,.1);
-    text-align: left;
-}
-
-.result-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-.result-info {
-    padding: 15px;
-}
-
-.result-price {
-    color: #087f3d;
-    font-size: 20px;
-    font-weight: bold;
-    margin: 8px 0;
-}
-
-.buy-result {
-    width: 100%;
-    border: none;
-    background: #087f3d;
-    color: white;
-    padding: 12px;
-    border-radius: 7px;
-    font-weight: bold;
-    cursor: pointer;
-}
-/* PRODUCT DETAILS */
-
-.product-page {
-    display: none;
-
-    position: fixed;
-
-    inset: 0;
-
-    background: #f4f6f8;
-
-    z-index: 1000;
-
-    overflow-y: auto;
-}
-
-.product-page-header {
-    background: #087f3d;
-
-    color: white;
-
-    padding: 15px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 20px;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 10;
-}
-
-.back-button {
-    border: none;
-
-    background: white;
-
-    color: #087f3d;
-
-    padding: 9px 15px;
-
-    border-radius: 7px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-}
-/* =========================================
-   PROFESSIONAL PRODUCT DETAILS PAGE
-========================================= */
-
-.product-page {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #f4f6f8;
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.product-page-header {
-    background: #087f3d;
-    color: white;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
-}
-
-.product-page-header h2 {
-    font-size: 20px;
-}
-
-.back-button {
-    border: none;
-    background: white;
-    color: #087f3d;
-    padding: 9px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.product-details {
-    max-width: 1050px;
-    margin: 25px auto;
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0,0,0,.10);
-}
-
-.details-image-container {
-    background: #f0f0f0;
-}
-
-.details-image {
-    width: 100%;
-    height: 450px;
-    object-fit: contain;
-    display: block;
-}
-
-.details-content {
-    padding: 28px;
-    text-align: left;
-}
-
-.details-category {
-    display: inline-block;
-    background: #e8f5ed;
-    color: #087f3d;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-.details-content h1 {
-    font-size: 32px;
-    color: #222;
-    margin-bottom: 10px;
-}
-
-.details-price {
-    color: #087f3d;
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 12px;
-}
-
-.details-location {
-    color: #666;
-    font-size: 15px;
-    margin-bottom: 22px;
-}
-
-.details-content hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 22px 0;
-}
-
-.details-content h3 {
-    margin-bottom: 10px;
-    color: #222;
-}
-
-.details-description {
-    color: #555;
-    line-height: 1.7;
-    margin-bottom: 5px;
-}
-
-/* SELLER */
-
-.seller-box {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    background: #f7f8f8;
-    padding: 16px;
-    border-radius: 12px;
-    margin-top: 12px;
-}
-
-.seller-icon {
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: #087f3d;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-}
-
-#detailsSeller {
-    font-size: 17px;
-}
-
-#detailsPhone {
-    color: #666;
-    margin-top: 4px;
-}
-
-/* WHATSAPP */
-
-.whatsapp-button {
-    width: 100%;
-    margin-top: 22px;
-    padding: 15px;
-    border: none;
-    border-radius: 9px;
-    background: #25D366;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.whatsapp-button:hover {
-    opacity: .9;
-}
-
-/* CALL BUTTON */
-
-.call-button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 14px;
-    border: 2px solid #087f3d;
-    border-radius: 9px;
-    background: white;
-    color: #087f3d;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* FAVOURITE */
-
-.favorite-button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 13px;
-    border: none;
-    border-radius: 9px;
-    background: #f1f1f1;
-    color: #333;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* DESKTOP */
+/* =========================================================
+   PRODUCT DETAILS DESKTOP
+   ========================================================= */
 
 @media (min-width: 750px) {
 
     .product-details {
         display: grid;
+
         grid-template-columns: 1.1fr 1fr;
     }
 
     .details-image {
         height: 600px;
     }
-
 }
 
-/* MOBILE */
 
-@media (max-width: 600px) {
+/* =========================================================
+   PRODUCT DETAILS MOBILE
+   ========================================================= */
+
+@media (max-width: 749px) {
 
     .product-details {
         margin: 0;
+
         border-radius: 0;
+
+        box-shadow: none;
     }
 }
-/* =========================================
-   SIOMA MARKET SELL PAGE
-========================================= */
 
-.sell-page {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #f4f6f8;
-    z-index: 9999;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+@media (max-width: 699px) {
+
+    .details-image {
+        height: 300px;
+    }
+
+    .details-content h1 {
+        font-size: 24px;
+    }
+
+    .details-price {
+        font-size: 24px;
+    }
 }
 
-.sell-page-header {
-    background: #087f3d;
-    color: white;
-    padding: 15px 16px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
 
-.sell-page-header h2 {
-    font-size: 20px;
-    margin: 0;
-}
-
-.sell-container {
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-    padding: 25px 16px 80px;
-}
-
-.sell-intro {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.sell-icon-large {
-    font-size: 45px;
-    margin-bottom: 10px;
-}
-
-.sell-intro h1 {
-    color: #087f3d;
-    margin-bottom: 8px;
-}
-
-.sell-intro p {
-    color: #666;
-}
-
-.sell-form {
-    background: white;
-    padding: 22px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.08);
-}
-
-.sell-form label {
-    display: block;
-    margin-top: 16px;
-    margin-bottom: 7px;
-    font-weight: bold;
-}
-
-.sell-form input,
-.sell-form select,
-.sell-form textarea {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-}
-
-.sell-form textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.publish-button {
-    width: 100%;
-    margin-top: 25px;
-    padding: 15px;
-    border: none;
-    border-radius: 9px;
-    background: #087f3d;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-}
-/* =========================================
-   SIOMAMARKET FAVORITES BUTTON
-========================================= */
-
-.favorites-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border: none;
-    background: #fff;
-    color: #087f3d;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.favorites-button:active {
-    transform: scale(.97);
-}
-
-/* FAVORITES PAGE */
-
-#favoritesPage {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #f4f6f8;
-    z-index: 10000;
-    overflow-y: auto;
-}
-
-#favoritesResults {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 25px 15px 60px;
-}
-
-#favoritesResults .results-title {
-    color: #087f3d;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-#favoritesResults .results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-#favoritesResults .result-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0,0,0,.08);
-}
-
-#favoritesResults .result-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-#favoritesResults .result-info {
-    padding: 15px;
-}
-
-#favoritesResults .result-price {
-    color: #087f3d;
-    font-size: 20px;
-    font-weight: bold;
-    margin: 8px 0;
-}
-
-#favoritesResults .buy-result {
-    width: 100%;
-    border: none;
-    background: #087f3d;
-    color: white;
-    padding: 12px;
-    border-radius: 7px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* MOBILE */
+/* =========================================================
+   SMALL MOBILE DEVICES
+   ========================================================= */
 
 @media (max-width: 600px) {
-.site-logo {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 8px;
-}
+
+    .site-logo {
+        width: 70px;
+
+        height: 70px;
+
+        object-fit: contain;
+
+        display: block;
+
+        margin: 0 auto 8px;
+    }
+
     .favorites-button {
         width: 100%;
+
         font-size: 13px;
+
         padding: 10px 8px;
     }
 
-   }
+    .details-content {
+        padding: 20px;
+    }
+
+    .sell-form {
+        padding: 18px;
+    }
+}
