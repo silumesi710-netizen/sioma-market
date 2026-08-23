@@ -1355,7 +1355,13 @@ footer h3 {
 /* MOBILE */
 
 @media (max-width: 600px) {
-
+.site-logo {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 8px;
+}
     .favorites-button {
         width: 100%;
         font-size: 13px;
