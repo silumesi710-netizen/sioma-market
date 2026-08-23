@@ -2,17 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#087f3d">
+<meta name="description" content="SiomaMarket - Buy and sell locally in Zambia">
 
-<title>SiomaMarket 🇿🇲 | Zambia's Local Marketplace</title>
+<title>SiomaMarket 🇿🇲 | Buy & Sell Locally</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-/* =========================================================
-   SIOMAMARKET PROFESSIONAL EDITION
-   ========================================================= */
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -24,17 +22,13 @@ html{
 }
 
 body{
-    font-family:Inter,Arial,Helvetica,sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:#f5f7f6;
     color:#17231c;
     line-height:1.5;
-    overflow-x:hidden;
 }
 
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
     font:inherit;
 }
 
@@ -42,226 +36,94 @@ button{
     cursor:pointer;
 }
 
-img{
-    max-width:100%;
-}
-
 :root{
-    --green:#07883f;
-    --green-dark:#045b2a;
-    --green-deep:#033d1d;
-    --green-light:#e9f8ef;
-    --green-soft:#f2fbf5;
+    --green:#087f3d;
+    --green-dark:#075b2d;
+    --green-light:#e8f6ee;
     --gold:#ffb703;
-    --gold-dark:#e39a00;
-    --gold-light:#fff5d6;
-    --dark:#102c1d;
-    --text:#17231c;
-    --muted:#6c7771;
+    --gold-light:#fff4ce;
+    --dark:#123524;
+    --muted:#69756e;
     --white:#fff;
     --border:#e1e8e4;
     --danger:#c62828;
-    --danger-light:#ffeded;
-    --success:#087f3d;
-    --shadow:0 10px 30px rgba(16,44,29,.08);
-    --shadow-lg:0 18px 50px rgba(16,44,29,.13);
-    --radius:16px;
+    --shadow:0 5px 18px rgba(18,53,36,.07);
 }
 
-/* =========================================================
-   GLOBAL
-   ========================================================= */
+/* ================= HEADER ================= */
 
-.hidden{
-    display:none!important;
-}
-
-.container{
-    max-width:1240px;
-    margin:auto;
-    padding-left:18px;
-    padding-right:18px;
-}
-
-.section{
-    margin-bottom:45px;
-}
-
-.section-heading{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:20px;
-    margin-bottom:18px;
-}
-
-.section-heading h2{
-    color:var(--dark);
-    font-size:25px;
-    line-height:1.2;
-}
-
-.section-heading p{
-    color:var(--muted);
-    font-size:14px;
-    margin-top:4px;
-}
-
-.section-link{
-    border:0;
-    background:none;
-    color:var(--green);
-    font-weight:800;
-}
-
-.no-results{
-    background:white;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:35px 20px;
-    text-align:center;
-    color:var(--muted);
-    box-shadow:var(--shadow);
-}
-
-hr{
-    border:0;
-    border-top:1px solid var(--border);
-    margin:20px 0;
-}
-
-/* =========================================================
-   HEADER / NAV
-   ========================================================= */
-
-.site-header{
+header{
     background:
-        radial-gradient(circle at 88% 8%,rgba(255,183,3,.22),transparent 25%),
-        radial-gradient(circle at 10% 90%,rgba(255,255,255,.08),transparent 25%),
-        linear-gradient(135deg,var(--green-deep),var(--green));
-    color:white;
-    position:relative;
-    overflow:hidden;
+    radial-gradient(circle at 90% 10%,rgba(255,183,3,.15),transparent 25%),
+    linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff;
+    padding:15px 15px 32px;
 }
 
-.top-nav{
-    max-width:1240px;
+.header-inner{
+    max-width:1200px;
     margin:auto;
-    padding:17px 18px;
+}
+
+.topbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:20px;
+    gap:15px;
+    margin-bottom:28px;
 }
 
-.brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    text-decoration:none;
-    color:white;
+.logo{
+    font-size:27px;
+    font-weight:900;
+    letter-spacing:-1px;
 }
 
-.brand-mark{
-    width:44px;
-    height:44px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:13px;
-    background:white;
-    color:var(--green);
-    font-size:23px;
-    box-shadow:0 5px 18px rgba(0,0,0,.15);
-}
-
-.brand-text strong{
-    display:block;
-    font-size:23px;
-    line-height:1;
-    letter-spacing:-.8px;
-}
-
-.brand-text strong span{
+.logo span{
     color:var(--gold);
 }
 
-.brand-text small{
-    display:block;
-    font-size:10px;
-    opacity:.8;
-    margin-top:4px;
+.tagline{
+    font-size:12px;
+    opacity:.85;
 }
 
-.desktop-nav{
+.account-actions{
     display:flex;
-    align-items:center;
-    gap:5px;
-}
-
-.desktop-nav button{
-    border:0;
-    background:transparent;
-    color:white;
-    padding:9px 12px;
-    border-radius:9px;
-    font-weight:700;
-}
-
-.desktop-nav button:hover{
-    background:rgba(255,255,255,.12);
-}
-
-.nav-actions{
-    display:flex;
-    align-items:center;
     gap:7px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
 }
 
-.nav-btn{
+.account-button{
     border:0;
     border-radius:9px;
     padding:9px 12px;
-    font-weight:800;
-    background:white;
+    background:#fff;
     color:var(--green);
+    font-weight:bold;
 }
 
-.nav-btn.gold{
+.account-button.gold{
     background:var(--gold);
     color:#222;
 }
 
-.nav-btn.soft{
+.account-button.soft{
     background:var(--green-light);
     color:var(--green);
 }
 
 .hero{
-    max-width:1000px;
+    max-width:900px;
     margin:auto;
-    padding:55px 18px 70px;
     text-align:center;
 }
 
-.hero-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    background:rgba(255,255,255,.12);
-    border:1px solid rgba(255,255,255,.2);
-    padding:7px 13px;
-    border-radius:30px;
-    font-size:12px;
-    font-weight:800;
-    margin-bottom:18px;
-}
-
 .hero h1{
-    font-size:clamp(38px,7vw,68px);
-    line-height:.98;
-    letter-spacing:-2.5px;
-    margin-bottom:18px;
+    font-size:clamp(31px,7vw,54px);
+    line-height:1.04;
+    margin-bottom:12px;
 }
 
 .hero h1 span{
@@ -269,30 +131,19 @@ hr{
 }
 
 .hero p{
-    max-width:680px;
+    max-width:650px;
     margin:auto;
     color:rgba(255,255,255,.9);
-    font-size:17px;
-}
-
-.search-wrapper{
-    max-width:850px;
-    margin:28px auto 0;
 }
 
 .search-box{
+    max-width:780px;
+    margin:22px auto 0;
     display:flex;
-    align-items:center;
-    background:white;
-    padding:6px;
-    border-radius:17px;
-    box-shadow:0 15px 40px rgba(0,0,0,.22);
-}
-
-.search-icon{
-    color:#87928c;
-    font-size:20px;
-    padding-left:13px;
+    background:#fff;
+    border-radius:14px;
+    padding:5px;
+    box-shadow:0 10px 25px rgba(0,0,0,.16);
 }
 
 .search-box input{
@@ -300,17 +151,16 @@ hr{
     min-width:0;
     border:0;
     outline:0;
-    padding:14px 12px;
+    padding:13px 15px;
     color:#222;
-    font-size:16px;
 }
 
 .search-box button{
     border:0;
-    border-radius:12px;
+    border-radius:10px;
+    padding:0 18px;
     background:var(--gold);
     color:#222;
-    padding:13px 21px;
     font-weight:900;
 }
 
@@ -318,18 +168,18 @@ hr{
     display:flex;
     justify-content:center;
     gap:10px;
-    margin-top:15px;
+    margin-top:14px;
 }
 
 .hero-actions button{
     border:0;
-    border-radius:11px;
-    padding:12px 19px;
-    font-weight:900;
+    border-radius:9px;
+    padding:12px 20px;
+    font-weight:bold;
 }
 
 .buy-btn{
-    background:white;
+    background:#fff;
     color:var(--green);
 }
 
@@ -338,371 +188,185 @@ hr{
     color:#222;
 }
 
-/* =========================================================
-   QUICK TRUST STRIP
-   ========================================================= */
-
-.trust-strip{
-    background:white;
-    border-bottom:1px solid var(--border);
-}
-
-.trust-grid{
-    max-width:1240px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    padding:17px 18px;
-}
-
-.trust-item{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:9px;
-    color:var(--dark);
-    font-size:13px;
-    font-weight:800;
-    border-right:1px solid var(--border);
-}
-
-.trust-item:last-child{
-    border-right:0;
-}
-
-.trust-item span{
-    font-size:20px;
-}
-
-/* =========================================================
-   MAIN
-   ========================================================= */
+/* ================= MAIN ================= */
 
 main{
-    max-width:1240px;
+    max-width:1200px;
     margin:auto;
-    padding:35px 18px 80px;
+    padding:28px 15px 60px;
 }
 
-/* =========================================================
-   CATEGORY CARDS
-   ========================================================= */
+.section{
+    margin-bottom:35px;
+}
+
+.section-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    margin-bottom:15px;
+}
+
+.section-heading h2{
+    color:var(--dark);
+    font-size:22px;
+}
+
+.section-heading p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+/* ================= CATEGORIES ================= */
 
 .categories{
     display:grid;
-    grid-template-columns:repeat(8,1fr);
-    gap:11px;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
 }
 
 .category{
-    background:white;
+    background:#fff;
     border:1px solid var(--border);
-    border-radius:15px;
-    padding:17px 7px;
+    border-radius:14px;
+    padding:17px 8px;
     text-align:center;
     box-shadow:var(--shadow);
-    transition:.2s ease;
+    transition:transform .15s;
 }
 
-.category:hover{
-    transform:translateY(-4px);
-    border-color:#b5d7c3;
-    box-shadow:var(--shadow-lg);
+.category:active{
+    transform:scale(.98);
 }
 
 .category-icon{
-    width:50px;
-    height:50px;
-    margin:0 auto 9px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--green-light);
-    font-size:27px;
+    display:block;
+    font-size:29px;
+    margin-bottom:5px;
 }
 
 .category-name{
     display:block;
-    font-weight:900;
-    font-size:13px;
+    font-weight:800;
 }
 
 .category-count{
     display:block;
-    font-size:10px;
     color:var(--muted);
-    margin-top:2px;
+    font-size:11px;
 }
 
-/* =========================================================
-   FILTER BAR
-   ========================================================= */
-
-.filter-bar{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-    background:white;
-    border:1px solid var(--border);
-    padding:12px;
-    border-radius:14px;
-    margin-bottom:20px;
-    box-shadow:var(--shadow);
-}
-
-.filter-bar select,
-.filter-bar input{
-    border:1px solid var(--border);
-    background:#fafcfb;
-    border-radius:9px;
-    padding:9px 11px;
-    outline:0;
-    color:var(--text);
-}
-
-.filter-bar label{
-    color:var(--muted);
-    font-size:12px;
-    font-weight:800;
-}
-
-.filter-reset{
-    margin-left:auto;
-    border:0;
-    background:var(--green-light);
-    color:var(--green);
-    border-radius:9px;
-    padding:9px 12px;
-    font-weight:800;
-}
-
-/* =========================================================
-   PRODUCT GRID
-   ========================================================= */
+/* ================= PRODUCTS ================= */
 
 .results-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:17px;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
 }
 
 .result-card{
-    position:relative;
     overflow:hidden;
-    background:white;
+    background:#fff;
     border:1px solid var(--border);
-    border-radius:17px;
+    border-radius:15px;
     box-shadow:var(--shadow);
-    transition:.2s ease;
-}
-
-.result-card:hover{
-    transform:translateY(-4px);
-    box-shadow:var(--shadow-lg);
 }
 
 .product-image-wrap{
     position:relative;
-    overflow:hidden;
-    background:#eef2ef;
+    background:#edf1ef;
 }
 
 .result-card img{
-    width:100%;
-    height:215px;
     display:block;
+    width:100%;
+    height:175px;
     object-fit:cover;
-    transition:.3s ease;
-}
-
-.result-card:hover img{
-    transform:scale(1.035);
 }
 
 .favorite-card{
     position:absolute;
-    right:11px;
-    top:11px;
-    width:39px;
-    height:39px;
+    top:9px;
+    right:9px;
+    width:37px;
+    height:37px;
     border:0;
     border-radius:50%;
     background:rgba(255,255,255,.95);
-    box-shadow:0 4px 13px rgba(0,0,0,.15);
-    font-size:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.14);
 }
 
-.product-status{
-    position:absolute;
-    left:10px;
-    top:10px;
-    background:var(--green);
-    color:white;
-    border-radius:20px;
-    padding:5px 9px;
-    font-size:10px;
-    font-weight:900;
+.favorite-card.saved{
+    color:#c62828;
 }
 
 .result-info{
-    padding:14px;
+    padding:13px;
 }
 
 .category-badge{
     display:inline-block;
-    background:var(--green-light);
-    color:var(--green);
     padding:4px 8px;
     border-radius:20px;
+    background:var(--green-light);
+    color:var(--green);
     font-size:10px;
-    font-weight:900;
-    margin-bottom:7px;
+    font-weight:bold;
 }
 
 .result-info h3{
-    font-size:16px;
+    margin:7px 0 5px;
+    font-size:15px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    margin-bottom:6px;
 }
 
 .result-price{
     color:var(--green);
-    font-size:20px;
-    font-weight:950;
+    font-size:19px;
+    font-weight:900;
 }
 
 .result-location{
     color:var(--muted);
     font-size:12px;
-    margin:5px 0 12px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.card-footer{
-    display:flex;
-    gap:7px;
+    margin:5px 0 10px;
 }
 
 .buy-result{
-    flex:1;
+    width:100%;
     border:0;
-    border-radius:9px;
-    background:var(--green);
-    color:white;
+    border-radius:8px;
     padding:10px;
-    font-size:12px;
-    font-weight:900;
+    background:var(--green);
+    color:#fff;
+    font-weight:bold;
 }
 
-.share-card{
-    width:40px;
+.no-results{
+    padding:28px 16px;
+    text-align:center;
+    background:#fff;
     border:1px solid var(--border);
-    border-radius:9px;
-    background:white;
-}
-
-/* =========================================================
-   FEATURED BANNER
-   ========================================================= */
-
-.feature-banner{
-    background:
-        radial-gradient(circle at 80% 20%,rgba(255,183,3,.3),transparent 25%),
-        linear-gradient(120deg,var(--green-dark),var(--green));
-    color:white;
-    border-radius:22px;
-    padding:30px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:25px;
-    overflow:hidden;
-    box-shadow:var(--shadow-lg);
-}
-
-.feature-banner h2{
-    font-size:28px;
-    margin-bottom:7px;
-}
-
-.feature-banner p{
-    color:rgba(255,255,255,.82);
-}
-
-.feature-banner button{
-    border:0;
-    background:var(--gold);
-    color:#222;
-    padding:12px 18px;
-    border-radius:10px;
-    font-weight:900;
-    white-space:nowrap;
-}
-
-/* =========================================================
-   HOW IT WORKS
-   ========================================================= */
-
-.steps{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-}
-
-.step{
-    background:white;
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:24px;
-    box-shadow:var(--shadow);
-}
-
-.step-icon{
-    width:48px;
-    height:48px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--green-light);
-    border-radius:13px;
-    font-size:23px;
-    margin-bottom:13px;
-}
-
-.step h3{
-    color:var(--dark);
-    margin-bottom:5px;
-}
-
-.step p{
+    border-radius:14px;
     color:var(--muted);
-    font-size:13px;
 }
 
-/* =========================================================
-   SEARCH RESULTS
-   ========================================================= */
+/* ================= RESULTS ================= */
 
 #searchResults{
-    max-width:1240px;
+    max-width:1200px;
     margin:auto;
-    padding:0 18px 30px;
+    padding:0 15px 25px;
 }
 
 .results-title{
+    margin:10px 0 15px;
     color:var(--dark);
-    margin:10px 0 16px;
 }
 
-/* =========================================================
-   FULL PAGES
-   ========================================================= */
+/* ================= FULL PAGES ================= */
 
 .full-page{
     display:none;
@@ -720,9 +384,9 @@ main{
     display:flex;
     align-items:center;
     gap:12px;
-    padding:12px 16px;
+    padding:12px 15px;
     background:var(--green);
-    color:white;
+    color:#fff;
     box-shadow:0 3px 12px rgba(0,0,0,.12);
 }
 
@@ -732,22 +396,20 @@ main{
 
 .back-button{
     border:0;
-    border-radius:9px;
-    background:white;
+    border-radius:8px;
+    padding:8px 12px;
+    background:#fff;
     color:var(--green);
-    padding:9px 13px;
-    font-weight:900;
+    font-weight:bold;
 }
 
 .page-container{
-    max-width:1150px;
+    max-width:1100px;
     margin:auto;
-    padding:25px 18px 80px;
+    padding:22px 15px 70px;
 }
 
-/* =========================================================
-   AUTH MODAL
-   ========================================================= */
+/* ================= MODALS ================= */
 
 .auth-modal,
 .edit-modal{
@@ -756,74 +418,59 @@ main{
     inset:0;
     z-index:10000;
     overflow-y:auto;
-    background:rgba(0,0,0,.68);
-    padding:20px;
+    background:rgba(0,0,0,.62);
+    padding:18px;
 }
 
 .auth-box,
 .edit-box{
-    max-width:470px;
-    margin:35px auto;
-    padding:26px;
-    background:white;
-    border-radius:20px;
-    box-shadow:0 20px 60px rgba(0,0,0,.3);
-}
-
-.auth-logo{
-    width:60px;
-    height:60px;
-    margin:0 auto 10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--green-light);
-    color:var(--green);
+    max-width:450px;
+    margin:30px auto;
+    padding:23px;
     border-radius:17px;
-    font-size:30px;
+    background:#fff;
+    box-shadow:0 15px 40px rgba(0,0,0,.22);
 }
 
 .auth-box h2,
 .edit-box h2{
     text-align:center;
     color:var(--green);
-    margin-bottom:5px;
+    margin-bottom:6px;
 }
 
 .auth-subtitle{
     text-align:center;
     color:var(--muted);
-    margin-bottom:20px;
-    font-size:13px;
+    margin-bottom:18px;
 }
 
 .auth-tabs{
     display:flex;
-    gap:8px;
-    margin-bottom:18px;
+    gap:7px;
+    margin-bottom:16px;
 }
 
 .auth-tab{
     flex:1;
     border:0;
     padding:11px;
-    border-radius:9px;
-    background:#edf0ee;
-    font-weight:900;
+    border-radius:8px;
+    background:#eee;
+    font-weight:bold;
 }
 
 .auth-tab.active{
     background:var(--green);
-    color:white;
+    color:#fff;
 }
 
 .auth-form label,
-.edit-box label,
-.sell-form label{
+.sell-form label,
+.edit-box label{
     display:block;
-    font-weight:800;
-    margin:13px 0 6px;
-    font-size:13px;
+    margin:12px 0 5px;
+    font-weight:bold;
 }
 
 .auth-form input,
@@ -834,20 +481,17 @@ main{
 .edit-box select,
 .edit-box textarea{
     width:100%;
-    border:1px solid #ccd7d1;
-    border-radius:10px;
+    border:1px solid #ccd6d0;
+    border-radius:8px;
     padding:12px;
     outline:0;
-    background:white;
+    background:#fff;
 }
 
 .auth-form input:focus,
 .sell-form input:focus,
 .sell-form select:focus,
-.sell-form textarea:focus,
-.edit-box input:focus,
-.edit-box select:focus,
-.edit-box textarea:focus{
+.sell-form textarea:focus{
     border-color:var(--green);
 }
 
@@ -855,62 +499,54 @@ main{
 .publish-button{
     width:100%;
     border:0;
-    border-radius:10px;
-    padding:14px;
-    margin-top:18px;
+    border-radius:8px;
+    padding:13px;
+    margin-top:17px;
     background:var(--green);
-    color:white;
-    font-weight:900;
+    color:#fff;
+    font-weight:bold;
+}
+
+.auth-submit:disabled,
+.publish-button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
 }
 
 .auth-close{
     width:100%;
     border:0;
-    border-radius:10px;
-    padding:12px;
-    margin-top:9px;
-    background:#edf0ee;
-    color:#333;
-    font-weight:800;
+    border-radius:8px;
+    padding:11px;
+    margin-top:8px;
+    background:#eee;
 }
 
 .auth-message,
 .sell-message{
-    margin-top:13px;
+    margin-top:12px;
     text-align:center;
-    font-weight:800;
-    font-size:13px;
+    font-weight:bold;
 }
 
-/* =========================================================
-   SELL
-   ========================================================= */
+/* ================= SELL ================= */
 
 .sell-container{
-    max-width:700px;
+    max-width:650px;
     margin:auto;
 }
 
 .sell-intro{
     text-align:center;
-    margin-bottom:22px;
+    margin-bottom:18px;
 }
 
 .sell-intro-icon{
-    width:68px;
-    height:68px;
-    margin:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:20px;
-    background:var(--green-light);
-    font-size:36px;
+    font-size:42px;
 }
 
 .sell-intro h1{
     color:var(--green);
-    margin-top:10px;
 }
 
 .sell-intro p{
@@ -918,164 +554,133 @@ main{
 }
 
 .sell-form{
-    background:white;
-    padding:24px;
-    border-radius:18px;
-    box-shadow:var(--shadow-lg);
-    border:1px solid var(--border);
+    background:#fff;
+    padding:21px;
+    border-radius:16px;
+    box-shadow:var(--shadow);
 }
 
 .sell-form textarea{
-    min-height:130px;
+    min-height:110px;
     resize:vertical;
 }
 
-.sell-help{
-    display:block;
-    color:var(--muted);
-    font-size:11px;
-    margin-top:5px;
-}
-
 #imagePreview{
-    margin-top:10px;
+    margin-top:8px;
 }
 
 #imagePreview img{
     width:100%;
-    max-width:320px;
-    max-height:300px;
+    max-width:280px;
+    max-height:250px;
     object-fit:contain;
-    border-radius:12px;
+    border-radius:10px;
 }
 
-/* =========================================================
-   PRODUCT DETAILS
-   ========================================================= */
+/* ================= PRODUCT DETAILS ================= */
 
 .product-details{
-    max-width:1100px;
-    margin:25px auto;
-    background:white;
-    border-radius:20px;
+    max-width:1050px;
+    margin:22px auto;
+    background:#fff;
+    border-radius:17px;
     overflow:hidden;
-    box-shadow:var(--shadow-lg);
-    display:grid;
-    grid-template-columns:1.05fr .95fr;
+    box-shadow:var(--shadow);
 }
 
 .details-image{
+    display:block;
     width:100%;
-    height:620px;
+    height:330px;
     object-fit:contain;
-    background:#edf1ee;
+    background:#edf1ef;
 }
 
 .details-content{
-    padding:30px;
+    padding:22px;
 }
 
 .details-category{
     display:inline-block;
     background:var(--green-light);
     color:var(--green);
-    padding:5px 10px;
+    padding:4px 9px;
     border-radius:20px;
     font-size:11px;
-    font-weight:900;
+    font-weight:bold;
 }
 
 .details-content h1{
-    font-size:32px;
-    line-height:1.15;
-    margin:11px 0;
+    font-size:27px;
+    margin:9px 0;
 }
 
 .details-price{
     color:var(--green);
-    font-size:32px;
-    font-weight:950;
+    font-size:28px;
+    font-weight:900;
 }
 
 .details-location{
     color:var(--muted);
-    margin:7px 0 17px;
+    margin:6px 0 17px;
 }
 
 .details-description{
     color:#555;
-    line-height:1.8;
+    margin-top:7px;
+    white-space:pre-wrap;
 }
 
 .seller-box{
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:15px;
-    margin-top:12px;
-    border-radius:13px;
-    background:#f4f7f5;
+    gap:11px;
+    padding:14px;
+    margin-top:10px;
+    background:#f4f6f5;
+    border-radius:11px;
 }
 
 .seller-icon{
-    width:47px;
-    height:47px;
+    width:43px;
+    height:43px;
     display:flex;
     align-items:center;
     justify-content:center;
     border-radius:50%;
     background:var(--green);
-    color:white;
-    font-size:21px;
+    color:#fff;
 }
 
 .whatsapp-button,
 .call-button,
-.favorite-button,
-.share-button{
+.favorite-button{
     width:100%;
-    border-radius:10px;
     padding:13px;
+    border-radius:9px;
     margin-top:9px;
-    font-weight:900;
+    font-weight:bold;
 }
 
 .whatsapp-button{
     border:0;
     background:#25d366;
-    color:white;
+    color:#fff;
 }
 
 .call-button{
     border:2px solid var(--green);
-    background:white;
+    background:#fff;
     color:var(--green);
 }
 
 .favorite-button{
     border:0;
-    background:#f0f3f1;
+    background:#eef2ef;
 }
 
-.share-button{
-    border:0;
-    background:var(--gold-light);
-    color:#725100;
-}
-
-.safety-box{
-    margin-top:15px;
-    padding:12px;
-    background:#fff8df;
-    border:1px solid #f1d98c;
-    border-radius:10px;
-    color:#6c5311;
-    font-size:12px;
-}
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
+/* ================= DASHBOARD ================= */
 
 .dashboard-title{
     text-align:center;
@@ -1085,33 +690,33 @@ main{
 .dashboard-subtitle{
     text-align:center;
     color:var(--muted);
-    margin-bottom:25px;
+    margin-bottom:22px;
 }
 
 .stats-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:13px;
-    margin-bottom:22px;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:20px;
 }
 
 .stat-card{
-    background:white;
-    padding:20px 10px;
+    background:#fff;
+    padding:18px 8px;
     text-align:center;
     border:1px solid var(--border);
-    border-radius:15px;
+    border-radius:14px;
     box-shadow:var(--shadow);
 }
 
 .stat-icon{
-    font-size:27px;
+    font-size:26px;
 }
 
 .stat-number{
     color:var(--green);
-    font-size:24px;
-    font-weight:950;
+    font-size:23px;
+    font-weight:900;
 }
 
 .stat-label{
@@ -1120,36 +725,31 @@ main{
 }
 
 .dashboard-section{
-    background:white;
-    border-radius:16px;
-    padding:20px;
-    margin-bottom:20px;
+    background:#fff;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:18px;
     box-shadow:var(--shadow);
-    border:1px solid var(--border);
 }
 
 .dashboard-section h3{
     color:var(--green);
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 
 .dashboard-listing{
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:14px 0;
-    border-bottom:1px solid #edf0ee;
-}
-
-.dashboard-listing:last-child{
-    border-bottom:0;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid #eee;
 }
 
 .dashboard-listing img{
-    width:90px;
-    height:72px;
+    width:78px;
+    height:65px;
     object-fit:cover;
-    border-radius:9px;
+    border-radius:8px;
 }
 
 .dashboard-listing-info{
@@ -1157,15 +757,9 @@ main{
     min-width:0;
 }
 
-.dashboard-listing-info h4{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
 .dashboard-listing-info p{
     color:var(--green);
-    font-weight:900;
+    font-weight:bold;
 }
 
 .dashboard-listing-info small{
@@ -1174,19 +768,19 @@ main{
 
 .dashboard-actions{
     display:flex;
-    gap:5px;
+    gap:4px;
     flex-wrap:wrap;
 }
 
 .small-button{
     border:0;
-    padding:8px 10px;
+    padding:7px 9px;
     border-radius:7px;
-    font-weight:900;
+    font-weight:bold;
 }
 
 .view-button{
-    background:#edf0ee;
+    background:#eee;
 }
 
 .edit-button{
@@ -1195,13 +789,11 @@ main{
 }
 
 .delete-button{
-    background:var(--danger-light);
+    background:#ffebee;
     color:var(--danger);
 }
 
-/* =========================================================
-   ADMIN
-   ========================================================= */
+/* ================= ADMIN ================= */
 
 .admin-page{
     z-index:7000;
@@ -1210,29 +802,28 @@ main{
 .admin-badge{
     display:inline-block;
     background:var(--gold);
-    padding:6px 12px;
+    padding:5px 11px;
     border-radius:20px;
-    font-weight:900;
-    margin-bottom:8px;
+    font-weight:bold;
 }
 
 .admin-controls{
     display:flex;
-    gap:8px;
+    gap:7px;
     flex-wrap:wrap;
 }
 
 .admin-controls button{
     border:0;
     border-radius:8px;
-    padding:10px 13px;
+    padding:9px 12px;
     background:var(--green);
-    color:white;
-    font-weight:900;
+    color:#fff;
+    font-weight:bold;
 }
 
 .admin-controls .secondary{
-    background:#edf0ee;
+    background:#eee;
     color:#333;
 }
 
@@ -1242,108 +833,68 @@ main{
 
 .admin-table{
     width:100%;
-    min-width:750px;
+    min-width:700px;
     border-collapse:collapse;
 }
 
 .admin-table th,
 .admin-table td{
-    padding:11px;
-    border-bottom:1px solid #edf0ee;
+    padding:9px;
+    border-bottom:1px solid #eee;
     text-align:left;
 }
 
 .admin-table th{
     background:var(--green);
-    color:white;
+    color:#fff;
 }
 
 .admin-table img{
-    width:60px;
-    height:50px;
+    width:55px;
+    height:45px;
     object-fit:cover;
-    border-radius:7px;
+    border-radius:6px;
 }
 
 .status-active{
     color:var(--green);
-    font-weight:900;
+    font-weight:bold;
 }
 
 .status-inactive{
     color:var(--danger);
-    font-weight:900;
+    font-weight:bold;
 }
 
-/* =========================================================
-   FOOTER
-   ========================================================= */
+/* ================= FOOTER ================= */
 
 footer{
     background:var(--dark);
-    color:white;
-    padding:45px 18px 30px;
+    color:#fff;
+    text-align:center;
+    padding:32px 15px;
 }
 
-.footer-inner{
-    max-width:1240px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:2fr 1fr 1fr 1fr;
-    gap:35px;
+footer h3{
+    font-size:21px;
 }
 
-.footer-brand h3{
-    font-size:25px;
-}
-
-.footer-brand h3 span{
+footer h3 span{
     color:var(--gold);
 }
 
-.footer-brand p{
-    color:#c5d0c9;
-    font-size:13px;
-    max-width:330px;
-    margin-top:8px;
+footer p{
+    color:#c8d1cc;
+    margin-top:4px;
 }
 
-.footer-column h4{
-    margin-bottom:11px;
-}
-
-.footer-column button{
-    display:block;
-    border:0;
-    background:none;
-    color:#c5d0c9;
-    margin:7px 0;
-    font-size:13px;
-}
-
-.footer-bottom{
-    max-width:1240px;
-    margin:30px auto 0;
-    padding-top:20px;
-    border-top:1px solid rgba(255,255,255,.12);
-    text-align:center;
-    color:#aebbb3;
-    font-size:12px;
-}
-
-/* =========================================================
-   MOBILE NAV
-   ========================================================= */
+/* ================= MOBILE NAV ================= */
 
 .mobile-nav{
     display:none;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media(max-width:1050px){
+@media(min-width:700px){
 
     .categories{
         grid-template-columns:repeat(4,1fr);
@@ -1353,96 +904,89 @@ footer{
         grid-template-columns:repeat(3,1fr);
     }
 
-    .desktop-nav{
-        display:none;
+    .product-details{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+    }
+
+    .details-image{
+        height:580px;
+    }
+
+    .stats-grid{
+        grid-template-columns:repeat(4,1fr);
     }
 }
 
-@media(max-width:760px){
+@media(max-width:699px){
 
-    body{
-        padding-bottom:65px;
+    .topbar{
+        align-items:flex-start;
     }
 
-    .top-nav{
-        padding:13px 12px;
+    .tagline{
+        display:none;
     }
 
-    .brand-text strong{
-        font-size:20px;
+    .account-actions{
+        max-width:220px;
     }
 
-    .brand-mark{
-        width:39px;
-        height:39px;
-    }
-
-    .nav-btn{
+    .account-button{
         padding:7px 9px;
         font-size:11px;
     }
 
-    .hero{
-        padding:38px 15px 48px;
+    .mobile-nav{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index:4000;
+        display:flex;
+        background:#fff;
+        border-top:1px solid var(--border);
+        box-shadow:0 -4px 15px rgba(0,0,0,.08);
+        padding:6px 3px;
     }
 
-    .hero h1{
-        letter-spacing:-1.5px;
+    .mobile-nav button{
+        flex:1;
+        border:0;
+        background:none;
+        color:#647069;
+        font-size:10px;
+        font-weight:bold;
     }
 
-    .hero p{
-        font-size:14px;
+    .mobile-nav strong{
+        display:block;
+        font-size:18px;
     }
 
-    .search-box{
-        border-radius:13px;
+    body{
+        padding-bottom:55px;
     }
+}
 
-    .search-box button{
-        padding:11px 12px;
+@media(max-width:430px){
+
+    .logo{
+        font-size:22px;
     }
 
     .hero-actions button{
         flex:1;
-    }
-
-    .trust-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .trust-item{
-        padding:8px 4px;
-        border-bottom:1px solid var(--border);
-    }
-
-    .trust-item:nth-child(2){
-        border-right:0;
-    }
-
-    .trust-item:nth-child(3),
-    .trust-item:nth-child(4){
-        border-bottom:0;
-    }
-
-    main{
-        padding-top:25px;
-    }
-
-    .categories{
-        grid-template-columns:repeat(4,1fr);
-    }
-
-    .results-grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:11px;
+        padding:11px 7px;
+        font-size:12px;
     }
 
     .result-card img{
-        height:165px;
+        height:145px;
     }
 
     .result-info{
-        padding:11px;
+        padding:10px;
     }
 
     .result-info h3{
@@ -1453,70 +997,6 @@ footer{
         font-size:17px;
     }
 
-    .feature-banner{
-        padding:22px;
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .steps{
-        grid-template-columns:1fr;
-    }
-
-    .product-details{
-        display:block;
-        margin:0;
-        border-radius:0;
-    }
-
-    .details-image{
-        height:340px;
-    }
-
-    .details-content{
-        padding:22px;
-    }
-
-    .details-content h1{
-        font-size:26px;
-    }
-
-    .stats-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .footer-inner{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .mobile-nav{
-        position:fixed;
-        display:flex;
-        left:0;
-        right:0;
-        bottom:0;
-        z-index:4000;
-        background:white;
-        border-top:1px solid var(--border);
-        box-shadow:0 -5px 20px rgba(0,0,0,.1);
-        justify-content:space-around;
-        padding:7px 3px;
-    }
-
-    .mobile-nav button{
-        flex:1;
-        border:0;
-        background:none;
-        color:#69756e;
-        font-size:10px;
-        font-weight:900;
-    }
-
-    .mobile-nav button strong{
-        display:block;
-        font-size:18px;
-    }
-
     .dashboard-listing{
         flex-wrap:wrap;
     }
@@ -1525,87 +1005,20 @@ footer{
         width:100%;
     }
 }
-
-@media(max-width:430px){
-
-    .nav-actions .soft{
-        display:none;
-    }
-
-    .brand-text small{
-        display:none;
-    }
-
-    .hero h1{
-        font-size:40px;
-    }
-
-    .categories{
-        gap:8px;
-    }
-
-    .category{
-        padding:12px 3px;
-    }
-
-    .category-icon{
-        width:42px;
-        height:42px;
-        font-size:23px;
-    }
-
-    .category-name{
-        font-size:11px;
-    }
-
-    .category-count{
-        display:none;
-    }
-
-    .results-grid{
-        gap:8px;
-    }
-
-    .result-card img{
-        height:145px;
-    }
-
-    .share-card{
-        display:none;
-    }
-
-    .footer-inner{
-        grid-template-columns:1fr;
-    }
-
-    .filter-bar{
-        align-items:stretch;
-    }
-
-    .filter-bar select{
-        flex:1;
-    }
-
-    .filter-reset{
-        margin-left:0;
-    }
-}
 </style>
 </head>
 
 <body>
 
-<!-- =========================================================
-     AUTH MODAL
-     ========================================================= -->
+<!-- =====================================================
+AUTH MODAL
+===================================================== -->
 
 <div id="authModal" class="auth-modal">
 
 <div class="auth-box">
 
-<div class="auth-logo">🛍️</div>
-
-<h2>Welcome to SiomaMarket</h2>
+<h2>🔐 SiomaMarket Account</h2>
 
 <p class="auth-subtitle">
 Buy and sell locally across Zambia.
@@ -1622,7 +1035,7 @@ Login
 <button id="registerTab"
 class="auth-tab"
 onclick="showRegister()">
-Create Account
+Register
 </button>
 
 </div>
@@ -1634,27 +1047,34 @@ Create Account
 type="email"
 id="loginEmail"
 placeholder="you@example.com"
+autocomplete="email"
 required>
 
 <label>Password</label>
 <input
 type="password"
 id="loginPassword"
+autocomplete="current-password"
 required>
 
-<button id="loginButton" class="auth-submit">
+<button
+id="loginButton"
+class="auth-submit">
 🔐 LOGIN
 </button>
 
 </form>
 
-<form id="registerForm" class="auth-form" style="display:none">
+<form
+id="registerForm"
+class="auth-form"
+style="display:none">
 
 <label>Full Name</label>
 <input
 type="text"
 id="registerName"
-placeholder="Your full name"
+autocomplete="name"
 required>
 
 <label>Phone / WhatsApp</label>
@@ -1662,6 +1082,7 @@ required>
 type="tel"
 id="registerPhone"
 placeholder="0971234567"
+autocomplete="tel"
 required>
 
 <label>Location</label>
@@ -1675,7 +1096,7 @@ required>
 <input
 type="email"
 id="registerEmail"
-placeholder="you@example.com"
+autocomplete="email"
 required>
 
 <label>Password</label>
@@ -1683,9 +1104,12 @@ required>
 type="password"
 id="registerPassword"
 minlength="6"
+autocomplete="new-password"
 required>
 
-<button id="registerButton" class="auth-submit">
+<button
+id="registerButton"
+class="auth-submit">
 📝 CREATE ACCOUNT
 </button>
 
@@ -1693,16 +1117,18 @@ required>
 
 <div id="authMessage" class="auth-message"></div>
 
-<button class="auth-close" onclick="closeAuthModal()">
+<button
+class="auth-close"
+onclick="closeAuthModal()">
 Close
 </button>
 
 </div>
 </div>
 
-<!-- =========================================================
-     SELL PAGE
-     ========================================================= -->
+<!-- =====================================================
+SELL PAGE
+===================================================== -->
 
 <div id="sellPage" class="full-page">
 
@@ -1728,13 +1154,13 @@ Close
 <label>Product Name</label>
 <input
 id="sellTitle"
-placeholder="e.g. Fresh Fish, Samsung Phone, Chicken"
+placeholder="e.g. Fresh Fish"
 required>
 
 <label>Description</label>
 <textarea
 id="sellDescription"
-placeholder="Describe your product clearly..."
+placeholder="Describe your product..."
 required></textarea>
 
 <label>Price (ZMW)</label>
@@ -1742,7 +1168,6 @@ required></textarea>
 type="number"
 id="sellPrice"
 min="0"
-placeholder="e.g. 500"
 required>
 
 <label>Category</label>
@@ -1777,8 +1202,8 @@ id="sellImage"
 accept="image/*"
 required>
 
-<small class="sell-help">
-Choose a clear photo from your Gallery or Camera. Maximum 6MB.
+<small>
+Choose a clear photo. Maximum 6MB.
 </small>
 
 <div id="imagePreview"></div>
@@ -1789,7 +1214,7 @@ Choose a clear photo from your Gallery or Camera. Maximum 6MB.
 id="sellerName"
 required>
 
-<label>WhatsApp / Phone Number</label>
+<label>WhatsApp / Phone</label>
 
 <input
 type="tel"
@@ -1799,30 +1224,37 @@ required>
 <button
 id="publishButton"
 class="publish-button">
+
 🚀 PUBLISH PRODUCT
+
 </button>
 
 <div id="sellMessage" class="sell-message"></div>
 
 </form>
-
 </div>
 </div>
 
-<!-- =========================================================
-     SELLER DASHBOARD
-     ========================================================= -->
+<!-- =====================================================
+SELLER DASHBOARD
+===================================================== -->
 
 <div id="sellerDashboard" class="full-page">
 
 <div class="page-header">
-<button class="back-button" onclick="closeSellerDashboard()">← Back</button>
+<button
+class="back-button"
+onclick="closeSellerDashboard()">
+← Back
+</button>
 <h2>Seller Dashboard</h2>
 </div>
 
 <div class="page-container">
 
-<h1 class="dashboard-title">🏪 Seller Dashboard</h1>
+<h1 class="dashboard-title">
+🏪 Seller Dashboard
+</h1>
 
 <p class="dashboard-subtitle">
 Manage your SiomaMarket products.
@@ -1867,15 +1299,22 @@ Manage your SiomaMarket products.
 </div>
 </div>
 
-<!-- =========================================================
-     ADMIN
-     ========================================================= -->
+<!-- =====================================================
+ADMIN
+===================================================== -->
 
 <div id="adminDashboard" class="full-page admin-page">
 
 <div class="page-header">
-<button class="back-button" onclick="closeAdminDashboard()">← Back</button>
+
+<button
+class="back-button"
+onclick="closeAdminDashboard()">
+← Back
+</button>
+
 <h2>Admin Dashboard</h2>
+
 </div>
 
 <div class="page-container">
@@ -1891,7 +1330,7 @@ SiomaMarket Admin
 </h1>
 
 <p class="dashboard-subtitle">
-Manage the marketplace.
+Manage marketplace listings.
 </p>
 
 </div>
@@ -1977,15 +1416,14 @@ onclick="showActiveAdminListings()">
 </table>
 
 </div>
-
 </div>
 
 </div>
 </div>
 
-<!-- =========================================================
-     PRODUCT PAGE
-     ========================================================= -->
+<!-- =====================================================
+PRODUCT DETAILS
+===================================================== -->
 
 <div id="productPage" class="full-page">
 
@@ -2052,6 +1490,7 @@ class="details-description">
 </div>
 
 <div>
+
 <strong id="detailsSeller">
 Seller
 </strong>
@@ -2081,25 +1520,13 @@ onclick="saveFavorite()">
 ❤️ Save Product
 </button>
 
-<button
-id="shareProductButton"
-class="share-button"
-onclick="shareCurrentProduct()">
-📤 Share Product
-</button>
-
-<div class="safety-box">
-🛡️ <strong>Safety tip:</strong>
-Meet in a safe public place and verify the product before making payment.
-</div>
-
 </div>
 </div>
 </div>
 
-<!-- =========================================================
-     FAVORITES
-     ========================================================= -->
+<!-- =====================================================
+FAVORITES
+===================================================== -->
 
 <div id="favoritesPage" class="full-page">
 
@@ -2122,9 +1549,9 @@ class="page-container">
 
 </div>
 
-<!-- =========================================================
-     EDIT MODAL
-     ========================================================= -->
+<!-- =====================================================
+EDIT
+===================================================== -->
 
 <div id="editModal" class="edit-modal">
 
@@ -2143,7 +1570,9 @@ id="editListingId">
 <textarea id="editDescription"></textarea>
 
 <label>Price</label>
-<input type="number" id="editPrice">
+<input
+type="number"
+id="editPrice">
 
 <label>Category</label>
 
@@ -2170,7 +1599,7 @@ id="editListingId">
 <label>Seller Phone</label>
 <input id="editSellerPhone">
 
-<div style="display:flex;gap:10px;margin-top:20px">
+<div style="display:flex;gap:8px;margin-top:18px">
 
 <button
 class="auth-submit"
@@ -2194,59 +1623,33 @@ class="auth-message">
 </div>
 </div>
 
-<!-- =========================================================
-     SITE HEADER
-     ========================================================= -->
+<!-- =====================================================
+HEADER
+===================================================== -->
 
-<header class="site-header">
+<header>
 
-<div class="top-nav">
+<div class="header-inner">
 
-<a class="brand" href="#" onclick="goHome();return false;">
+<div class="topbar">
 
-<div class="brand-mark">
-🛍️
+<div>
+
+<div class="logo">
+🛍️ Sioma<span>Market</span>
 </div>
 
-<div class="brand-text">
-
-<strong>
-Sioma<span>Market</span>
-</strong>
-
-<small>
+<div class="tagline">
 Zambia's local marketplace
-</small>
+</div>
 
 </div>
 
-</a>
-
-<nav class="desktop-nav">
-
-<button onclick="goHome()">
-Home
-</button>
-
-<button onclick="scrollToCategories()">
-Categories
-</button>
-
-<button onclick="buyNow()">
-Search
-</button>
-
-<button onclick="sellNow()">
-Sell
-</button>
-
-</nav>
-
-<div class="nav-actions">
+<div class="account-actions">
 
 <button
 id="dashboardButton"
-class="nav-btn soft"
+class="account-button soft"
 onclick="openSellerDashboard()"
 style="display:none">
 🏪 Dashboard
@@ -2254,22 +1657,21 @@ style="display:none">
 
 <button
 id="adminButton"
-class="nav-btn gold"
+class="account-button gold"
 onclick="openAdminDashboard()"
 style="display:none">
 🛡️ Admin
 </button>
 
 <button
-class="nav-btn"
+class="account-button"
 onclick="showFavorites()">
-❤️
-<span class="desktop-only">Favorites</span>
+❤️ Favorites
 </button>
 
 <button
 id="accountButton"
-class="nav-btn"
+class="account-button"
 onclick="openAccount()">
 🔐 Login
 </button>
@@ -2280,37 +1682,26 @@ onclick="openAccount()">
 
 <div class="hero">
 
-<div class="hero-badge">
-🇿🇲 Proudly serving Zambia
-</div>
-
 <h1>
 Buy Local.<br>
 Sell <span>Local.</span>
 </h1>
 
 <p>
-Discover products, services and opportunities from sellers in Sioma and across Zambia.
+Discover products and services from people in Sioma and across Zambia.
 </p>
 
-<div class="search-wrapper">
-
 <div class="search-box">
-
-<div class="search-icon">
-🔍
-</div>
 
 <input
 id="searchInput"
 type="search"
-placeholder="Search phones, fish, cars, clothes, services...">
+placeholder="Search phones, fish, cars, clothes..."
+autocomplete="off">
 
 <button onclick="searchMarket()">
-SEARCH
+🔍 Search
 </button>
-
-</div>
 
 </div>
 
@@ -2319,7 +1710,7 @@ SEARCH
 <button
 class="buy-btn"
 onclick="buyNow()">
-🛒 BROWSE PRODUCTS
+🛒 BUY NOW
 </button>
 
 <button
@@ -2331,118 +1722,98 @@ onclick="sellNow()">
 </div>
 
 </div>
+
+</div>
 </header>
 
-<!-- =========================================================
-     TRUST STRIP
-     ========================================================= -->
-
-<section class="trust-strip">
-
-<div class="trust-grid">
-
-<div class="trust-item">
-<span>🇿🇲</span>
-Zambian Marketplace
-</div>
-
-<div class="trust-item">
-<span>🔐</span>
-Secure Accounts
-</div>
-
-<div class="trust-item">
-<span>💬</span>
-WhatsApp Sellers
-</div>
-
-<div class="trust-item">
-<span>📍</span>
-Local Listings
-</div>
-
-</div>
-</section>
-
-<!-- =========================================================
-     SEARCH RESULTS
-     ========================================================= -->
+<!-- SEARCH RESULTS -->
 
 <div id="searchResults"></div>
 
-<!-- =========================================================
-     MAIN
-     ========================================================= -->
+<!-- =====================================================
+MAIN
+===================================================== -->
 
 <main>
 
-<!-- CATEGORIES -->
-
-<section
-id="categoriesSection"
-class="section">
+<section class="section">
 
 <div class="section-heading">
 
 <div>
-<h2>Browse Categories</h2>
-<p>Find what you need quickly.</p>
-</div>
 
-<button
-class="section-link"
-onclick="clearSearch()">
-View all
-</button>
+<h2>Browse Categories</h2>
+
+<p>
+Find what you need quickly.
+</p>
+
+</div>
 
 </div>
 
 <div class="categories">
 
-<div class="category" onclick="searchCategory('Agriculture')">
-<div class="category-icon">🌾</div>
+<div
+class="category"
+onclick="searchCategory('Agriculture')">
+<span class="category-icon">🌾</span>
 <span class="category-name">Agriculture</span>
 <span class="category-count">Farm products</span>
 </div>
 
-<div class="category" onclick="searchCategory('Livestock')">
-<div class="category-icon">🐔</div>
+<div
+class="category"
+onclick="searchCategory('Livestock')">
+<span class="category-icon">🐔</span>
 <span class="category-name">Livestock</span>
 <span class="category-count">Animals & poultry</span>
 </div>
 
-<div class="category" onclick="searchCategory('Fish')">
-<div class="category-icon">🐟</div>
+<div
+class="category"
+onclick="searchCategory('Fish')">
+<span class="category-icon">🐟</span>
 <span class="category-name">Fish</span>
-<span class="category-count">Fresh & dried</span>
+<span class="category-count">Fresh & dried fish</span>
 </div>
 
-<div class="category" onclick="searchCategory('Phones')">
-<div class="category-icon">📱</div>
+<div
+class="category"
+onclick="searchCategory('Phones')">
+<span class="category-icon">📱</span>
 <span class="category-name">Phones</span>
 <span class="category-count">Phones & accessories</span>
 </div>
 
-<div class="category" onclick="searchCategory('Vehicles')">
-<div class="category-icon">🚗</div>
+<div
+class="category"
+onclick="searchCategory('Vehicles')">
+<span class="category-icon">🚗</span>
 <span class="category-name">Vehicles</span>
 <span class="category-count">Cars & motorcycles</span>
 </div>
 
-<div class="category" onclick="searchCategory('Houses')">
-<div class="category-icon">🏠</div>
+<div
+class="category"
+onclick="searchCategory('Houses')">
+<span class="category-icon">🏠</span>
 <span class="category-name">Houses</span>
 <span class="category-count">Property</span>
 </div>
 
-<div class="category" onclick="searchCategory('Clothes')">
-<div class="category-icon">👕</div>
+<div
+class="category"
+onclick="searchCategory('Clothes')">
+<span class="category-icon">👕</span>
 <span class="category-name">Clothes</span>
 <span class="category-count">Fashion</span>
 </div>
 
-<div class="category" onclick="searchCategory('Services')">
-<div class="category-icon">🛠️</div>
+<div
+class="category"
+onclick="searchCategory('Services')">
+<span class="category-icon">🛠️</span>
 <span class="category-name">Services</span>
 <span class="category-count">Local services</span>
 </div>
@@ -2450,48 +1821,19 @@ View all
 </div>
 </section>
 
-<!-- FEATURED -->
-
-<section class="section">
-
-<div class="feature-banner">
-
-<div>
-
-<h2>
-🚀 Grow Your Business With SiomaMarket
-</h2>
-
-<p>
-List your products and reach buyers in Sioma and beyond.
-</p>
-
-</div>
-
-<button onclick="sellNow()">
-START SELLING
-</button>
-
-</div>
-
-</section>
-
-<!-- LATEST -->
-
 <section class="section">
 
 <div class="section-heading">
 
 <div>
-<h2>🔥 Latest Products</h2>
-<p>Fresh listings from SiomaMarket sellers.</p>
-</div>
 
-<button
-class="section-link"
-onclick="loadListings()">
-Refresh
-</button>
+<h2>🔥 Latest Products</h2>
+
+<p>
+Fresh listings from SiomaMarket sellers.
+</p>
+
+</div>
 
 </div>
 
@@ -2505,76 +1847,15 @@ Refresh
 
 </section>
 
-<!-- HOW IT WORKS -->
-
-<section class="section">
-
-<div class="section-heading">
-
-<div>
-<h2>How SiomaMarket Works</h2>
-<p>Simple. Local. Convenient.</p>
-</div>
-
-</div>
-
-<div class="steps">
-
-<div class="step">
-
-<div class="step-icon">
-🔎
-</div>
-
-<h3>1. Find a Product</h3>
-
-<p>
-Search for products and services from sellers around you.
-</p>
-
-</div>
-
-<div class="step">
-
-<div class="step-icon">
-💬
-</div>
-
-<h3>2. Contact the Seller</h3>
-
-<p>
-Use WhatsApp or phone to discuss the product directly.
-</p>
-
-</div>
-
-<div class="step">
-
-<div class="step-icon">
-🤝
-</div>
-
-<h3>3. Meet & Trade</h3>
-
-<p>
-Agree on a safe meeting place and complete your transaction.
-</p>
-
-</div>
-
-</div>
-
-</section>
-
 </main>
 
-<!-- =========================================================
-     MOBILE NAV
-     ========================================================= -->
+<!-- =====================================================
+MOBILE NAV
+===================================================== -->
 
 <nav class="mobile-nav">
 
-<button onclick="goHome()">
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})">
 <strong>🏠</strong>
 Home
 </button>
@@ -2601,71 +1882,35 @@ Account
 
 </nav>
 
-<!-- =========================================================
-     FOOTER
-     ========================================================= -->
+<!-- =====================================================
+FOOTER
+===================================================== -->
 
 <footer>
-
-<div class="footer-inner">
-
-<div class="footer-brand">
 
 <h3>
 🛍️ Sioma<span>Market</span>
 </h3>
 
 <p>
-Your local marketplace in Zambia. Buy local, sell local and grow together.
+Your local marketplace in Zambia 🇿🇲
 </p>
 
-</div>
+<p>
+Buy local. Sell local. Grow together.
+</p>
 
-<div class="footer-column">
-
-<h4>Marketplace</h4>
-
-<button onclick="goHome()">Home</button>
-<button onclick="scrollToCategories()">Categories</button>
-<button onclick="buyNow()">Search Products</button>
-<button onclick="sellNow()">Sell Product</button>
-
-</div>
-
-<div class="footer-column">
-
-<h4>Account</h4>
-
-<button onclick="showFavorites()">Favorites</button>
-<button onclick="openAccount()">Login</button>
-<button onclick="openSellerDashboard()">Seller Dashboard</button>
-
-</div>
-
-<div class="footer-column">
-
-<h4>Popular</h4>
-
-<button onclick="searchCategory('Agriculture')">Agriculture</button>
-<button onclick="searchCategory('Fish')">Fish</button>
-<button onclick="searchCategory('Phones')">Phones</button>
-<button onclick="searchCategory('Vehicles')">Vehicles</button>
-
-</div>
-
-</div>
-
-<div class="footer-bottom">
-© 2026 SiomaMarket 🇿🇲 — Buy Local. Sell Local. Grow Together.
-</div>
+<p>
+© 2026 SiomaMarket
+</p>
 
 </footer>
 
 <script>
 
 /* =========================================================
-   SUPABASE
-   ========================================================= */
+SUPABASE CONFIGURATION
+========================================================= */
 
 const SUPABASE_URL =
 "https://luolbdjonzissgskjupd.supabase.co";
@@ -2675,8 +1920,8 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 const ADMIN_EMAIL =
@@ -2690,13 +1935,15 @@ const DEFAULT_IMAGE =
 
 let currentUser = null;
 let currentListingId = null;
-let currentProduct = null;
 let sellerListingsCache = [];
 let adminListingsCache = [];
+let favoritesCache = new Set();
+let sessionLoaded = false;
+let searchTimer = null;
 
 /* =========================================================
-   HELPERS
-   ========================================================= */
+HELPERS
+========================================================= */
 
 function escapeHTML(value){
 
@@ -2710,52 +1957,19 @@ return String(value ?? "")
 }
 
 function escapeAttribute(value){
-
 return escapeHTML(value);
-
 }
 
-function money(value){
+function formatPrice(value){
 
-return "K"+Number(value||0).toLocaleString();
-
-}
-
-/* =========================================================
-   HOME
-   ========================================================= */
-
-function goHome(){
-
-document.querySelector(".site-header")
-.scrollIntoView({
-behavior:"smooth"
-});
-
-}
-
-function scrollToCategories(){
-
-document.getElementById("categoriesSection")
-.scrollIntoView({
-behavior:"smooth"
-});
-
-}
-
-function clearSearch(){
-
-document.getElementById("searchInput").value="";
-
-document.getElementById("searchResults").innerHTML="";
-
-loadListings();
+return "K"+Number(value || 0)
+.toLocaleString("en-ZM");
 
 }
 
 /* =========================================================
-   AUTH UI
-   ========================================================= */
+MODAL
+========================================================= */
 
 function openAuthModal(){
 
@@ -2801,30 +2015,106 @@ document.getElementById("authMessage").innerText="";
 
 }
 
+/* =========================================================
+ACCOUNT
+========================================================= */
+
 function openAccount(){
 
 if(currentUser){
 
-if(confirm(
-"You are currently logged in.\n\nDo you want to logout?"
-)){
-
 logoutSeller();
-
-}
 
 return;
 
 }
 
 openAuthModal();
+
 showLogin();
 
 }
 
 /* =========================================================
-   ADMIN
-   ========================================================= */
+SESSION
+========================================================= */
+
+async function loadAuthSession(){
+
+if(sessionLoaded) return currentUser;
+
+try{
+
+const result =
+await supabaseClient.auth.getSession();
+
+currentUser =
+result.data?.session?.user || null;
+
+sessionLoaded=true;
+
+await updateAccountUI();
+
+return currentUser;
+
+}catch(error){
+
+console.error(error);
+
+currentUser=null;
+
+sessionLoaded=true;
+
+await updateAccountUI();
+
+return null;
+
+}
+
+}
+
+/* =========================================================
+AUTH STATE
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+(event,session)=>{
+
+currentUser =
+session?.user || null;
+
+sessionLoaded=true;
+
+updateAccountUI();
+
+if(currentUser){
+
+const meta =
+currentUser.user_metadata || {};
+
+if(
+meta.full_name ||
+meta.phone ||
+meta.location
+){
+
+createSellerProfile(
+currentUser.id,
+meta.full_name || "",
+meta.phone || "",
+meta.location || "Sioma"
+);
+
+}
+
+}
+
+}
+);
+
+/* =========================================================
+ADMIN CHECK
+========================================================= */
 
 async function isAdmin(){
 
@@ -2833,7 +2123,7 @@ if(!currentUser)return false;
 const result =
 await supabaseClient
 .from("admin_users")
-.select("user_id,email")
+.select("user_id")
 .eq("user_id",currentUser.id)
 .maybeSingle();
 
@@ -2842,8 +2132,49 @@ return !!result.data;
 }
 
 /* =========================================================
-   PROFILE
-   ========================================================= */
+ACCOUNT UI
+========================================================= */
+
+async function updateAccountUI(){
+
+const button =
+document.getElementById("accountButton");
+
+const dashboard =
+document.getElementById("dashboardButton");
+
+const admin =
+document.getElementById("adminButton");
+
+if(!button)return;
+
+if(currentUser){
+
+button.innerText="🚪 Logout";
+
+dashboard.style.display="block";
+
+const adminStatus =
+await isAdmin();
+
+admin.style.display =
+adminStatus ? "block" : "none";
+
+}else{
+
+button.innerText="🔐 Login";
+
+dashboard.style.display="none";
+
+admin.style.display="none";
+
+}
+
+}
+
+/* =========================================================
+SELLER PROFILE
+========================================================= */
 
 async function createSellerProfile(
 userId,
@@ -2855,15 +2186,10 @@ location
 return await supabaseClient
 .from("seller_profiles")
 .upsert({
-
 id:userId,
-
-full_name:name||"",
-
-phone:phone||"",
-
-location:location||"Sioma"
-
+full_name:name || "",
+phone:phone || "",
+location:location || "Sioma"
 },{
 onConflict:"id"
 });
@@ -2884,67 +2210,22 @@ await supabaseClient
 if(!result.data)return;
 
 document.getElementById("sellerName").value =
-result.data.full_name||"";
+result.data.full_name || "";
 
 document.getElementById("sellerPhone").value =
-result.data.phone||"";
+result.data.phone || "";
 
 document.getElementById("sellLocation").value =
-result.data.location||"Sioma";
+result.data.location || "Sioma";
 
 }
 
 /* =========================================================
-   ACCOUNT UI
-   ========================================================= */
-
-async function updateAccountUI(){
-
-const button =
-document.getElementById("accountButton");
-
-const dashboard =
-document.getElementById("dashboardButton");
-
-const admin =
-document.getElementById("adminButton");
-
-if(currentUser){
-
-button.innerText="🚪 Logout";
-
-dashboard.style.display="inline-block";
-
-if(await isAdmin()){
-
-admin.style.display="inline-block";
-
-}else{
-
-admin.style.display="none";
-
-}
-
-}else{
-
-button.innerText="🔐 Login";
-
-dashboard.style.display="none";
-
-admin.style.display="none";
-
-}
-
-}
-
-/* =========================================================
-   REGISTER
-   ========================================================= */
+REGISTER
+========================================================= */
 
 document.getElementById("registerForm")
-.addEventListener(
-"submit",
-async function(e){
+.addEventListener("submit",async function(e){
 
 e.preventDefault();
 
@@ -2998,11 +2279,15 @@ location
 
 });
 
-if(result.error)throw result.error;
+if(result.error)
+throw result.error;
 
 if(result.data.session){
 
-currentUser=result.data.user;
+currentUser =
+result.data.user;
+
+sessionLoaded=true;
 
 await createSellerProfile(
 currentUser.id,
@@ -3011,28 +2296,25 @@ phone,
 location
 );
 
-await updateAccountUI();
-
 message.style.color="#087f3d";
 
 message.innerText=
 "✅ Account created successfully!";
 
+await updateAccountUI();
+
 setTimeout(()=>{
-
 closeAuthModal();
-
 sellNow();
-
-},900);
+},700);
 
 }else{
 
 message.style.color="#087f3d";
 
-message.innerHTML =
+message.innerHTML=
 "✅ Account created!<br><br>"+
-"📧 Check your email and confirm your account before logging in.";
+"📧 Check your email and confirm your account.";
 
 }
 
@@ -3040,27 +2322,26 @@ message.innerHTML =
 
 message.style.color="#c62828";
 
-message.innerHTML =
-"❌ "+escapeHTML(error.message);
+message.innerText=
+"❌ "+error.message;
 
 }finally{
 
 button.disabled=false;
 
-button.innerText="📝 CREATE ACCOUNT";
+button.innerText=
+"📝 CREATE ACCOUNT";
 
 }
 
 });
 
 /* =========================================================
-   LOGIN
-   ========================================================= */
+LOGIN
+========================================================= */
 
 document.getElementById("loginForm")
-.addEventListener(
-"submit",
-async function(e){
+.addEventListener("submit",async function(e){
 
 e.preventDefault();
 
@@ -3090,9 +2371,13 @@ document.getElementById("loginPassword")
 
 });
 
-if(result.error)throw result.error;
+if(result.error)
+throw result.error;
 
-currentUser=result.data.user;
+currentUser =
+result.data.user;
+
+sessionLoaded=true;
 
 await updateAccountUI();
 
@@ -3105,15 +2390,15 @@ message.innerText=
 
 setTimeout(
 closeAuthModal,
-700
+500
 );
 
 }catch(error){
 
 message.style.color="#c62828";
 
-message.innerHTML =
-"❌ "+escapeHTML(error.message);
+message.innerText=
+"❌ "+error.message;
 
 }finally{
 
@@ -3126,90 +2411,48 @@ button.innerText="🔐 LOGIN";
 });
 
 /* =========================================================
-   AUTH STATE
-   ========================================================= */
-
-supabaseClient.auth.onAuthStateChange(
-async function(event,session){
-
-currentUser =
-session ? session.user : null;
-
-await updateAccountUI();
-
-if(session){
-
-const meta =
-session.user.user_metadata||{};
-
-if(
-meta.full_name ||
-meta.phone ||
-meta.location
-){
-
-await createSellerProfile(
-session.user.id,
-meta.full_name||"",
-meta.phone||"",
-meta.location||"Sioma"
-);
-
-}
-
-}
-
-});
-
-/* =========================================================
-   SESSION
-   ========================================================= */
-
-async function loadAuthSession(){
-
-const result =
-await supabaseClient.auth.getSession();
-
-currentUser =
-result.data.session ?
-result.data.session.user :
-null;
-
-await updateAccountUI();
-
-}
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
+LOGOUT
+========================================================= */
 
 async function logoutSeller(){
+
+const yes =
+confirm(
+"Are you sure you want to logout?"
+);
+
+if(!yes)return;
 
 const result =
 await supabaseClient.auth.signOut();
 
 if(result.error){
 
-alert(result.error.message);
+alert("❌ "+result.error.message);
+
 return;
 
 }
 
 currentUser=null;
+sessionLoaded=true;
+favoritesCache.clear();
 
 closeSellerDashboard();
-
 closeAdminDashboard();
+closeFavorites();
+closeProductPage();
+closeSellPage();
 
 await updateAccountUI();
 
-alert("You have been logged out.");
+alert("✅ You have been logged out.");
 
 }
 
 /* =========================================================
-   SELL PAGE
-   ========================================================= */
+SELL PAGE
+========================================================= */
 
 async function sellNow(){
 
@@ -3218,12 +2461,11 @@ await loadAuthSession();
 if(!currentUser){
 
 openAuthModal();
-
 showLogin();
 
 document.getElementById("authMessage").style.color="#c62828";
 
-document.getElementById("authMessage").innerText =
+document.getElementById("authMessage").innerText=
 "🔐 Please login or register before selling.";
 
 return;
@@ -3247,13 +2489,11 @@ document.body.style.overflow="auto";
 }
 
 /* =========================================================
-   IMAGE PREVIEW
-   ========================================================= */
+IMAGE PREVIEW
+========================================================= */
 
 document.getElementById("sellImage")
-.addEventListener(
-"change",
-function(){
+.addEventListener("change",function(){
 
 const file=this.files[0];
 
@@ -3276,7 +2516,7 @@ return;
 
 if(file.size>6*1024*1024){
 
-alert("Please select an image smaller than 6MB.");
+alert("Please choose an image smaller than 6MB.");
 
 this.value="";
 
@@ -3287,61 +2527,47 @@ return;
 const url =
 URL.createObjectURL(file);
 
-preview.innerHTML =
-`
-<div style="
-background:#f3f5f4;
-padding:12px;
-border-radius:10px;
-margin-top:10px">
-
+preview.innerHTML=`
+<div style="margin-top:10px">
 <strong>Photo Preview</strong>
-
 <br><br>
-
 <img
 src="${escapeAttribute(url)}"
-alt="Preview">
-
+alt="Preview"
+loading="lazy">
 </div>
 `;
 
 });
 
 /* =========================================================
-   UPLOAD IMAGE
-   ========================================================= */
+IMAGE UPLOAD
+========================================================= */
 
 async function uploadProductImage(file){
 
-if(!file){
+if(!file)
+throw new Error("Please select a product photo.");
 
-throw new Error(
-"Please select a product photo."
-);
-
-}
-
-if(file.size>6*1024*1024){
-
+if(file.size>6*1024*1024)
 throw new Error(
 "Please choose an image smaller than 6MB."
 );
 
-}
-
 const extension =
-(file.name.split(".").pop()||"jpg")
+(file.name.split(".").pop() || "jpg")
 .toLowerCase()
-.replace(/[^a-z0-9]/g,"")||"jpg";
+.replace(/[^a-z0-9]/g,"") || "jpg";
 
 const filePath =
-"products/"+
-Date.now()+"-"+
+"products/" +
+Date.now() +
+"-" +
 Math.random()
 .toString(36)
-.substring(2)+
-"."+extension;
+.substring(2) +
+"." +
+extension;
 
 const upload =
 await supabaseClient.storage
@@ -3367,13 +2593,11 @@ return supabaseClient.storage
 }
 
 /* =========================================================
-   PUBLISH
-   ========================================================= */
+PUBLISH
+========================================================= */
 
 document.getElementById("sellForm")
-.addEventListener(
-"submit",
-async function(e){
+.addEventListener("submit",async function(e){
 
 e.preventDefault();
 
@@ -3384,6 +2608,8 @@ if(!currentUser){
 closeSellPage();
 
 openAuthModal();
+
+showLogin();
 
 return;
 
@@ -3399,7 +2625,8 @@ try{
 
 button.disabled=true;
 
-button.innerText="⏳ UPLOADING...";
+button.innerText=
+"⏳ UPLOADING...";
 
 const imageFile =
 document.getElementById("sellImage")
@@ -3407,6 +2634,9 @@ document.getElementById("sellImage")
 
 const imageURL =
 await uploadProductImage(imageFile);
+
+button.innerText=
+"⏳ PUBLISHING...";
 
 const title =
 document.getElementById("sellTitle")
@@ -3418,13 +2648,11 @@ document.getElementById("sellDescription")
 
 const price =
 Number(
-document.getElementById("sellPrice")
-.value
+document.getElementById("sellPrice").value
 );
 
 const category =
-document.getElementById("sellCategory")
-.value;
+document.getElementById("sellCategory").value;
 
 const location =
 document.getElementById("sellLocation")
@@ -3449,8 +2677,6 @@ location
 if(profile.error)
 throw profile.error;
 
-button.innerText="⏳ PUBLISHING...";
-
 const result =
 await supabaseClient
 .from("listings")
@@ -3474,13 +2700,14 @@ throw result.error;
 
 message.style.color="#087f3d";
 
-message.innerText =
+message.innerText=
 "✅ Product published successfully!";
 
 this.reset();
 
-document.getElementById("imagePreview")
-.innerHTML="";
+document.getElementById(
+"imagePreview"
+).innerHTML="";
 
 await loadListings();
 
@@ -3490,21 +2717,21 @@ closeSellPage();
 
 button.disabled=false;
 
-button.innerText =
+button.innerText=
 "🚀 PUBLISH PRODUCT";
 
-},1200);
+},800);
 
 }catch(error){
 
 message.style.color="#c62828";
 
-message.innerHTML =
-"❌ "+escapeHTML(error.message);
+message.innerText=
+"❌ "+error.message;
 
 button.disabled=false;
 
-button.innerText =
+button.innerText=
 "🚀 PUBLISH PRODUCT";
 
 }
@@ -3512,43 +2739,44 @@ button.innerText =
 });
 
 /* =========================================================
-   LOAD LISTINGS
-   ========================================================= */
+LOAD LISTINGS
+========================================================= */
 
 async function loadListings(){
+
+const box =
+document.getElementById("homeProducts");
 
 const result =
 await supabaseClient
 .from("listings")
-.select("*")
+.select(
+"id,title,description,price,category,location,image_url,seller_name,seller_phone,status,created_at,user_id"
+)
 .eq("status","active")
-.order("created_at",{
-ascending:false
-});
+.order("created_at",{ascending:false})
+.limit(12);
 
 if(result.error){
 
-document.getElementById("homeProducts")
-.innerHTML =
-`
-<div class="no-results">
+box.innerHTML=
+`<div class="no-results">
 ❌ Could not load products.
-</div>
-`;
+</div>`;
 
 return;
 
 }
 
 renderHomeProducts(
-result.data||[]
+result.data || []
 );
 
 }
 
 /* =========================================================
-   HOME PRODUCTS
-   ========================================================= */
+HOME
+========================================================= */
 
 function renderHomeProducts(data){
 
@@ -3557,75 +2785,45 @@ document.getElementById("homeProducts");
 
 if(!data.length){
 
-box.innerHTML =
-`
-<div class="no-results">
-
-<div style="font-size:35px">
-🛍️
-</div>
-
-<br>
-
-No products have been listed yet.
-
-<br><br>
-
+box.innerHTML=
+`<div class="no-results">
+🛍️ No products listed yet.<br><br>
 Be the first seller on SiomaMarket!
-
-<br><br>
-
-<button
-onclick="sellNow()"
-style="
-border:0;
-background:#07883f;
-color:white;
-padding:11px 18px;
-border-radius:9px;
-font-weight:900">
-
-SELL YOUR FIRST PRODUCT
-
-</button>
-
-</div>
-`;
+</div>`;
 
 return;
 
 }
 
-box.innerHTML =
-`
+box.innerHTML=`
 <div class="results-grid">
-
-${data
-.slice(0,12)
-.map(productCard)
-.join("")}
-
+${data.map(productCard).join("")}
 </div>
 `;
 
 }
 
 /* =========================================================
-   PRODUCT CARD
-   ========================================================= */
+PRODUCT CARD
+========================================================= */
 
 function productCard(item){
-
-const image =
-item.image_url||DEFAULT_IMAGE;
-
-const title =
-item.title||"Product";
 
 const id =
 String(item.id);
 
+const image =
+item.image_url ||
+DEFAULT_IMAGE;
+
+const title =
+item.title || "Product";
+
+const saved =
+favoritesCache.has(id);
+
 return `
+
 <div class="result-card">
 
 <div class="product-image-wrap">
@@ -3633,16 +2831,15 @@ return `
 <img
 src="${escapeAttribute(image)}"
 alt="${escapeAttribute(title)}"
+loading="lazy"
+decoding="async"
 onerror="this.src='${DEFAULT_IMAGE}'">
 
-<div class="product-status">
-● Available
-</div>
-
 <button
-class="favorite-card"
-onclick="quickFavorite('${escapeAttribute(id)}')">
-❤️
+class="favorite-card ${saved?"saved":""}"
+data-favorite-id="${escapeAttribute(id)}"
+onclick="quickFavorite('${escapeAttribute(id)}',event)">
+${saved?"💖":"❤️"}
 </button>
 
 </div>
@@ -3650,7 +2847,7 @@ onclick="quickFavorite('${escapeAttribute(id)}')">
 <div class="result-info">
 
 <span class="category-badge">
-${escapeHTML(item.category||"Other")}
+${escapeHTML(item.category || "Other")}
 </span>
 
 <h3>
@@ -3658,14 +2855,12 @@ ${escapeHTML(title)}
 </h3>
 
 <div class="result-price">
-${money(item.price)}
+${formatPrice(item.price)}
 </div>
 
 <div class="result-location">
-📍 ${escapeHTML(item.location||"Sioma")}
+📍 ${escapeHTML(item.location || "Sioma")}
 </div>
-
-<div class="card-footer">
 
 <button
 class="buy-result"
@@ -3673,14 +2868,6 @@ onclick="viewListing('${escapeAttribute(id)}')">
 👀 VIEW PRODUCT
 </button>
 
-<button
-class="share-card"
-onclick="shareListing('${escapeAttribute(id)}')">
-📤
-</button>
-
-</div>
-
 </div>
 
 </div>
@@ -3689,482 +2876,78 @@ onclick="shareListing('${escapeAttribute(id)}')">
 }
 
 /* =========================================================
-   SEARCH
-   ========================================================= */
+REFRESH FAVORITE BUTTONS
+========================================================= */
 
-async function searchMarket(){
+function refreshFavoriteIcons(){
 
-const search =
-document.getElementById("searchInput")
-.value.trim();
+document
+.querySelectorAll("[data-favorite-id]")
+.forEach(button=>{
 
-if(!search){
+const id =
+button.dataset.favoriteId;
 
-document.getElementById("searchResults")
-.innerHTML =
-`
-<div class="no-results">
-🔎 Enter something to search.
-</div>
-`;
+const saved =
+favoritesCache.has(id);
 
-return;
+button.innerText =
+saved ? "💖" : "❤️";
+
+button.classList.toggle(
+"saved",
+saved
+);
+
+});
 
 }
 
-const box =
-document.getElementById("searchResults");
+/* =========================================================
+LOAD FAVORITE IDS
+========================================================= */
 
-box.innerHTML =
-`
-<div class="no-results">
-🔎 Searching SiomaMarket...
-</div>
-`;
+async function loadFavoriteIds(){
+
+favoritesCache.clear();
+
+if(!currentUser)return;
 
 const result =
 await supabaseClient
-.from("listings")
-.select("*")
-.eq("status","active")
-.or(
-"title.ilike.%"+search+"%,"+
-"description.ilike.%"+search+"%,"+
-"category.ilike.%"+search+"%,"+
-"location.ilike.%"+search+"%"
-)
-.order("created_at",{
-ascending:false
-});
+.from("favorites")
+.select("listing_id")
+.eq("user_id",currentUser.id);
 
 if(result.error){
 
-box.innerHTML =
-`
-<div class="no-results">
-❌ Search failed.
-</div>
-`;
+console.error(
+"Favorites:",
+result.error
+);
 
 return;
 
 }
 
-renderResults(
-result.data||[],
-"🔎 Search Results"
+(result.data || []).forEach(item=>{
+
+favoritesCache.add(
+String(item.listing_id)
 );
 
-}
-
-/* =========================================================
-   RENDER RESULTS
-   ========================================================= */
-
-function renderResults(data,heading){
-
-const box =
-document.getElementById("searchResults");
-
-if(!data.length){
-
-box.innerHTML =
-`
-<div class="no-results">
-
-<div style="font-size:35px">
-🔍
-</div>
-
-<br>
-
-No products found.
-
-<br><br>
-
-Try another search.
-
-</div>
-`;
-
-return;
-
-}
-
-box.innerHTML =
-`
-
-<h2 class="results-title">
-${escapeHTML(heading)}
-</h2>
-
-<div class="filter-bar">
-
-<label>Category</label>
-
-<select
-id="resultCategoryFilter"
-onchange="filterResults()">
-
-<option value="">All</option>
-<option>Agriculture</option>
-<option>Livestock</option>
-<option>Fish</option>
-<option>Phones</option>
-<option>Vehicles</option>
-<option>Houses</option>
-<option>Clothes</option>
-<option>Services</option>
-
-</select>
-
-<label>Sort</label>
-
-<select
-id="resultSort"
-onchange="filterResults()">
-
-<option value="newest">Newest</option>
-<option value="low">Price: Low to High</option>
-<option value="high">Price: High to Low</option>
-
-</select>
-
-<button
-class="filter-reset"
-onclick="clearSearch()">
-Clear
-</button>
-
-</div>
-
-<div
-id="filteredResults"
-class="results-grid">
-
-${data.map(productCard).join("")}
-
-</div>
-
-`;
-
-window.lastSearchResults=data;
-
-box.scrollIntoView({
-behavior:"smooth"
 });
 
 }
 
-window.lastSearchResults=[];
-
-function filterResults(){
-
-let data =
-[...window.lastSearchResults];
-
-const category =
-document.getElementById(
-"resultCategoryFilter"
-)?.value||"";
-
-const sort =
-document.getElementById(
-"resultSort"
-)?.value||"newest";
-
-if(category){
-
-data =
-data.filter(
-x=>x.category===category
-);
-
-}
-
-if(sort==="low"){
-
-data.sort(
-(a,b)=>
-Number(a.price||0)-
-Number(b.price||0)
-);
-
-}
-
-if(sort==="high"){
-
-data.sort(
-(a,b)=>
-Number(b.price||0)-
-Number(a.price||0)
-);
-
-}
-
-if(sort==="newest"){
-
-data.sort(
-(a,b)=>
-new Date(b.created_at||0)-
-new Date(a.created_at||0)
-);
-
-}
-
-const box =
-document.getElementById(
-"filteredResults"
-);
-
-if(box){
-
-box.innerHTML =
-data.length
-? data.map(productCard).join("")
-: `
-<div class="no-results"
-style="grid-column:1/-1">
-No products match your filter.
-</div>
-`;
-
-}
-
-}
-
 /* =========================================================
-   CATEGORY
-   ========================================================= */
+QUICK FAVORITE
+========================================================= */
 
-async function searchCategory(category){
+async function quickFavorite(id,event){
 
-const result =
-await supabaseClient
-.from("listings")
-.select("*")
-.eq("status","active")
-.eq("category",category)
-.order("created_at",{
-ascending:false
-});
-
-renderResults(
-result.data||[],
-"🛍️ "+category
-);
-
-}
-
-/* =========================================================
-   BUY
-   ========================================================= */
-
-function buyNow(){
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-setTimeout(()=>{
-
-document.getElementById(
-"searchInput"
-).focus();
-
-},350);
-
-}
-
-/* =========================================================
-   VIEW LISTING
-   ========================================================= */
-
-async function viewListing(id){
-
-const page =
-document.getElementById("productPage");
-
-page.style.display="block";
-
-document.body.style.overflow="hidden";
-
-const result =
-await supabaseClient
-.from("listings")
-.select("*")
-.eq("id",id)
-.single();
-
-if(result.error){
-
-document.getElementById(
-"detailsTitle"
-).innerText =
-"Unable to load product.";
-
-return;
-
-}
-
-const data=result.data;
-
-currentListingId=data.id;
-
-currentProduct=data;
-
-document.getElementById(
-"detailsImage"
-).src =
-data.image_url||DEFAULT_IMAGE;
-
-document.getElementById(
-"detailsTitle"
-).innerText =
-data.title||"Product";
-
-document.getElementById(
-"detailsPrice"
-).innerText =
-money(data.price);
-
-document.getElementById(
-"detailsCategory"
-).innerText =
-data.category||"Other";
-
-document.getElementById(
-"detailsLocation"
-).innerText =
-"📍 "+(data.location||"Sioma");
-
-document.getElementById(
-"detailsDescription"
-).innerText =
-data.description||
-"No description provided.";
-
-document.getElementById(
-"detailsSeller"
-).innerText =
-data.seller_name||
-"Sioma Seller";
-
-document.getElementById(
-"detailsPhone"
-).innerText =
-data.seller_phone||
-"Phone not provided";
-
-const whatsapp =
-document.getElementById(
-"whatsappButton"
-);
-
-const call =
-document.getElementById(
-"callButton"
-);
-
-if(data.seller_phone){
-
-whatsapp.style.display="block";
-
-call.style.display="block";
-
-whatsapp.onclick =
-()=>contactSeller(
-data.seller_phone,
-data.title
-);
-
-call.onclick =
-()=>callSeller(
-data.seller_phone
-);
-
-}else{
-
-whatsapp.style.display="none";
-
-call.style.display="none";
-
-}
-
-await updateFavoriteButton();
-
-}
-
-/* =========================================================
-   CLOSE PRODUCT
-   ========================================================= */
-
-function closeProductPage(){
-
-document.getElementById(
-"productPage"
-).style.display="none";
-
-document.body.style.overflow="auto";
-
-}
-
-/* =========================================================
-   WHATSAPP
-   ========================================================= */
-
-function contactSeller(
-phone,
-product
-){
-
-let number =
-String(phone).replace(/\D/g,"");
-
-if(number.startsWith("0")){
-
-number =
-"260"+
-number.substring(1);
-
-}
-
-const message =
-encodeURIComponent(
-"Hello, I found your "+
-product+
-" on SiomaMarket. Is it still available?"
-);
-
-window.open(
-"https://wa.me/"+
-number+
-"?text="+
-message,
-"_blank"
-);
-
-}
-
-/* =========================================================
-   CALL
-   ========================================================= */
-
-function callSeller(phone){
-
-window.location.href =
-"tel:"+
-String(phone)
-.replace(/[^\d+]/g,"");
-
-}
-
-/* =========================================================
-   FAVORITES
-   ========================================================= */
-
-async function quickFavorite(id){
+if(event)
+event.stopPropagation();
 
 await loadAuthSession();
 
@@ -4174,27 +2957,35 @@ openAuthModal();
 
 showLogin();
 
+document.getElementById("authMessage").style.color="#c62828";
+
+document.getElementById("authMessage").innerText=
+"🔐 Login to save favorites.";
+
 return;
 
 }
 
-const existing =
-await supabaseClient
-.from("favorites")
-.select("id")
-.eq("user_id",currentUser.id)
-.eq("listing_id",id)
-.maybeSingle();
+id=String(id);
 
-if(existing.data){
+if(favoritesCache.has(id)){
 
+const result =
 await supabaseClient
 .from("favorites")
 .delete()
-.eq("id",existing.data.id)
-.eq("user_id",currentUser.id);
+.eq("user_id",currentUser.id)
+.eq("listing_id",id);
 
-alert("💔 Removed from favorites.");
+if(result.error){
+
+alert("❌ "+result.error.message);
+
+return;
+
+}
+
+favoritesCache.delete(id);
 
 }else{
 
@@ -4210,43 +3001,45 @@ listing_id:id
 
 if(result.error){
 
-alert("❌ "+result.error.message);
+if(result.error.code==="23505"){
+
+favoritesCache.add(id);
+
+}else{
+
+alert(
+"❌ "+result.error.message
+);
 
 return;
 
 }
 
-alert("❤️ Added to favorites!");
+}else{
+
+favoritesCache.add(id);
+
+}
+
+}
+
+refreshFavoriteIcons();
+
+if(
+document.getElementById(
+"productPage"
+).style.display==="block"
+){
+
+await updateFavoriteButton();
 
 }
 
 }
 
 /* =========================================================
-   CHECK FAVORITE
-   ========================================================= */
-
-async function checkFavorite(){
-
-if(!currentUser||
-!currentListingId)
-return false;
-
-const result =
-await supabaseClient
-.from("favorites")
-.select("id")
-.eq("user_id",currentUser.id)
-.eq("listing_id",currentListingId)
-.maybeSingle();
-
-return !!result.data;
-
-}
-
-/* =========================================================
-   UPDATE FAVORITE BUTTON
-   ========================================================= */
+CURRENT FAVORITE
+========================================================= */
 
 async function updateFavoriteButton(){
 
@@ -4257,7 +3050,7 @@ document.getElementById(
 
 if(!currentUser){
 
-button.innerText =
+button.innerText=
 "❤️ Save Product";
 
 return;
@@ -4265,73 +3058,366 @@ return;
 }
 
 const saved =
-await checkFavorite();
+favoritesCache.has(
+String(currentListingId)
+);
 
 button.innerText =
 saved
-?
-"💔 Remove Favorite"
-:
-"❤️ Save Product";
+? "💔 Remove Favorite"
+: "❤️ Save Product";
 
 }
 
 /* =========================================================
-   SAVE FAVORITE
-   ========================================================= */
+SAVE FROM DETAILS
+========================================================= */
 
 async function saveFavorite(){
 
-await loadAuthSession();
+if(!currentListingId)return;
 
-if(!currentUser){
+await quickFavorite(
+String(currentListingId)
+);
 
-openAuthModal();
+await updateFavoriteButton();
 
-showLogin();
+}
+
+/* =========================================================
+SEARCH
+========================================================= */
+
+async function searchMarket(){
+
+const search =
+document.getElementById("searchInput")
+.value.trim();
+
+if(!search){
+
+document.getElementById(
+"searchResults"
+).innerHTML="";
 
 return;
 
 }
 
-if(!currentListingId)
-return;
+const box =
+document.getElementById("searchResults");
 
-const existing =
-await supabaseClient
-.from("favorites")
-.select("id")
-.eq("user_id",currentUser.id)
-.eq("listing_id",currentListingId)
-.maybeSingle();
+box.innerHTML=
+`<div class="no-results">
+🔎 Searching...
+</div>`;
 
-if(existing.data){
-
-await supabaseClient
-.from("favorites")
-.delete()
-.eq("id",existing.data.id)
-.eq("user_id",currentUser.id);
-
-}else{
+const safe =
+search.replace(/[%_]/g,"");
 
 const result =
 await supabaseClient
-.from("favorites")
-.insert({
-
-user_id:currentUser.id,
-listing_id:currentListingId
-
-});
+.from("listings")
+.select("*")
+.eq("status","active")
+.or(
+"title.ilike.%"+safe+"%,"+
+"description.ilike.%"+safe+"%,"+
+"category.ilike.%"+safe+"%,"+
+"location.ilike.%"+safe+"%"
+)
+.order("created_at",{ascending:false})
+.limit(50);
 
 if(result.error){
 
-alert("❌ "+result.error.message);
+box.innerHTML=
+`<div class="no-results">
+❌ Search failed.
+</div>`;
 
 return;
 
 }
+
+renderResults(
+result.data || [],
+"🔎 Search Results"
+);
+
+}
+
+/* =========================================================
+SEARCH ENTER / DEBOUNCE
+========================================================= */
+
+document.getElementById("searchInput")
+.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+e.preventDefault();
+
+searchMarket();
+
+}
+
+});
+
+document.getElementById("searchInput")
+.addEventListener("input",function(){
+
+clearTimeout(searchTimer);
+
+const value =
+this.value.trim();
+
+if(!value){
+
+document.getElementById(
+"searchResults"
+).innerHTML="";
+
+return;
+
+}
+
+searchTimer =
+setTimeout(
+searchMarket,
+450
+);
+
+});
+
+/* =========================================================
+RESULTS
+========================================================= */
+
+function renderResults(data,heading){
+
+const box =
+document.getElementById("searchResults");
+
+if(!data.length){
+
+box.innerHTML=
+`<div class="no-results">
+🔍 No products found.
+</div>`;
+
+return;
+
+}
+
+box.innerHTML=`
+
+<h2 class="results-title">
+${escapeHTML(heading)}
+</h2>
+
+<div class="results-grid">
+${data.map(productCard).join("")}
+</div>
+`;
+
+box.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+/* =========================================================
+CATEGORY
+========================================================= */
+
+async function searchCategory(category){
+
+const box =
+document.getElementById("searchResults");
+
+box.innerHTML=
+`<div class="no-results">
+⏳ Loading ${escapeHTML(category)}...
+</div>`;
+
+const result =
+await supabaseClient
+.from("listings")
+.select("*")
+.eq("status","active")
+.eq("category",category)
+.order("created_at",{ascending:false})
+.limit(50);
+
+if(result.error){
+
+box.innerHTML=
+`<div class="no-results">
+❌ Could not load category.
+</div>`;
+
+return;
+
+}
+
+renderResults(
+result.data || [],
+"🛍️ "+category
+);
+
+}
+
+/* =========================================================
+BUY
+========================================================= */
+
+function buyNow(){
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+setTimeout(()=>{
+
+document.getElementById(
+"searchInput"
+).focus();
+
+},300);
+
+}
+
+/* =========================================================
+VIEW LISTING
+========================================================= */
+
+async function viewListing(id){
+
+const page =
+document.getElementById("productPage");
+
+page.style.display="block";
+
+document.body.style.overflow="hidden";
+
+document.getElementById(
+"detailsTitle"
+).innerText="Loading...";
+
+const result =
+await supabaseClient
+.from("listings")
+.select("*")
+.eq("id",id)
+.single();
+
+if(result.error){
+
+document.getElementById(
+"detailsTitle"
+).innerText=
+"Unable to load product.";
+
+return;
+
+}
+
+const data =
+result.data;
+
+currentListingId =
+data.id;
+
+const image =
+document.getElementById(
+"detailsImage"
+);
+
+image.src =
+data.image_url || DEFAULT_IMAGE;
+
+image.onerror=function(){
+this.src=DEFAULT_IMAGE;
+};
+
+document.getElementById(
+"detailsTitle"
+).innerText =
+data.title || "Product";
+
+document.getElementById(
+"detailsPrice"
+).innerText =
+formatPrice(data.price);
+
+document.getElementById(
+"detailsCategory"
+).innerText =
+data.category || "Other";
+
+document.getElementById(
+"detailsLocation"
+).innerText =
+"📍 "+(data.location || "Sioma");
+
+document.getElementById(
+"detailsDescription"
+).innerText =
+data.description ||
+"No description provided.";
+
+document.getElementById(
+"detailsSeller"
+).innerText =
+data.seller_name ||
+"Sioma Seller";
+
+document.getElementById(
+"detailsPhone"
+).innerText =
+data.seller_phone ||
+"Phone not provided";
+
+const whatsapp =
+document.getElementById(
+"whatsappButton"
+);
+
+const call =
+document.getElementById(
+"callButton"
+);
+
+if(data.seller_phone){
+
+whatsapp.style.display="block";
+call.style.display="block";
+
+whatsapp.onclick=()=>contactSeller(
+data.seller_phone,
+data.title
+);
+
+call.onclick=()=>callSeller(
+data.seller_phone
+);
+
+}else{
+
+whatsapp.style.display="none";
+call.style.display="none";
+
+}
+
+await loadAuthSession();
+
+if(currentUser){
+
+await loadFavoriteIds();
 
 }
 
@@ -4340,8 +3426,66 @@ await updateFavoriteButton();
 }
 
 /* =========================================================
-   FAVORITES PAGE
-   ========================================================= */
+CLOSE PRODUCT
+========================================================= */
+
+function closeProductPage(){
+
+document.getElementById(
+"productPage"
+).style.display="none";
+
+document.body.style.overflow="auto";
+
+}
+
+/* =========================================================
+WHATSAPP
+========================================================= */
+
+function contactSeller(phone,product){
+
+let number =
+String(phone)
+.replace(/\D/g,"");
+
+if(number.startsWith("0")){
+
+number =
+"260"+number.substring(1);
+
+}
+
+const message =
+encodeURIComponent(
+"Hello, I found your "+
+product+
+" on SiomaMarket. Is it still available?"
+);
+
+window.open(
+"https://wa.me/"+number+
+"?text="+message,
+"_blank"
+);
+
+}
+
+/* =========================================================
+CALL
+========================================================= */
+
+function callSeller(phone){
+
+window.location.href =
+"tel:"+String(phone)
+.replace(/[^\d+]/g,"");
+
+}
+
+/* =========================================================
+FAVORITES PAGE
+========================================================= */
 
 async function showFavorites(){
 
@@ -4352,6 +3496,11 @@ if(!currentUser){
 openAuthModal();
 
 showLogin();
+
+document.getElementById(
+"authMessage"
+).innerText =
+"🔐 Login to view your favorites.";
 
 return;
 
@@ -4371,12 +3520,12 @@ page.style.display="block";
 
 document.body.style.overflow="hidden";
 
-box.innerHTML =
-`
-<div class="no-results">
+box.innerHTML=
+`<div class="no-results">
 ⏳ Loading favorites...
-</div>
-`;
+</div>`;
+
+await loadFavoriteIds();
 
 const result =
 await supabaseClient
@@ -4384,6 +3533,7 @@ await supabaseClient
 .select(`
 id,
 listing_id,
+created_at,
 listings(
 id,
 title,
@@ -4395,66 +3545,45 @@ status
 )
 `)
 .eq("user_id",currentUser.id)
-.order("created_at",{
-ascending:false
-});
+.order("created_at",{ascending:false});
 
 if(result.error){
 
-box.innerHTML =
-`
-<div class="no-results">
+box.innerHTML=
+`<div class="no-results">
 ❌ Could not load favorites.
-</div>
-`;
+</div>`;
 
 return;
 
 }
 
 const favorites =
-(result.data||[])
+(result.data || [])
 .filter(
-x=>x.listings &&
+x =>
+x.listings &&
 x.listings.status==="active"
 );
 
 if(!favorites.length){
 
-box.innerHTML =
-`
-<div class="no-results">
-
-<div style="font-size:40px">
-❤️
-</div>
-
-<br>
-
-You have no saved products yet.
-
+box.innerHTML=
+`<div class="no-results">
+❤️ You have no saved products yet.
 <br><br>
-
 Browse SiomaMarket and save products you like.
-
-</div>
-`;
+</div>`;
 
 return;
 
 }
 
-box.innerHTML =
-`
+box.innerHTML=`
 
-<div class="section-heading">
-
-<div>
-<h2>❤️ My Favorites</h2>
-<p>Products you saved for later.</p>
-</div>
-
-</div>
+<h2 class="results-title">
+❤️ My Favorites
+</h2>
 
 <div class="results-grid">
 
@@ -4478,67 +3607,8 @@ document.body.style.overflow="auto";
 }
 
 /* =========================================================
-   SHARE
-   ========================================================= */
-
-async function shareListing(id){
-
-const url =
-window.location.origin+
-window.location.pathname+
-"?product="+encodeURIComponent(id);
-
-const title="SiomaMarket Product";
-
-if(navigator.share){
-
-try{
-
-await navigator.share({
-title,
-text:"Check out this product on SiomaMarket 🇿🇲",
-url
-});
-
-}catch(e){}
-
-}else{
-
-try{
-
-await navigator.clipboard.writeText(url);
-
-alert(
-"📋 Product link copied!"
-);
-
-}catch(e){
-
-prompt(
-"Copy this product link:",
-url
-);
-
-}
-
-}
-
-}
-
-async function shareCurrentProduct(){
-
-if(!currentProduct)
-return;
-
-await shareListing(
-currentProduct.id
-);
-
-}
-
-/* =========================================================
-   SELLER DASHBOARD
-   ========================================================= */
+SELLER DASHBOARD
+========================================================= */
 
 async function openSellerDashboard(){
 
@@ -4581,22 +3651,18 @@ await supabaseClient
 .from("listings")
 .select("*")
 .eq("user_id",currentUser.id)
-.order("created_at",{
-ascending:false
-});
+.order("created_at",{ascending:false});
 
 if(result.error){
 
-alert(
-"Could not load dashboard."
-);
+console.error(result.error);
 
 return;
 
 }
 
 sellerListingsCache =
-result.data||[];
+result.data || [];
 
 const listings =
 sellerListingsCache;
@@ -4622,23 +3688,24 @@ listings.reduce(
 0
 ).toLocaleString();
 
+const listingIds =
+listings.map(x=>x.id);
+
+let favoriteCount=0;
+
+if(listingIds.length){
+
 const fav =
 await supabaseClient
 .from("favorites")
-.select("listing_id");
+.select("id")
+.in("listing_id",listingIds);
 
-const myIds =
-new Set(
-listings.map(x=>String(x.id))
-);
+if(!fav.error)
+favoriteCount =
+(fav.data || []).length;
 
-const favoriteCount =
-(fav.data||[])
-.filter(
-x=>myIds.has(
-String(x.listing_id)
-)
-).length;
+}
 
 document.getElementById(
 "sellerFavoriteCount"
@@ -4650,8 +3717,8 @@ renderSellerListings(listings);
 }
 
 /* =========================================================
-   SELLER LISTINGS
-   ========================================================= */
+SELLER LISTINGS
+========================================================= */
 
 function renderSellerListings(listings){
 
@@ -4662,24 +3729,12 @@ document.getElementById(
 
 if(!listings.length){
 
-box.innerHTML =
-`
-<div class="no-results">
+box.innerHTML=
+`<div class="no-results">
 📦 You have no products yet.
 <br><br>
-<button
-onclick="sellNow()"
-style="
-border:0;
-background:#07883f;
-color:white;
-padding:10px 15px;
-border-radius:8px;
-font-weight:900">
-+ ADD PRODUCT
-</button>
-</div>
-`;
+Tap SELL to create your first listing.
+</div>`;
 
 return;
 
@@ -4691,33 +3746,24 @@ listings.map(item=>`
 <div class="dashboard-listing">
 
 <img
-src="${escapeAttribute(
-item.image_url||DEFAULT_IMAGE
-)}"
-alt="Product">
+src="${escapeAttribute(item.image_url||DEFAULT_IMAGE)}"
+alt="Product"
+loading="lazy">
 
 <div class="dashboard-listing-info">
 
 <h4>
-${escapeHTML(
-item.title||"Product"
-)}
+${escapeHTML(item.title||"Product")}
 </h4>
 
 <p>
-K${Number(
-item.price||0
-).toLocaleString()}
+${formatPrice(item.price)}
 </p>
 
 <small>
-📍 ${escapeHTML(
-item.location||"Sioma"
-)}
+📍 ${escapeHTML(item.location||"Sioma")}
 •
-${escapeHTML(
-item.status||"active"
-)}
+${escapeHTML(item.status||"active")}
 </small>
 
 </div>
@@ -4737,12 +3783,6 @@ onclick="openEditModal('${item.id}')">
 </button>
 
 <button
-class="small-button edit-button"
-onclick="sellerToggleStatus('${item.id}')">
-${item.status==="active"?"⏸️":"▶️"}
-</button>
-
-<button
 class="small-button delete-button"
 onclick="deleteSellerListing('${item.id}')">
 🗑️
@@ -4757,53 +3797,8 @@ onclick="deleteSellerListing('${item.id}')">
 }
 
 /* =========================================================
-   SELLER STATUS
-   ========================================================= */
-
-async function sellerToggleStatus(id){
-
-const item =
-sellerListingsCache.find(
-x=>String(x.id)===String(id)
-);
-
-if(!item)return;
-
-const newStatus =
-item.status==="active"
-?
-"inactive"
-:
-"active";
-
-const result =
-await supabaseClient
-.from("listings")
-.update({
-status:newStatus
-})
-.eq("id",id)
-.eq("user_id",currentUser.id);
-
-if(result.error){
-
-alert(
-"❌ "+result.error.message
-);
-
-return;
-
-}
-
-await loadSellerDashboard();
-
-await loadListings();
-
-}
-
-/* =========================================================
-   EDIT
-   ========================================================= */
+EDIT
+========================================================= */
 
 function openEditModal(id){
 
@@ -4868,8 +3863,8 @@ document.getElementById(
 }
 
 /* =========================================================
-   SAVE EDIT
-   ========================================================= */
+SAVE EDIT
+========================================================= */
 
 async function saveEditedListing(){
 
@@ -4945,20 +3940,28 @@ document.getElementById(
 
 await loadSellerDashboard();
 
+await loadListings();
+
+if(
+document.getElementById(
+"adminDashboard"
+).style.display==="block"
+){
+
 await loadAdminListings();
 
-await loadListings();
+}
 
 setTimeout(
 closeEditModal,
-700
+600
 );
 
 }
 
 /* =========================================================
-   DELETE SELLER LISTING
-   ========================================================= */
+DELETE SELLER LISTING
+========================================================= */
 
 async function deleteSellerListing(id){
 
@@ -4976,16 +3979,16 @@ await supabaseClient
 
 if(result.error){
 
-alert(
-"❌ "+result.error.message
-);
+alert("❌ "+result.error.message);
 
 return;
 
 }
 
-alert(
-"✅ Product deleted."
+alert("✅ Product deleted.");
+
+favoritesCache.delete(
+String(id)
 );
 
 await loadSellerDashboard();
@@ -4995,8 +3998,8 @@ await loadListings();
 }
 
 /* =========================================================
-   ADMIN
-   ========================================================= */
+ADMIN
+========================================================= */
 
 async function openAdminDashboard(){
 
@@ -5004,9 +4007,7 @@ await loadAuthSession();
 
 if(!(await isAdmin())){
 
-alert(
-"⛔ Access denied."
-);
+alert("⛔ Access denied.");
 
 return;
 
@@ -5033,8 +4034,8 @@ document.body.style.overflow="auto";
 }
 
 /* =========================================================
-   LOAD ADMIN LISTINGS
-   ========================================================= */
+ADMIN LOAD
+========================================================= */
 
 async function loadAdminListings(){
 
@@ -5043,42 +4044,34 @@ document.getElementById(
 "adminListingsBody"
 );
 
-body.innerHTML =
-`
-<tr>
+body.innerHTML=
+`<tr>
 <td colspan="7">
 ⏳ Loading...
 </td>
-</tr>
-`;
+</tr>`;
 
 const result =
 await supabaseClient
 .from("listings")
 .select("*")
-.order("created_at",{
-ascending:false
-});
+.order("created_at",{ascending:false});
 
 if(result.error){
 
-body.innerHTML =
-`
-<tr>
+body.innerHTML=
+`<tr>
 <td colspan="7">
-❌ ${escapeHTML(
-result.error.message
-)}
+❌ ${escapeHTML(result.error.message)}
 </td>
-</tr>
-`;
+</tr>`;
 
 return;
 
 }
 
 adminListingsCache =
-result.data||[];
+result.data || [];
 
 const listings =
 adminListingsCache;
@@ -5117,10 +4110,6 @@ renderAdminListings(listings);
 
 }
 
-/* =========================================================
-   ADMIN TABLE
-   ========================================================= */
-
 function renderAdminListings(listings){
 
 const body =
@@ -5130,14 +4119,12 @@ document.getElementById(
 
 if(!listings.length){
 
-body.innerHTML =
-`
-<tr>
+body.innerHTML=
+`<tr>
 <td colspan="7">
 No listings found.
 </td>
-</tr>
-`;
+</tr>`;
 
 return;
 
@@ -5151,49 +4138,36 @@ listings.map(item=>`
 <td>
 
 <img
-src="${escapeAttribute(
-item.image_url||DEFAULT_IMAGE
-)}"
-alt="Product">
+src="${escapeAttribute(item.image_url||DEFAULT_IMAGE)}"
+alt="Product"
+loading="lazy">
 
 </td>
 
 <td>
-
 <strong>
-${escapeHTML(
-item.title||"Product"
-)}
+${escapeHTML(item.title||"Product")}
 </strong>
-
 </td>
 
 <td>
-K${Number(
-item.price||0
-).toLocaleString()}
+${formatPrice(item.price)}
 </td>
 
 <td>
-${escapeHTML(
-item.seller_name||"Unknown"
-)}
+${escapeHTML(item.seller_name||"Unknown")}
 </td>
 
 <td>
-${escapeHTML(
-item.location||"Sioma"
-)}
+${escapeHTML(item.location||"Sioma")}
 </td>
 
 <td>
 
 <span class="${
 item.status==="active"
-?
-"status-active"
-:
-"status-inactive"
+?"status-active"
+:"status-inactive"
 }">
 
 ${escapeHTML(
@@ -5221,13 +4195,13 @@ onclick="openEditModal('${item.id}')">
 <button
 class="small-button edit-button"
 onclick="toggleListingStatus('${item.id}')">
+
 ${
 item.status==="active"
-?
-"⏸️"
-:
-"▶️"
+?"⏸️"
+:"▶️"
 }
+
 </button>
 
 <button
@@ -5263,8 +4237,8 @@ x=>x.status==="active"
 }
 
 /* =========================================================
-   ADMIN STATUS
-   ========================================================= */
+TOGGLE STATUS
+========================================================= */
 
 async function toggleListingStatus(id){
 
@@ -5277,10 +4251,8 @@ if(!item)return;
 
 const newStatus =
 item.status==="active"
-?
-"inactive"
-:
-"active";
+?"inactive"
+:"active";
 
 const result =
 await supabaseClient
@@ -5307,8 +4279,8 @@ await loadListings();
 }
 
 /* =========================================================
-   ADMIN DELETE
-   ========================================================= */
+ADMIN DELETE
+========================================================= */
 
 async function adminDeleteListing(id){
 
@@ -5333,8 +4305,10 @@ return;
 
 }
 
-alert(
-"✅ Listing deleted."
+alert("✅ Listing deleted.");
+
+favoritesCache.delete(
+String(id)
 );
 
 await loadAdminListings();
@@ -5344,61 +4318,49 @@ await loadListings();
 }
 
 /* =========================================================
-   SEARCH ENTER
-   ========================================================= */
-
-document.getElementById(
-"searchInput"
-)
-.addEventListener(
-"keydown",
-function(e){
-
-if(e.key==="Enter"){
-
-e.preventDefault();
-
-searchMarket();
-
-}
-
-});
-
-/* =========================================================
-   URL PRODUCT SUPPORT
-   ========================================================= */
-
-async function checkProductURL(){
-
-const params =
-new URLSearchParams(
-window.location.search
-);
-
-const product =
-params.get("product");
-
-if(product){
-
-await viewListing(product);
-
-}
-
-}
-
-/* =========================================================
-   PAGE START
-   ========================================================= */
+PAGE START
+========================================================= */
 
 document.addEventListener(
 "DOMContentLoaded",
 async function(){
 
+/*
+    Load session first.
+    Favorites are only requested for logged-in users.
+*/
+
 await loadAuthSession();
+
+if(currentUser){
+
+await loadFavoriteIds();
+
+}
+
+/*
+    Load marketplace products.
+*/
 
 await loadListings();
 
-await checkProductURL();
+refreshFavoriteIcons();
+
+}
+);
+
+/* =========================================================
+ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+"keydown",
+function(e){
+
+if(e.key!=="Escape")return;
+
+closeAuthModal();
+closeEditModal();
 
 }
 );
@@ -5406,4 +4368,4 @@ await checkProductURL();
 </script>
 
 </body>
-    </html>
+   </html>
