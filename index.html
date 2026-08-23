@@ -13,11 +13,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f7f6;
-  color:#17231c;
-  line-height:1.5;
-  padding-bottom:70px;
+ font-family:Arial,Helvetica,sans-serif;
+ background:#f5f7f6;
+ color:#17231c;
+ line-height:1.5;
+ padding-bottom:70px;
 }
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -262,6 +262,17 @@ main{
  box-shadow:0 2px 7px rgba(0,0,0,.15);
 }
 .favorite-card.saved{color:#c62828}
+.photo-count-badge{
+ position:absolute;
+ bottom:7px;
+ left:7px;
+ padding:4px 7px;
+ border-radius:20px;
+ background:rgba(0,0,0,.68);
+ color:#fff;
+ font-size:10px;
+ font-weight:bold;
+}
 .result-info{padding:9px}
 .category-badge,.sioma-badge{
  display:inline-block;
@@ -493,13 +504,94 @@ main{
  min-height:100px;
  resize:vertical;
 }
-#imagePreview{margin-top:8px}
-#imagePreview img{
+
+/* THREE PHOTO UPLOADER */
+.photo-upload-box{
+ margin-top:8px;
+ padding:12px;
+ border:2px dashed #b9c8bf;
+ border-radius:12px;
+ background:#f8faf9;
+}
+.photo-upload-title{
+ font-weight:900;
+ color:var(--green);
+ font-size:14px;
+ margin-bottom:4px;
+}
+.photo-upload-help{
+ color:var(--muted);
+ font-size:11px;
+ margin-bottom:10px;
+}
+.photo-upload-input{
  width:100%;
- max-width:280px;
- max-height:230px;
- object-fit:contain;
+ padding:10px;
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:8px;
+}
+.image-preview-grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:7px;
+ margin-top:12px;
+}
+.preview-item{
+ position:relative;
+ min-width:0;
+ aspect-ratio:1/1;
  border-radius:9px;
+ overflow:hidden;
+ background:#edf1ef;
+ border:1px solid var(--border);
+}
+.preview-item img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ display:block;
+}
+.preview-number{
+ position:absolute;
+ left:5px;
+ top:5px;
+ padding:3px 6px;
+ border-radius:20px;
+ background:var(--green);
+ color:#fff;
+ font-size:9px;
+ font-weight:900;
+}
+.preview-remove{
+ position:absolute;
+ right:5px;
+ top:5px;
+ width:28px;
+ height:28px;
+ border:0;
+ border-radius:50%;
+ background:rgba(198,40,40,.95);
+ color:#fff;
+ font-weight:900;
+}
+.preview-main{
+ position:absolute;
+ left:5px;
+ bottom:5px;
+ padding:3px 6px;
+ border-radius:20px;
+ background:rgba(0,0,0,.7);
+ color:#fff;
+ font-size:8px;
+ font-weight:bold;
+}
+.photo-counter{
+ margin-top:8px;
+ text-align:center;
+ color:var(--muted);
+ font-size:11px;
+ font-weight:bold;
 }
 
 /* DETAILS */
@@ -512,12 +604,35 @@ main{
  overflow:hidden;
  box-shadow:var(--shadow);
 }
-.details-image{
+.details-gallery{
+ background:#edf1ef;
+}
+.details-main-image{
  display:block;
  width:100%;
  height:300px;
  object-fit:contain;
  background:#edf1ef;
+}
+.details-thumbnails{
+ display:flex;
+ gap:7px;
+ padding:8px;
+ overflow-x:auto;
+ background:#e6ece8;
+}
+.details-thumb{
+ width:70px;
+ height:60px;
+ min-width:70px;
+ object-fit:cover;
+ border-radius:7px;
+ border:3px solid transparent;
+ cursor:pointer;
+ background:#fff;
+}
+.details-thumb.active{
+ border-color:var(--green);
 }
 .details-content{padding:17px}
 .details-category{
@@ -837,9 +952,7 @@ main{
  font-size:9px!important;
  font-weight:900;
 }
-.conversation-time{
- font-size:9px!important;
-}
+.conversation-time{font-size:9px!important}
 .chat{
  background:#fff;
  border-radius:12px;
@@ -984,7 +1097,10 @@ footer p{
   display:grid;
   grid-template-columns:1fr 1fr;
  }
- .details-image{height:580px}
+ .details-gallery{
+  min-width:0;
+ }
+ .details-main-image{height:500px}
  .message-layout{
   display:grid;
   grid-template-columns:300px 1fr;
@@ -996,7 +1112,6 @@ footer p{
  }
 }
 
-/* LARGE DESKTOP */
 @media(min-width:900px){
  .topbar{margin-bottom:25px}
  .logo{font-size:27px}
@@ -1005,7 +1120,6 @@ footer p{
  .result-card img{height:220px}
 }
 
-/* VERY SMALL PHONES */
 @media(max-width:360px){
  .logo{font-size:20px}
  .account-button{padding:7px 6px;font-size:10px}
@@ -1017,6 +1131,8 @@ footer p{
  .buy-result{font-size:10px}
  .category{min-height:92px}
  .category-icon{font-size:25px}
+ .image-preview-grid{gap:4px}
+ .preview-remove{width:25px;height:25px;font-size:11px}
 }
 </style>
 </head>
@@ -1076,6 +1192,7 @@ footer p{
 </div>
 
 <div class="sell-container page-container">
+
 <div class="sell-intro">
 <div class="sell-intro-icon">🏷️</div>
 <h1>Sell in Sioma</h1>
@@ -1111,10 +1228,33 @@ footer p{
 <label>Location</label>
 <input id="sellLocation" value="Sioma" required>
 
-<label>Product Photo</label>
-<input type="file" id="sellImage" accept="image/*" required>
-<small>Maximum 6MB.</small>
-<div id="imagePreview"></div>
+<label>Product Photos</label>
+
+<div class="photo-upload-box">
+
+<div class="photo-upload-title">
+📸 Add up to 3 product photos
+</div>
+
+<div class="photo-upload-help">
+Use clear photos. The first photo will be the main product photo.
+Maximum 6MB per photo.
+</div>
+
+<input
+ type="file"
+ id="sellImage"
+ class="photo-upload-input"
+ accept="image/*"
+ multiple>
+
+<div id="imagePreview" class="image-preview-grid"></div>
+
+<div id="photoCounter" class="photo-counter">
+0 / 3 photos selected
+</div>
+
+</div>
 
 <label>Your Name</label>
 <input id="sellerName" required>
@@ -1127,6 +1267,7 @@ footer p{
 </button>
 
 <div id="sellMessage" class="sell-message"></div>
+
 </form>
 </div>
 </div>
@@ -1143,6 +1284,7 @@ footer p{
 <p class="dashboard-subtitle">Manage your SiomaMarket products.</p>
 
 <div class="stats-grid">
+
 <div class="stat-card">
 <div class="stat-icon">📦</div>
 <div id="sellerTotalListings" class="stat-number">0</div>
@@ -1166,12 +1308,14 @@ footer p{
 <div id="sellerValue" class="stat-number">K0</div>
 <div class="stat-label">Listed Value</div>
 </div>
+
 </div>
 
 <div class="dashboard-section">
 <h3>📦 My Products</h3>
 <div id="sellerListings"></div>
 </div>
+
 </div>
 </div>
 
@@ -1191,6 +1335,7 @@ footer p{
 </div>
 
 <div class="stats-grid">
+
 <div class="stat-card">
 <div class="stat-icon">📦</div>
 <div id="adminTotalListings" class="stat-number">0</div>
@@ -1214,6 +1359,7 @@ footer p{
 <div id="adminMarketValue" class="stat-number">K0</div>
 <div class="stat-label">Market Value</div>
 </div>
+
 </div>
 
 <div class="dashboard-section">
@@ -1244,21 +1390,35 @@ footer p{
 <tbody id="adminListingsBody"></tbody>
 </table>
 </div>
+
 </div>
 </div>
 </div>
 
 <!-- PRODUCT -->
 <div id="productPage" class="full-page">
+
 <div class="page-header">
 <button class="back-button" onclick="closeProductPage()">← Back</button>
 <h2>Product Details</h2>
 </div>
 
 <div class="product-details">
-<img id="detailsImage" class="details-image" src="" alt="Product">
+
+<div class="details-gallery">
+
+<img
+ id="detailsImage"
+ class="details-main-image"
+ src=""
+ alt="Product">
+
+<div id="detailsThumbnails" class="details-thumbnails"></div>
+
+</div>
 
 <div class="details-content">
+
 <div id="detailsCategory" class="details-category"></div>
 
 <h1 id="detailsTitle">Product</h1>
@@ -1270,6 +1430,7 @@ footer p{
 <hr>
 
 <h3>Description</h3>
+
 <p id="detailsDescription" class="details-description"></p>
 
 <hr>
@@ -1277,32 +1438,51 @@ footer p{
 <h3>Seller</h3>
 
 <div class="seller-box">
+
 <div class="seller-icon">👤</div>
+
 <div>
 <strong id="detailsSeller">Seller</strong>
 <div id="detailsPhone"></div>
 </div>
+
 </div>
 
-<button id="whatsappButton" class="whatsapp-button">💬 WhatsApp Seller</button>
-<button id="callButton" class="call-button">📞 Call Seller</button>
-<button id="messageButton" class="message-button">💬 Message Seller</button>
-<button id="favoriteButton" class="favorite-button" onclick="saveFavorite()">❤️ Save Product</button>
+<button id="whatsappButton" class="whatsapp-button">
+💬 WhatsApp Seller
+</button>
+
+<button id="callButton" class="call-button">
+📞 Call Seller
+</button>
+
+<button id="messageButton" class="message-button">
+💬 Message Seller
+</button>
+
+<button id="favoriteButton" class="favorite-button" onclick="saveFavorite()">
+❤️ Save Product
+</button>
+
 </div>
 </div>
 </div>
 
 <!-- FAVORITES -->
 <div id="favoritesPage" class="full-page">
+
 <div class="page-header">
 <button class="back-button" onclick="closeFavorites()">← Back</button>
 <h2>❤️ My Favorites</h2>
 </div>
+
 <div id="favoritesResults" class="page-container"></div>
+
 </div>
 
 <!-- MESSAGES -->
 <div id="messagesPage" class="full-page messages-page">
+
 <div class="page-header">
 <button class="back-button" onclick="closeMessages()">← Back</button>
 <h2>💬 Sioma Messages</h2>
@@ -1311,10 +1491,17 @@ footer p{
 <div class="message-layout">
 
 <div class="conversations">
-<div class="conversations-header">💬 Conversations</div>
-<div id="conversationList">
-<div class="empty-chat">Loading conversations...</div>
+
+<div class="conversations-header">
+💬 Conversations
 </div>
+
+<div id="conversationList">
+<div class="empty-chat">
+Loading conversations...
+</div>
+</div>
+
 </div>
 
 <div class="chat">
@@ -1324,19 +1511,25 @@ Select a conversation
 </div>
 
 <div id="messageList" class="messages">
+
 <div class="empty-chat">
 💬 Select a conversation to start messaging.
 </div>
+
 </div>
 
 <div class="chat-input">
-<textarea
-id="messageInput"
-class="message-input"
-placeholder="Write a message..."
-rows="1"></textarea>
 
-<button class="send-message" onclick="sendMessage()">Send</button>
+<textarea
+ id="messageInput"
+ class="message-input"
+ placeholder="Write a message..."
+ rows="1"></textarea>
+
+<button class="send-message" onclick="sendMessage()">
+Send
+</button>
+
 </div>
 
 </div>
@@ -1345,6 +1538,7 @@ rows="1"></textarea>
 
 <!-- EDIT -->
 <div id="editModal" class="edit-modal">
+
 <div class="edit-box">
 
 <h2>✏️ Edit Product</h2>
@@ -1361,6 +1555,7 @@ rows="1"></textarea>
 <input type="number" id="editPrice" inputmode="decimal">
 
 <label>Category</label>
+
 <select id="editCategory">
 <option>Agriculture</option>
 <option>Livestock</option>
@@ -1384,55 +1579,82 @@ rows="1"></textarea>
 <input id="editSellerPhone">
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px">
-<button class="auth-submit" onclick="saveEditedListing()">💾 SAVE</button>
-<button class="auth-close" onclick="closeEditModal()">Cancel</button>
+
+<button class="auth-submit" onclick="saveEditedListing()">
+💾 SAVE
+</button>
+
+<button class="auth-close" onclick="closeEditModal()">
+Cancel
+</button>
+
 </div>
 
 <div id="editMessage" class="auth-message"></div>
+
 </div>
 </div>
 
 <!-- HEADER -->
 <header>
+
 <div class="header-inner">
 
 <div class="topbar">
 
 <div>
-<div class="logo">🛍️ Sioma<span>Market</span></div>
-<div class="tagline"></div>
-<div class="location-pill">📍 proudly Sioma</div>
+
+<div class="logo">
+🛍️ Sioma<span>Market</span>
+</div>
+
+<div class="tagline">
+Sioma's local marketplace
+</div>
+
+<div class="location-pill">
+📍 proudly Sioma
+</div>
+
 </div>
 
 <div class="account-actions">
 
-<button id="dashboardButton"
-class="account-button soft"
-onclick="openSellerDashboard()"
-style="display:none">
+<button
+ id="dashboardButton"
+ class="account-button soft"
+ onclick="openSellerDashboard()"
+ style="display:none">
 🏪 Dashboard
 </button>
 
-<button id="messagesButton"
-class="account-button soft"
-onclick="openMessages()"
-style="display:none">
+<button
+ id="messagesButton"
+ class="account-button soft"
+ onclick="openMessages()"
+ style="display:none">
 💬 Messages
 <span id="messageBadge" class="message-badge">0</span>
 </button>
 
-<button id="adminButton"
-class="account-button gold"
-onclick="openAdminDashboard()"
-style="display:none">
+<button
+ id="adminButton"
+ class="account-button gold"
+ onclick="openAdminDashboard()"
+ style="display:none">
 🛡️ Admin
 </button>
 
-<button class="account-button" onclick="showFavorites()">
+<button
+ class="account-button"
+ onclick="showFavorites()">
 ❤️ Favorites
 </button>
 
-<button id="accountButton" class="account-button" onclick="openAccount()">
+<button
+ id="accountButton"
+ class="account-button"
+ onclick="openAccount()">
 🔐 Login
 </button>
 
@@ -1446,19 +1668,38 @@ Sioma Buys.<br>
 Sioma <span>Sells.</span>
 </h1>
 
-<p>The local marketplace built for people in Sioma.</p>
+<p>
+The local marketplace built for people in Sioma.
+</p>
+
+<div class="sioma-banner">
+📍 Buy and sell locally in Sioma
+</div>
+
 <div class="search-box">
+
 <input
-id="searchInput"
-type="search"
-placeholder="Search products in Sioma..."
-autocomplete="off">
-<button onclick="searchMarket()">🔍 Search</button>
+ id="searchInput"
+ type="search"
+ placeholder="Search products in Sioma..."
+ autocomplete="off">
+
+<button onclick="searchMarket()">
+🔍 Search
+</button>
+
 </div>
 
 <div class="hero-actions">
-<button class="buy-btn" onclick="buyNow()">🛒 BUY IN SIOMAMARKET</button>
-<button class="sell-btn" onclick="sellNow()">🏷️ SELL IN SIOMAMARKET</button>
+
+<button class="buy-btn" onclick="buyNow()">
+🛒 BUY IN SIOMAMARKET
+</button>
+
+<button class="sell-btn" onclick="sellNow()">
+🏷️ SELL IN SIOMAMARKET
+</button>
+
 </div>
 
 </div>
@@ -1472,10 +1713,17 @@ autocomplete="off">
 <section class="section">
 
 <div class="section-heading">
+
 <div>
+
 <h2>📍 Sioma Categories</h2>
-<p>Find products around Sioma.</p>
+
+<p>
+Find products around Sioma.
+</p>
+
 </div>
+
 </div>
 
 <div class="categories">
@@ -1534,17 +1782,27 @@ autocomplete="off">
 <section class="section">
 
 <div class="section-heading">
+
 <div>
+
 <h2>🔥 Latest in Sioma</h2>
-<p>Fresh products from Sioma sellers.</p>
+
+<p>
+Fresh products from Sioma sellers.
+</p>
+
 </div>
+
 </div>
 
 <div id="homeProducts">
-<div class="no-results">⏳ Loading Sioma products...</div>
+<div class="no-results">
+⏳ Loading Sioma products...
+</div>
 </div>
 
 </section>
+
 </main>
 
 <!-- MOBILE NAV -->
@@ -1578,19 +1836,37 @@ Account
 </nav>
 
 <footer>
-<h3>🛍️ Sioma<span>Market</span></h3>
-<p>📍 Sioma's local marketplace</p>
-<p>Buy local. Sell local. Grow together.</p>
-<p>🇿🇲 Sioma today. Zambia tomorrow.</p>
-<p>© 2026 SiomaMarket</p>
+
+<h3>
+🛍️ Sioma<span>Market</span>
+</h3>
+
+<p>
+📍 Sioma's local marketplace
+</p>
+
+<p>
+Buy local. Sell local. Grow together.
+</p>
+
+<p>
+🇿🇲 Sioma today. Zambia tomorrow.
+</p>
+
+<p>
+© 2026 SiomaMarket
+</p>
+
 </footer>
 
 <script>
+
 /* =========================================================
    SUPABASE
 ========================================================= */
 
-const SUPABASE_URL="https://luolbdjonzissgskjupd.supabase.co";
+const SUPABASE_URL=
+"https://luolbdjonzissgskjupd.supabase.co";
 
 const SUPABASE_KEY=
 "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
@@ -1601,7 +1877,8 @@ window.supabase.createClient(
  SUPABASE_KEY
 );
 
-const ADMIN_EMAIL="silumesi710@gmail.com";
+const ADMIN_EMAIL=
+"silumesi710@gmail.com";
 
 const EMAIL_REDIRECT_URL=
 "https://silumesi710-netizen.github.io/sioma-market/";
@@ -1621,15 +1898,86 @@ let currentConversationId=null;
 let currentConversationListingId=null;
 let messageRefreshTimer=null;
 
-const MESSAGE_READ_KEY="siomaMarket_message_reads";
+const MESSAGE_READ_KEY=
+"siomaMarket_message_reads";
 
 let messageReadState={};
+
+/* =========================================================
+   THREE PHOTO SYSTEM
+========================================================= */
+
+let selectedProductImages=[];
+
+const MAX_PRODUCT_IMAGES=3;
+const MAX_IMAGE_SIZE=6*1024*1024;
+
+/*
+ Existing listings have image_url as a normal URL.
+
+ New listings store image_url as:
+ ["url1","url2","url3"]
+
+ This means no database column needs to be added.
+*/
+
+function getProductImages(item){
+
+ if(!item)return[];
+
+ const raw=item.image_url;
+
+ if(!raw)return[];
+
+ if(Array.isArray(raw))
+ return raw.filter(Boolean);
+
+ if(typeof raw==="string"){
+
+  try{
+
+   const parsed=JSON.parse(raw);
+
+   if(Array.isArray(parsed))
+   return parsed.filter(Boolean);
+
+  }catch(error){}
+
+  return [raw];
+ }
+
+ return[];
+}
+
+function getPrimaryImage(item){
+
+ const images=
+ getProductImages(item);
+
+ return images[0]||DEFAULT_IMAGE;
+}
+
+function getImageStorageValue(images){
+
+ if(!images||!images.length)
+ return null;
+
+ /*
+  Store one URL exactly as before for one image.
+  Store JSON for multiple images.
+ */
+ if(images.length===1)
+ return images[0];
+
+ return JSON.stringify(images);
+}
 
 /* =========================================================
    HELPERS
 ========================================================= */
 
 function escapeHTML(value){
+
  return String(value??"")
  .replace(/&/g,"&amp;")
  .replace(/</g,"&lt;")
@@ -1639,15 +1987,22 @@ function escapeHTML(value){
 }
 
 function escapeAttribute(value){
+
  return escapeHTML(value);
 }
 
 function formatPrice(value){
- return "K"+Number(value||0).toLocaleString("en-ZM");
+
+ return "K"+
+ Number(value||0)
+ .toLocaleString("en-ZM");
 }
 
 function isSioma(location){
- return String(location||"").toLowerCase().includes("sioma");
+
+ return String(location||"")
+ .toLowerCase()
+ .includes("sioma");
 }
 
 /* =========================================================
@@ -1655,37 +2010,68 @@ function isSioma(location){
 ========================================================= */
 
 function openAuthModal(){
- document.getElementById("authModal").style.display="block";
+
+ document.getElementById("authModal")
+ .style.display="block";
+
  document.body.style.overflow="hidden";
 }
 
 function closeAuthModal(){
- document.getElementById("authModal").style.display="none";
+
+ document.getElementById("authModal")
+ .style.display="none";
+
  document.body.style.overflow="auto";
 }
 
 function showLogin(){
- document.getElementById("loginForm").style.display="block";
- document.getElementById("registerForm").style.display="none";
- document.getElementById("loginTab").classList.add("active");
- document.getElementById("registerTab").classList.remove("active");
- document.getElementById("authMessage").innerText="";
+
+ document.getElementById("loginForm")
+ .style.display="block";
+
+ document.getElementById("registerForm")
+ .style.display="none";
+
+ document.getElementById("loginTab")
+ .classList.add("active");
+
+ document.getElementById("registerTab")
+ .classList.remove("active");
+
+ document.getElementById("authMessage")
+ .innerText="";
 }
 
 function showRegister(){
- document.getElementById("loginForm").style.display="none";
- document.getElementById("registerForm").style.display="block";
- document.getElementById("loginTab").classList.remove("active");
- document.getElementById("registerTab").classList.add("active");
- document.getElementById("authMessage").innerText="";
+
+ document.getElementById("loginForm")
+ .style.display="none";
+
+ document.getElementById("registerForm")
+ .style.display="block";
+
+ document.getElementById("loginTab")
+ .classList.remove("active");
+
+ document.getElementById("registerTab")
+ .classList.add("active");
+
+ document.getElementById("authMessage")
+ .innerText="";
 }
 
 function openAccount(){
+
  if(currentUser){
+
   logoutSeller();
+
  }else{
+
   openAuthModal();
   showLogin();
+
  }
 }
 
@@ -1695,12 +2081,16 @@ function openAccount(){
 
 async function loadAuthSession(){
 
- if(sessionLoaded)return currentUser;
+ if(sessionLoaded)
+ return currentUser;
 
  try{
-  const result=await supabaseClient.auth.getSession();
 
-  currentUser=result.data?.session?.user||null;
+  const result=
+  await supabaseClient.auth.getSession();
+
+  currentUser=
+  result.data?.session?.user||null;
 
   sessionLoaded=true;
 
@@ -1728,13 +2118,19 @@ async function loadAuthSession(){
 supabaseClient.auth.onAuthStateChange(
 (event,session)=>{
 
- currentUser=session?.user||null;
+ currentUser=
+ session?.user||null;
+
  sessionLoaded=true;
 
  updateAccountUI();
 
  if(currentUser){
-  setTimeout(updateMessageBadge,500);
+
+  setTimeout(
+   updateMessageBadge,
+   500
+  );
  }
 
 }
@@ -1746,9 +2142,11 @@ supabaseClient.auth.onAuthStateChange(
 
 async function isAdmin(){
 
- if(!currentUser)return false;
+ if(!currentUser)
+ return false;
 
- const result=await supabaseClient
+ const result=
+ await supabaseClient
  .from("admin_users")
  .select("user_id")
  .eq("user_id",currentUser.id)
@@ -1763,25 +2161,37 @@ async function isAdmin(){
 
 async function updateAccountUI(){
 
- const button=document.getElementById("accountButton");
- const dashboard=document.getElementById("dashboardButton");
- const admin=document.getElementById("adminButton");
- const messages=document.getElementById("messagesButton");
+ const button=
+ document.getElementById("accountButton");
+
+ const dashboard=
+ document.getElementById("dashboardButton");
+
+ const admin=
+ document.getElementById("adminButton");
+
+ const messages=
+ document.getElementById("messagesButton");
 
  if(!button)return;
 
  if(currentUser){
 
   button.innerText="🚪 Logout";
+
   dashboard.style.display="block";
   messages.style.display="block";
 
-  const adminStatus=await isAdmin();
+  const adminStatus=
+  await isAdmin();
 
   admin.style.display=
   adminStatus?"block":"none";
 
-  setTimeout(updateMessageBadge,100);
+  setTimeout(
+   updateMessageBadge,
+   100
+  );
 
  }else{
 
@@ -1791,9 +2201,11 @@ async function updateAccountUI(){
   admin.style.display="none";
   messages.style.display="none";
 
-  const badge=document.getElementById("messageBadge");
+  const badge=
+  document.getElementById("messageBadge");
 
-  if(badge)badge.style.display="none";
+  if(badge)
+  badge.style.display="none";
  }
 }
 
@@ -1802,7 +2214,10 @@ async function updateAccountUI(){
 ========================================================= */
 
 async function createSellerProfile(
- userId,name,phone,location
+ userId,
+ name,
+ phone,
+ location
 ){
 
  return await supabaseClient
@@ -1821,7 +2236,8 @@ async function loadSellerProfile(){
 
  if(!currentUser)return;
 
- const result=await supabaseClient
+ const result=
+ await supabaseClient
  .from("seller_profiles")
  .select("*")
  .eq("id",currentUser.id)
@@ -1844,7 +2260,9 @@ async function loadSellerProfile(){
 ========================================================= */
 
 document.getElementById("registerForm")
-.addEventListener("submit",async function(e){
+.addEventListener(
+"submit",
+async function(e){
 
  e.preventDefault();
 
@@ -1855,19 +2273,24 @@ document.getElementById("registerForm")
  document.getElementById("authMessage");
 
  const name=
- document.getElementById("registerName").value.trim();
+ document.getElementById("registerName")
+ .value.trim();
 
  const phone=
- document.getElementById("registerPhone").value.trim();
+ document.getElementById("registerPhone")
+ .value.trim();
 
  const location=
- document.getElementById("registerLocation").value.trim();
+ document.getElementById("registerLocation")
+ .value.trim();
 
  const email=
- document.getElementById("registerEmail").value.trim();
+ document.getElementById("registerEmail")
+ .value.trim();
 
  const password=
- document.getElementById("registerPassword").value;
+ document.getElementById("registerPassword")
+ .value;
 
  button.disabled=true;
  button.innerText="⏳ CREATING...";
@@ -1888,7 +2311,8 @@ document.getElementById("registerForm")
    }
   });
 
-  if(result.error)throw result.error;
+  if(result.error)
+  throw result.error;
 
   if(result.data.session){
 
@@ -1903,10 +2327,13 @@ document.getElementById("registerForm")
     location
    );
 
-   if(profile.error)throw profile.error;
+   if(profile.error)
+   throw profile.error;
 
    message.style.color="#087f3d";
-   message.innerText="✅ Account created!";
+
+   message.innerText=
+   "✅ Account created!";
 
    await updateAccountUI();
 
@@ -1927,12 +2354,16 @@ document.getElementById("registerForm")
  }catch(error){
 
   message.style.color="#c62828";
-  message.innerText="❌ "+error.message;
+
+  message.innerText=
+  "❌ "+error.message;
 
  }finally{
 
   button.disabled=false;
-  button.innerText="📝 CREATE ACCOUNT";
+
+  button.innerText=
+  "📝 CREATE ACCOUNT";
  }
 
 });
@@ -1942,7 +2373,9 @@ document.getElementById("registerForm")
 ========================================================= */
 
 document.getElementById("loginForm")
-.addEventListener("submit",async function(e){
+.addEventListener(
+"submit",
+async function(e){
 
  e.preventDefault();
 
@@ -1958,7 +2391,8 @@ document.getElementById("loginForm")
  try{
 
   const result=
-  await supabaseClient.auth.signInWithPassword({
+  await supabaseClient.auth
+  .signInWithPassword({
 
    email:
    document.getElementById("loginEmail")
@@ -1970,7 +2404,8 @@ document.getElementById("loginForm")
 
   });
 
-  if(result.error)throw result.error;
+  if(result.error)
+  throw result.error;
 
   currentUser=result.data.user;
   sessionLoaded=true;
@@ -1979,19 +2414,28 @@ document.getElementById("loginForm")
   await loadSellerProfile();
 
   message.style.color="#087f3d";
-  message.innerText="✅ Login successful!";
 
-  setTimeout(closeAuthModal,500);
+  message.innerText=
+  "✅ Login successful!";
+
+  setTimeout(
+   closeAuthModal,
+   500
+  );
 
  }catch(error){
 
   message.style.color="#c62828";
-  message.innerText="❌ "+error.message;
+
+  message.innerText=
+  "❌ "+error.message;
 
  }finally{
 
   button.disabled=false;
-  button.innerText="🔐 LOGIN";
+
+  button.innerText=
+  "🔐 LOGIN";
  }
 
 });
@@ -2002,7 +2446,9 @@ document.getElementById("loginForm")
 
 async function logoutSeller(){
 
- if(!confirm("Are you sure you want to logout?"))return;
+ if(!confirm(
+ "Are you sure you want to logout?"
+ ))return;
 
  const result=
  await supabaseClient.auth.signOut();
@@ -2010,6 +2456,7 @@ async function logoutSeller(){
  if(result.error){
 
   alert("❌ "+result.error.message);
+
   return;
  }
 
@@ -2041,11 +2488,14 @@ async function sellNow(){
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
 
-  document.getElementById("authMessage").style.color="#c62828";
+  document.getElementById("authMessage")
+  .style.color="#c62828";
 
-  document.getElementById("authMessage").innerText=
+  document.getElementById("authMessage")
+  .innerText=
   "🔐 Login or register before selling.";
 
   return;
@@ -2053,79 +2503,189 @@ async function sellNow(){
 
  await loadSellerProfile();
 
- document.getElementById("sellPage").style.display="block";
+ document.getElementById("sellPage")
+ .style.display="block";
 
  document.body.style.overflow="hidden";
 }
 
 function closeSellPage(){
 
- document.getElementById("sellPage").style.display="none";
+ document.getElementById("sellPage")
+ .style.display="none";
 
  document.body.style.overflow="auto";
+
+ selectedProductImages=[];
+
+ document.getElementById("sellImage")
+ .value="";
+
+ renderImagePreviews();
 }
 
 /* =========================================================
-   IMAGE PREVIEW
+   THREE IMAGE SELECTOR
 ========================================================= */
 
-document.getElementById("sellImage")
-.addEventListener("change",function(){
+const sellImageInput=
+document.getElementById("sellImage");
 
- const file=this.files[0];
+sellImageInput.addEventListener(
+"change",
+function(){
+
+ const files=
+ Array.from(this.files||[]);
+
+ if(!files.length)return;
+
+ if(
+ selectedProductImages.length+
+ files.length>
+ MAX_PRODUCT_IMAGES
+ ){
+
+  alert(
+   "You can upload a maximum of 3 photos per product."
+  );
+
+  this.value="";
+  return;
+ }
+
+ for(const file of files){
+
+  if(!file.type.startsWith("image/")){
+
+   alert(
+    "Only image files are allowed."
+   );
+
+   continue;
+  }
+
+  if(file.size>MAX_IMAGE_SIZE){
+
+   alert(
+    file.name+
+    " is larger than 6MB."
+   );
+
+   continue;
+  }
+
+  selectedProductImages.push(file);
+ }
+
+ renderImagePreviews();
+
+ this.value="";
+});
+
+function renderImagePreviews(){
 
  const preview=
  document.getElementById("imagePreview");
 
+ const counter=
+ document.getElementById("photoCounter");
+
  preview.innerHTML="";
 
- if(!file)return;
+ selectedProductImages.forEach(
+ (file,index)=>{
 
- if(!file.type.startsWith("image/")){
+  const url=
+  URL.createObjectURL(file);
 
-  alert("Please select an image.");
-  this.value="";
-  return;
- }
+  const item=
+  document.createElement("div");
 
- if(file.size>6*1024*1024){
+  item.className="preview-item";
 
-  alert("Please choose an image smaller than 6MB.");
-  this.value="";
-  return;
- }
+  item.innerHTML=`
 
- const url=URL.createObjectURL(file);
+  <img
+   src="${escapeAttribute(url)}"
+   alt="Product photo ${index+1}">
 
- preview.innerHTML=`
- <div style="margin-top:10px">
- <strong>Photo Preview</strong><br><br>
- <img src="${escapeAttribute(url)}" alt="Preview">
- </div>`;
-});
+  <span class="preview-number">
+   ${index+1}
+  </span>
+
+  <button
+   type="button"
+   class="preview-remove"
+   onclick="removeProductImage(${index})">
+   ×
+  </button>
+
+  ${
+   index===0
+   ?
+   `<span class="preview-main">
+    ⭐ MAIN PHOTO
+   </span>`
+   :""
+  }
+
+  `;
+
+  preview.appendChild(item);
+ });
+
+ counter.innerText=
+ selectedProductImages.length+
+ " / 3 photos selected";
+}
+
+function removeProductImage(index){
+
+ selectedProductImages.splice(
+  index,
+  1
+ );
+
+ renderImagePreviews();
+}
 
 /* =========================================================
-   UPLOAD
+   UPLOAD ONE PRODUCT IMAGE
 ========================================================= */
 
 async function uploadProductImage(file){
 
  if(!file)
-  throw new Error("Please select a product photo.");
+ throw new Error(
+  "Please select a product photo."
+ );
 
- if(file.size>6*1024*1024)
-  throw new Error("Maximum image size is 6MB.");
+ if(file.size>MAX_IMAGE_SIZE)
+ throw new Error(
+  "Maximum image size is 6MB."
+ );
 
  const extension=
- (file.name.split(".").pop()||"jpg")
+ (
+  file.name.split(".").pop()||
+  "jpg"
+ )
  .toLowerCase()
- .replace(/[^a-z0-9]/g,"")||"jpg";
+ .replace(
+  /[^a-z0-9]/g,
+  ""
+ )||"jpg";
 
  const filePath=
  "products/"+
- Date.now()+"-"+
- Math.random().toString(36).substring(2)+
- "."+extension;
+ Date.now()+
+ "-"+
+ Math.random()
+ .toString(36)
+ .substring(2)+
+ "."+
+ extension;
 
  const upload=
  await supabaseClient.storage
@@ -2140,7 +2700,8 @@ async function uploadProductImage(file){
   }
  );
 
- if(upload.error)throw upload.error;
+ if(upload.error)
+ throw upload.error;
 
  return supabaseClient.storage
  .from("Product-images")
@@ -2149,11 +2710,60 @@ async function uploadProductImage(file){
 }
 
 /* =========================================================
+   UPLOAD THREE PRODUCT IMAGES
+========================================================= */
+
+async function uploadProductImages(files){
+
+ if(!files||!files.length){
+
+  throw new Error(
+   "Please select at least one product photo."
+  );
+ }
+
+ if(files.length>MAX_PRODUCT_IMAGES){
+
+  throw new Error(
+   "Maximum 3 photos are allowed."
+  );
+ }
+
+ const urls=[];
+
+ for(
+  let i=0;
+  i<files.length;
+  i++
+ ){
+
+  const progress=
+  document.getElementById("publishButton");
+
+  progress.innerText=
+   "⏳ UPLOADING PHOTO "+
+   (i+1)+
+   " OF "+
+   files.length+
+   "...";
+
+  const url=
+  await uploadProductImage(files[i]);
+
+  urls.push(url);
+ }
+
+ return urls;
+}
+
+/* =========================================================
    PUBLISH
 ========================================================= */
 
 document.getElementById("sellForm")
-.addEventListener("submit",async function(e){
+.addEventListener(
+"submit",
+async function(e){
 
  e.preventDefault();
 
@@ -2162,8 +2772,11 @@ document.getElementById("sellForm")
  if(!currentUser){
 
   closeSellPage();
+
   openAuthModal();
+
   showLogin();
+
   return;
  }
 
@@ -2175,40 +2788,69 @@ document.getElementById("sellForm")
 
  try{
 
+  if(
+   selectedProductImages.length<1
+  ){
+
+   throw new Error(
+    "Please select at least 1 product photo."
+   );
+  }
+
+  if(
+   selectedProductImages.length>3
+  ){
+
+   throw new Error(
+    "Maximum 3 product photos are allowed."
+   );
+  }
+
   button.disabled=true;
-  button.innerText="⏳ UPLOADING...";
 
-  const imageFile=
-  document.getElementById("sellImage")
-  .files[0];
+  button.innerText=
+  "⏳ PREPARING PHOTOS...";
 
-  const imageURL=
-  await uploadProductImage(imageFile);
+  const imageURLs=
+  await uploadProductImages(
+   selectedProductImages
+  );
 
-  button.innerText="⏳ PUBLISHING...";
+  button.innerText=
+  "⏳ PUBLISHING...";
 
   const title=
-  document.getElementById("sellTitle").value.trim();
+  document.getElementById("sellTitle")
+  .value.trim();
 
   const description=
-  document.getElementById("sellDescription").value.trim();
+  document.getElementById("sellDescription")
+  .value.trim();
 
   const price=
-  Number(document.getElementById("sellPrice").value);
+  Number(
+   document.getElementById("sellPrice")
+   .value
+  );
 
   const category=
-  document.getElementById("sellCategory").value;
+  document.getElementById("sellCategory")
+  .value;
 
   let location=
-  document.getElementById("sellLocation").value.trim();
+  document.getElementById("sellLocation")
+  .value.trim();
 
-  if(!location)location="Sioma";
+  if(!location)
+  location="Sioma";
 
   const sellerName=
-  document.getElementById("sellerName").value.trim();
+  document.getElementById("sellerName")
+  .value.trim();
 
   const sellerPhone=
-  document.getElementById("sellerPhone").value.trim();
+  document.getElementById("sellerPhone")
+  .value.trim();
 
   const profile=
   await createSellerProfile(
@@ -2218,34 +2860,65 @@ document.getElementById("sellForm")
    location
   );
 
-  if(profile.error)throw profile.error;
+  if(profile.error)
+  throw profile.error;
+
+  /*
+   Important:
+   One image = normal URL
+   Multiple images = JSON array
+  */
+
+  const storedImages=
+  getImageStorageValue(imageURLs);
 
   const result=
   await supabaseClient
   .from("listings")
   .insert({
+
    title,
    description,
    price,
    category,
    location,
-   image_url:imageURL,
+
+   image_url:storedImages,
+
    seller_name:sellerName,
    seller_phone:sellerPhone,
+
    status:"active",
+
    user_id:currentUser.id
+
   });
 
-  if(result.error)throw result.error;
+  if(result.error)
+  throw result.error;
 
   message.style.color="#087f3d";
+
   message.innerText=
-  "✅ Product published in Sioma!";
+  "✅ Product published in Sioma with "+
+  imageURLs.length+
+  " photo"+
+  (
+   imageURLs.length===1
+   ?""
+   :"s"
+  )+
+  "!";
 
   this.reset();
 
-  document.getElementById("sellLocation").value="Sioma";
-  document.getElementById("imagePreview").innerHTML="";
+  document.getElementById(
+   "sellLocation"
+  ).value="Sioma";
+
+  selectedProductImages=[];
+
+  renderImagePreviews();
 
   await loadListings();
 
@@ -2254,17 +2927,25 @@ document.getElementById("sellForm")
    closeSellPage();
 
    button.disabled=false;
-   button.innerText="🚀 PUBLISH IN SIOMA";
 
-  },800);
+   button.innerText=
+   "🚀 PUBLISH IN SIOMA";
+
+  },900);
 
  }catch(error){
 
+  console.error(error);
+
   message.style.color="#c62828";
-  message.innerText="❌ "+error.message;
+
+  message.innerText=
+  "❌ "+error.message;
 
   button.disabled=false;
-  button.innerText="🚀 PUBLISH IN SIOMA";
+
+  button.innerText=
+  "🚀 PUBLISH IN SIOMA";
  }
 
 });
@@ -2282,24 +2963,29 @@ async function loadListings(){
  await supabaseClient
  .from("listings")
  .select(
- "id,title,description,price,category,location,image_url,seller_name,seller_phone,status,created_at,user_id"
+  "id,title,description,price,category,location,image_url,seller_name,seller_phone,status,created_at,user_id"
  )
  .eq("status","active")
  .ilike("location","%Sioma%")
- .order("created_at",{ascending:false})
+ .order(
+  "created_at",
+  {ascending:false}
+ )
  .limit(12);
 
  if(result.error){
 
   box.innerHTML=
   `<div class="no-results">
-  ❌ Could not load Sioma products.
+   ❌ Could not load Sioma products.
   </div>`;
 
   return;
  }
 
- renderHomeProducts(result.data||[]);
+ renderHomeProducts(
+  result.data||[]
+ );
 }
 
 function renderHomeProducts(data){
@@ -2311,9 +2997,9 @@ function renderHomeProducts(data){
 
   box.innerHTML=
   `<div class="no-results">
-  📍 No products listed in Sioma yet.
-  <br><br>
-  Be the first seller on SiomaMarket!
+   📍 No products listed in Sioma yet.
+   <br><br>
+   Be the first seller on SiomaMarket!
   </div>`;
 
   return;
@@ -2331,28 +3017,50 @@ function renderHomeProducts(data){
 
 function productCard(item){
 
- const id=String(item.id);
- const image=item.image_url||DEFAULT_IMAGE;
- const title=item.title||"Product";
- const saved=favoritesCache.has(id);
+ const id=
+ String(item.id);
+
+ const images=
+ getProductImages(item);
+
+ const image=
+ images[0]||
+ DEFAULT_IMAGE;
+
+ const title=
+ item.title||
+ "Product";
+
+ const saved=
+ favoritesCache.has(id);
 
  return`
+
  <div class="result-card">
 
  <div class="product-image-wrap">
 
  <img
- src="${escapeAttribute(image)}"
- alt="${escapeAttribute(title)}"
- loading="lazy"
- decoding="async"
- onerror="this.src='${DEFAULT_IMAGE}'">
+  src="${escapeAttribute(image)}"
+  alt="${escapeAttribute(title)}"
+  loading="lazy"
+  decoding="async"
+  onerror="this.src='${DEFAULT_IMAGE}'">
+
+ ${
+  images.length>1
+  ?
+  `<span class="photo-count-badge">
+   📸 ${images.length} photos
+  </span>`
+  :""
+ }
 
  <button
- class="favorite-card ${saved?"saved":""}"
- data-favorite-id="${escapeAttribute(id)}"
- onclick="quickFavorite('${escapeAttribute(id)}',event)">
- ${saved?"💖":"❤️"}
+  class="favorite-card ${saved?"saved":""}"
+  data-favorite-id="${escapeAttribute(id)}"
+  onclick="quickFavorite('${escapeAttribute(id)}',event)">
+  ${saved?"💖":"❤️"}
  </button>
 
  </div>
@@ -2364,13 +3072,15 @@ function productCard(item){
  </span>
 
  ${
- isSioma(item.location)
- ?
- '<span class="sioma-badge">📍 SIOMA</span>'
- :""
+  isSioma(item.location)
+  ?
+  '<span class="sioma-badge">📍 SIOMA</span>'
+  :""
  }
 
- <h3>${escapeHTML(title)}</h3>
+ <h3>
+ ${escapeHTML(title)}
+ </h3>
 
  <div class="result-price">
  ${formatPrice(item.price)}
@@ -2381,12 +3091,13 @@ function productCard(item){
  </div>
 
  <button
- class="buy-result"
- onclick="viewListing('${escapeAttribute(id)}')">
- 👀 VIEW PRODUCT
+  class="buy-result"
+  onclick="viewListing('${escapeAttribute(id)}')">
+  👀 VIEW PRODUCT
  </button>
 
  </div>
+
  </div>`;
 }
 
@@ -2398,50 +3109,74 @@ async function loadFavoriteIds(){
 
  favoritesCache.clear();
 
- if(!currentUser)return;
+ if(!currentUser)
+ return;
 
  const result=
  await supabaseClient
  .from("favorites")
  .select("listing_id")
- .eq("user_id",currentUser.id);
+ .eq(
+  "user_id",
+  currentUser.id
+ );
 
- if(result.error)return;
+ if(result.error)
+ return;
 
- (result.data||[]).forEach(item=>{
-  favoritesCache.add(String(item.listing_id));
+ (result.data||[])
+ .forEach(item=>{
+
+  favoritesCache.add(
+   String(item.listing_id)
+  );
+
  });
 }
 
 function refreshFavoriteIcons(){
 
- document.querySelectorAll("[data-favorite-id]")
+ document.querySelectorAll(
+  "[data-favorite-id]"
+ )
  .forEach(button=>{
 
-  const id=button.dataset.favoriteId;
+  const id=
+  button.dataset.favoriteId;
 
-  const saved=favoritesCache.has(id);
+  const saved=
+  favoritesCache.has(id);
 
-  button.innerText=saved?"💖":"❤️";
+  button.innerText=
+  saved?"💖":"❤️";
 
-  button.classList.toggle("saved",saved);
+  button.classList.toggle(
+   "saved",
+   saved
+  );
  });
 }
 
 async function quickFavorite(id,event){
 
- if(event)event.stopPropagation();
+ if(event)
+ event.stopPropagation();
 
  await loadAuthSession();
 
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
 
-  document.getElementById("authMessage").style.color="#c62828";
+  document.getElementById(
+   "authMessage"
+  ).style.color="#c62828";
 
-  document.getElementById("authMessage").innerText=
+  document.getElementById(
+   "authMessage"
+  ).innerText=
   "🔐 Login to save favorites.";
 
   return;
@@ -2455,12 +3190,22 @@ async function quickFavorite(id,event){
   await supabaseClient
   .from("favorites")
   .delete()
-  .eq("user_id",currentUser.id)
-  .eq("listing_id",id);
+  .eq(
+   "user_id",
+   currentUser.id
+  )
+  .eq(
+   "listing_id",
+   id
+  );
 
   if(result.error){
 
-   alert("❌ "+result.error.message);
+   alert(
+    "❌ "+
+    result.error.message
+   );
+
    return;
   }
 
@@ -2479,13 +3224,21 @@ async function quickFavorite(id,event){
   if(result.error){
 
    if(result.error.code==="23505"){
+
     favoritesCache.add(id);
+
    }else{
-    alert("❌ "+result.error.message);
+
+    alert(
+     "❌ "+
+     result.error.message
+    );
+
     return;
    }
 
   }else{
+
    favoritesCache.add(id);
   }
  }
@@ -2493,8 +3246,11 @@ async function quickFavorite(id,event){
  refreshFavoriteIcons();
 
  if(
- document.getElementById("productPage").style.display==="block"
+  document.getElementById(
+   "productPage"
+  ).style.display==="block"
  ){
+
   await updateFavoriteButton();
  }
 }
@@ -2502,16 +3258,22 @@ async function quickFavorite(id,event){
 async function updateFavoriteButton(){
 
  const button=
- document.getElementById("favoriteButton");
+ document.getElementById(
+  "favoriteButton"
+ );
 
  if(!currentUser){
 
-  button.innerText="❤️ Save Product";
+  button.innerText=
+  "❤️ Save Product";
+
   return;
  }
 
  button.innerText=
- favoritesCache.has(String(currentListingId))
+ favoritesCache.has(
+  String(currentListingId)
+ )
  ?
  "💔 Remove Favorite"
  :
@@ -2520,9 +3282,12 @@ async function updateFavoriteButton(){
 
 async function saveFavorite(){
 
- if(!currentListingId)return;
+ if(!currentListingId)
+ return;
 
- await quickFavorite(String(currentListingId));
+ await quickFavorite(
+  String(currentListingId)
+ );
 
  await updateFavoriteButton();
 }
@@ -2534,24 +3299,34 @@ async function saveFavorite(){
 async function searchMarket(){
 
  const search=
- document.getElementById("searchInput")
- .value.trim();
+ document.getElementById(
+  "searchInput"
+ ).value.trim();
 
  if(!search){
 
-  document.getElementById("searchResults").innerHTML="";
+  document.getElementById(
+   "searchResults"
+  ).innerHTML="";
+
   return;
  }
 
  const box=
- document.getElementById("searchResults");
+ document.getElementById(
+  "searchResults"
+ );
 
  box.innerHTML=
  `<div class="no-results">
- 🔎 Searching Sioma...
+  🔎 Searching Sioma...
  </div>`;
 
- const safe=search.replace(/[%_]/g,"");
+ const safe=
+ search.replace(
+  /[%_]/g,
+  ""
+ );
 
  const result=
  await supabaseClient
@@ -2560,18 +3335,27 @@ async function searchMarket(){
  .eq("status","active")
  .ilike("location","%Sioma%")
  .or(
-  "title.ilike.%"+safe+"%,"+
-  "description.ilike.%"+safe+"%,"+
-  "category.ilike.%"+safe+"%"
+  "title.ilike.%"+
+  safe+
+  "%,"+
+  "description.ilike.%"+
+  safe+
+  "%,"+
+  "category.ilike.%"+
+  safe+
+  "%"
  )
- .order("created_at",{ascending:false})
+ .order(
+  "created_at",
+  {ascending:false}
+ )
  .limit(50);
 
  if(result.error){
 
   box.innerHTML=
   `<div class="no-results">
-  ❌ Search failed.
+   ❌ Search failed.
   </div>`;
 
   return;
@@ -2583,51 +3367,78 @@ async function searchMarket(){
  );
 }
 
-document.getElementById("searchInput")
-.addEventListener("keydown",function(e){
+document.getElementById(
+ "searchInput"
+)
+.addEventListener(
+ "keydown",
+ function(e){
 
- if(e.key==="Enter"){
-  e.preventDefault();
-  searchMarket();
+  if(e.key==="Enter"){
+
+   e.preventDefault();
+
+   searchMarket();
+  }
+
  }
-});
+);
 
-document.getElementById("searchInput")
-.addEventListener("input",function(){
+document.getElementById(
+ "searchInput"
+)
+.addEventListener(
+ "input",
+ function(){
 
- clearTimeout(searchTimer);
+  clearTimeout(searchTimer);
 
- const value=this.value.trim();
+  const value=
+  this.value.trim();
 
- if(!value){
+  if(!value){
 
-  document.getElementById("searchResults").innerHTML="";
-  return;
+   document.getElementById(
+    "searchResults"
+   ).innerHTML="";
+
+   return;
+  }
+
+  searchTimer=
+  setTimeout(
+   searchMarket,
+   450
+  );
  }
-
- searchTimer=setTimeout(searchMarket,450);
-});
+);
 
 /* =========================================================
    RESULTS
 ========================================================= */
 
-function renderResults(data,heading){
+function renderResults(
+ data,
+ heading
+){
 
  const box=
- document.getElementById("searchResults");
+ document.getElementById(
+  "searchResults"
+ );
 
  if(!data.length){
 
   box.innerHTML=
   `<div class="no-results">
-  📍 No matching products found in Sioma.
+   📍 No matching products found in Sioma.
   </div>`;
 
   return;
  }
 
  box.innerHTML=`
+
  <h2 class="results-title">
  ${escapeHTML(heading)}
  </h2>
@@ -2646,14 +3457,20 @@ function renderResults(data,heading){
    CATEGORY
 ========================================================= */
 
-async function searchCategory(category){
+async function searchCategory(
+ category
+){
 
  const box=
- document.getElementById("searchResults");
+ document.getElementById(
+  "searchResults"
+ );
 
  box.innerHTML=
  `<div class="no-results">
- ⏳ Loading ${escapeHTML(category)} in Sioma...
+  ⏳ Loading
+  ${escapeHTML(category)}
+  in Sioma...
  </div>`;
 
  const result=
@@ -2663,14 +3480,17 @@ async function searchCategory(category){
  .eq("status","active")
  .ilike("location","%Sioma%")
  .eq("category",category)
- .order("created_at",{ascending:false})
+ .order(
+  "created_at",
+  {ascending:false}
+ )
  .limit(50);
 
  if(result.error){
 
   box.innerHTML=
   `<div class="no-results">
-  ❌ Could not load category.
+   ❌ Could not load category.
   </div>`;
 
   return;
@@ -2696,7 +3516,9 @@ function buyNow(){
  setTimeout(()=>{
 
   const input=
-  document.getElementById("searchInput");
+  document.getElementById(
+   "searchInput"
+  );
 
   input.focus();
 
@@ -2715,14 +3537,17 @@ function buyNow(){
 async function viewListing(id){
 
  const page=
- document.getElementById("productPage");
+ document.getElementById(
+  "productPage"
+ );
 
  page.style.display="block";
 
  document.body.style.overflow="hidden";
 
- document.getElementById("detailsTitle").innerText=
- "Loading...";
+ document.getElementById(
+  "detailsTitle"
+ ).innerText="Loading...";
 
  const result=
  await supabaseClient
@@ -2733,45 +3558,86 @@ async function viewListing(id){
 
  if(result.error){
 
-  document.getElementById("detailsTitle").innerText=
+  document.getElementById(
+   "detailsTitle"
+  ).innerText=
   "Unable to load product.";
 
   return;
  }
 
- const data=result.data;
+ const data=
+ result.data;
 
- currentListingId=data.id;
+ currentListingId=
+ data.id;
 
- document.getElementById("detailsImage").src=
- data.image_url||DEFAULT_IMAGE;
+ const images=
+ getProductImages(data);
 
- document.getElementById("detailsTitle").innerText=
+ const primaryImage=
+ images[0]||
+ DEFAULT_IMAGE;
+
+ document.getElementById(
+  "detailsImage"
+ ).src=
+ primaryImage;
+
+ renderDetailsThumbnails(
+  images
+ );
+
+ document.getElementById(
+  "detailsTitle"
+ ).innerText=
  data.title||"Product";
 
- document.getElementById("detailsPrice").innerText=
+ document.getElementById(
+  "detailsPrice"
+ ).innerText=
  formatPrice(data.price);
 
- document.getElementById("detailsCategory").innerText=
+ document.getElementById(
+  "detailsCategory"
+ ).innerText=
  data.category||"Other";
 
- document.getElementById("detailsLocation").innerText=
- "📍 "+(data.location||"Sioma");
+ document.getElementById(
+  "detailsLocation"
+ ).innerText=
+ "📍 "+(
+  data.location||
+  "Sioma"
+ );
 
- document.getElementById("detailsDescription").innerText=
- data.description||"No description provided.";
+ document.getElementById(
+  "detailsDescription"
+ ).innerText=
+ data.description||
+ "No description provided.";
 
- document.getElementById("detailsSeller").innerText=
- data.seller_name||"Sioma Seller";
+ document.getElementById(
+  "detailsSeller"
+ ).innerText=
+ data.seller_name||
+ "Sioma Seller";
 
- document.getElementById("detailsPhone").innerText=
- data.seller_phone||"Phone not provided";
+ document.getElementById(
+  "detailsPhone"
+ ).innerText=
+ data.seller_phone||
+ "Phone not provided";
 
  const whatsapp=
- document.getElementById("whatsappButton");
+ document.getElementById(
+  "whatsappButton"
+ );
 
  const call=
- document.getElementById("callButton");
+ document.getElementById(
+  "callButton"
+ );
 
  if(data.seller_phone){
 
@@ -2786,7 +3652,9 @@ async function viewListing(id){
   };
 
   call.onclick=()=>{
-   callSeller(data.seller_phone);
+   callSeller(
+    data.seller_phone
+   );
   };
 
  }else{
@@ -2795,7 +3663,9 @@ async function viewListing(id){
   call.style.display="none";
  }
 
- document.getElementById("messageButton").onclick=
+ document.getElementById(
+  "messageButton"
+ ).onclick=
  ()=>{
   startConversation(data);
  };
@@ -2808,9 +3678,64 @@ async function viewListing(id){
  await updateFavoriteButton();
 }
 
+function renderDetailsThumbnails(
+ images
+){
+
+ const box=
+ document.getElementById(
+  "detailsThumbnails"
+ );
+
+ box.innerHTML="";
+
+ if(!images||!images.length)
+ return;
+
+ images.forEach(
+ (image,index)=>{
+
+  const thumbnail=
+  document.createElement("img");
+
+  thumbnail.className=
+  "details-thumb"+
+  (
+   index===0
+   ?" active"
+   :""
+  );
+
+  thumbnail.src=
+  image;
+
+  thumbnail.alt=
+  "Product photo "+(index+1);
+
+  thumbnail.onclick=()=>{
+
+   document.getElementById(
+    "detailsImage"
+   ).src=image;
+
+   document.querySelectorAll(
+    ".details-thumb"
+   ).forEach(
+    x=>x.classList.remove("active")
+   );
+
+   thumbnail.classList.add("active");
+  };
+
+  box.appendChild(thumbnail);
+ });
+}
+
 function closeProductPage(){
 
- document.getElementById("productPage").style.display="none";
+ document.getElementById(
+  "productPage"
+ ).style.display="none";
 
  document.body.style.overflow="auto";
 }
@@ -2819,13 +3744,19 @@ function closeProductPage(){
    WHATSAPP / CALL
 ========================================================= */
 
-function contactSeller(phone,product){
+function contactSeller(
+ phone,
+ product
+){
 
  let number=
- String(phone).replace(/\D/g,"");
+ String(phone)
+ .replace(/\D/g,"");
 
  if(number.startsWith("0"))
- number="260"+number.substring(1);
+ number=
+ "260"+
+ number.substring(1);
 
  const message=
  encodeURIComponent(
@@ -2835,8 +3766,10 @@ function contactSeller(phone,product){
  );
 
  window.open(
-  "https://wa.me/"+number+
-  "?text="+message,
+  "https://wa.me/"+
+  number+
+  "?text="+
+  message,
   "_blank"
  );
 }
@@ -2844,7 +3777,8 @@ function contactSeller(phone,product){
 function callSeller(phone){
 
  window.location.href=
- "tel:"+String(phone)
+ "tel:"+
+ String(phone)
  .replace(/[^\d+]/g,"");
 }
 
@@ -2859,19 +3793,26 @@ async function showFavorites(){
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
 
-  document.getElementById("authMessage").innerText=
+  document.getElementById(
+   "authMessage"
+  ).innerText=
   "🔐 Login to view your favorites.";
 
   return;
  }
 
  const page=
- document.getElementById("favoritesPage");
+ document.getElementById(
+  "favoritesPage"
+ );
 
  const box=
- document.getElementById("favoritesResults");
+ document.getElementById(
+  "favoritesResults"
+ );
 
  page.style.display="block";
 
@@ -2879,7 +3820,7 @@ async function showFavorites(){
 
  box.innerHTML=
  `<div class="no-results">
- ⏳ Loading favorites...
+  ⏳ Loading favorites...
  </div>`;
 
  await loadFavoriteIds();
@@ -2888,27 +3829,33 @@ async function showFavorites(){
  await supabaseClient
  .from("favorites")
  .select(`
- id,
- listing_id,
- created_at,
- listings(
   id,
-  title,
-  price,
-  category,
-  location,
-  image_url,
-  status
- )
+  listing_id,
+  created_at,
+  listings(
+   id,
+   title,
+   price,
+   category,
+   location,
+   image_url,
+   status
+  )
  `)
- .eq("user_id",currentUser.id)
- .order("created_at",{ascending:false});
+ .eq(
+  "user_id",
+  currentUser.id
+ )
+ .order(
+  "created_at",
+  {ascending:false}
+ );
 
  if(result.error){
 
   box.innerHTML=
   `<div class="no-results">
-  ❌ Could not load favorites.
+   ❌ Could not load favorites.
   </div>`;
 
   return;
@@ -2926,27 +3873,32 @@ async function showFavorites(){
 
   box.innerHTML=
   `<div class="no-results">
-  ❤️ No saved Sioma products yet.
-  <br><br>
-  Browse SiomaMarket and save products you like.
+   ❤️ No saved Sioma products yet.
+   <br><br>
+   Browse SiomaMarket and save products you like.
   </div>`;
 
   return;
  }
 
  box.innerHTML=`
+
  <h2 class="results-title">
  ❤️ My Sioma Favorites
  </h2>
 
  <div class="results-grid">
- ${favorites.map(x=>productCard(x.listings)).join("")}
+ ${favorites
+  .map(x=>productCard(x.listings))
+  .join("")}
  </div>`;
 }
 
 function closeFavorites(){
 
- document.getElementById("favoritesPage").style.display="none";
+ document.getElementById(
+  "favoritesPage"
+ ).style.display="none";
 
  document.body.style.overflow="auto";
 }
@@ -2962,11 +3914,15 @@ async function openSellerDashboard(){
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
+
   return;
  }
 
- document.getElementById("sellerDashboard").style.display="block";
+ document.getElementById(
+  "sellerDashboard"
+ ).style.display="block";
 
  document.body.style.overflow="hidden";
 
@@ -2975,7 +3931,9 @@ async function openSellerDashboard(){
 
 function closeSellerDashboard(){
 
- document.getElementById("sellerDashboard").style.display="none";
+ document.getElementById(
+  "sellerDashboard"
+ ).style.display="none";
 
  document.body.style.overflow="auto";
 }
@@ -2986,25 +3944,43 @@ async function loadSellerDashboard(){
  await supabaseClient
  .from("listings")
  .select("*")
- .eq("user_id",currentUser.id)
- .order("created_at",{ascending:false});
+ .eq(
+  "user_id",
+  currentUser.id
+ )
+ .order(
+  "created_at",
+  {ascending:false}
+ );
 
- if(result.error)return;
+ if(result.error)
+ return;
 
- sellerListingsCache=result.data||[];
+ sellerListingsCache=
+ result.data||[];
 
- const listings=sellerListingsCache;
+ const listings=
+ sellerListingsCache;
 
- document.getElementById("sellerTotalListings").innerText=
+ document.getElementById(
+  "sellerTotalListings"
+ ).innerText=
  listings.length;
 
- document.getElementById("sellerActiveListings").innerText=
- listings.filter(x=>x.status==="active").length;
+ document.getElementById(
+  "sellerActiveListings"
+ ).innerText=
+ listings.filter(
+  x=>x.status==="active"
+ ).length;
 
- document.getElementById("sellerValue").innerText=
+ document.getElementById(
+  "sellerValue"
+ ).innerText=
  "K"+
  listings.reduce(
-  (a,x)=>a+Number(x.price||0),
+  (a,x)=>
+  a+Number(x.price||0),
   0
  ).toLocaleString();
 
@@ -3019,30 +3995,40 @@ async function loadSellerDashboard(){
   await supabaseClient
   .from("favorites")
   .select("id")
-  .in("listing_id",listingIds);
+  .in(
+   "listing_id",
+   listingIds
+  );
 
   if(!fav.error)
-  favoriteCount=(fav.data||[]).length;
+  favoriteCount=
+  (fav.data||[]).length;
  }
 
- document.getElementById("sellerFavoriteCount").innerText=
+ document.getElementById(
+  "sellerFavoriteCount"
+ ).innerText=
  favoriteCount;
 
  renderSellerListings(listings);
 }
 
-function renderSellerListings(listings){
+function renderSellerListings(
+ listings
+){
 
  const box=
- document.getElementById("sellerListings");
+ document.getElementById(
+  "sellerListings"
+ );
 
  if(!listings.length){
 
   box.innerHTML=
   `<div class="no-results">
-  📦 You have no products yet.
-  <br><br>
-  Tap SELL to create your first Sioma listing.
+   📦 You have no products yet.
+   <br><br>
+   Tap SELL to create your first Sioma listing.
   </div>`;
 
   return;
@@ -3054,13 +4040,18 @@ function renderSellerListings(listings){
  <div class="dashboard-listing">
 
  <img
- src="${escapeAttribute(item.image_url||DEFAULT_IMAGE)}"
- alt="Product">
+  src="${escapeAttribute(
+   getPrimaryImage(item)
+  )}"
+  alt="Product">
 
  <div class="dashboard-listing-info">
 
  <h4>
- ${escapeHTML(item.title||"Product")}
+ ${escapeHTML(
+  item.title||
+  "Product"
+ )}
  </h4>
 
  <p>
@@ -3068,8 +4059,21 @@ function renderSellerListings(listings){
  </p>
 
  <small>
- 📍 ${escapeHTML(item.location||"Sioma")}
- • ${escapeHTML(item.status||"active")}
+ 📍 ${escapeHTML(
+  item.location||
+  "Sioma"
+ )}
+ • ${escapeHTML(
+  item.status||
+  "active"
+ )}
+ ${
+  getProductImages(item).length>1
+  ?
+  " • 📸 "+
+  getProductImages(item).length
+  :""
+ }
  </small>
 
  </div>
@@ -3077,21 +4081,21 @@ function renderSellerListings(listings){
  <div class="dashboard-actions">
 
  <button
- class="small-button view-button"
- onclick="viewListing('${item.id}')">
- 👀
+  class="small-button view-button"
+  onclick="viewListing('${item.id}')">
+  👀
  </button>
 
  <button
- class="small-button edit-button"
- onclick="openEditModal('${item.id}')">
- ✏️
+  class="small-button edit-button"
+  onclick="openEditModal('${item.id}')">
+  ✏️
  </button>
 
  <button
- class="small-button delete-button"
- onclick="deleteSellerListing('${item.id}')">
- 🗑️
+  class="small-button delete-button"
+  onclick="deleteSellerListing('${item.id}')">
+  🗑️
  </button>
 
  </div>
@@ -3116,22 +4120,58 @@ function openEditModal(id){
 
  if(!item)return;
 
- document.getElementById("editListingId").value=item.id;
- document.getElementById("editTitle").value=item.title||"";
- document.getElementById("editDescription").value=item.description||"";
- document.getElementById("editPrice").value=item.price||0;
- document.getElementById("editCategory").value=item.category||"Other";
- document.getElementById("editLocation").value=item.location||"Sioma";
- document.getElementById("editSellerName").value=item.seller_name||"";
- document.getElementById("editSellerPhone").value=item.seller_phone||"";
- document.getElementById("editMessage").innerText="";
+ document.getElementById(
+  "editListingId"
+ ).value=item.id;
 
- document.getElementById("editModal").style.display="block";
+ document.getElementById(
+  "editTitle"
+ ).value=item.title||"";
+
+ document.getElementById(
+  "editDescription"
+ ).value=
+ item.description||"";
+
+ document.getElementById(
+  "editPrice"
+ ).value=
+ item.price||0;
+
+ document.getElementById(
+  "editCategory"
+ ).value=
+ item.category||"Other";
+
+ document.getElementById(
+  "editLocation"
+ ).value=
+ item.location||"Sioma";
+
+ document.getElementById(
+  "editSellerName"
+ ).value=
+ item.seller_name||"";
+
+ document.getElementById(
+  "editSellerPhone"
+ ).value=
+ item.seller_phone||"";
+
+ document.getElementById(
+  "editMessage"
+ ).innerText="";
+
+ document.getElementById(
+  "editModal"
+ ).style.display="block";
 }
 
 function closeEditModal(){
 
- document.getElementById("editModal").style.display="none";
+ document.getElementById(
+  "editModal"
+ ).style.display="none";
 }
 
 async function saveEditedListing(){
@@ -3139,16 +4179,49 @@ async function saveEditedListing(){
  await loadAuthSession();
 
  const id=
- document.getElementById("editListingId").value;
+ document.getElementById(
+  "editListingId"
+ ).value;
 
  const update={
-  title:document.getElementById("editTitle").value.trim(),
-  description:document.getElementById("editDescription").value.trim(),
-  price:Number(document.getElementById("editPrice").value),
-  category:document.getElementById("editCategory").value,
-  location:document.getElementById("editLocation").value.trim()||"Sioma",
-  seller_name:document.getElementById("editSellerName").value.trim(),
-  seller_phone:document.getElementById("editSellerPhone").value.trim()
+
+  title:
+  document.getElementById(
+   "editTitle"
+  ).value.trim(),
+
+  description:
+  document.getElementById(
+   "editDescription"
+  ).value.trim(),
+
+  price:
+  Number(
+   document.getElementById(
+    "editPrice"
+   ).value
+  ),
+
+  category:
+  document.getElementById(
+   "editCategory"
+  ).value,
+
+  location:
+  document.getElementById(
+   "editLocation"
+  ).value.trim()||
+  "Sioma",
+
+  seller_name:
+  document.getElementById(
+   "editSellerName"
+  ).value.trim(),
+
+  seller_phone:
+  document.getElementById(
+   "editSellerPhone"
+  ).value.trim()
  };
 
  const result=
@@ -3159,25 +4232,36 @@ async function saveEditedListing(){
 
  if(result.error){
 
-  document.getElementById("editMessage").innerText=
+  document.getElementById(
+   "editMessage"
+  ).innerText=
   "❌ "+result.error.message;
 
   return;
  }
 
- document.getElementById("editMessage").innerText=
+ document.getElementById(
+  "editMessage"
+ ).innerText=
  "✅ Product updated.";
 
  await loadSellerDashboard();
+
  await loadListings();
 
  if(
- document.getElementById("adminDashboard").style.display==="block"
+  document.getElementById(
+   "adminDashboard"
+  ).style.display==="block"
  ){
+
   await loadAdminListings();
  }
 
- setTimeout(closeEditModal,600);
+ setTimeout(
+  closeEditModal,
+  600
+ );
 }
 
 /* =========================================================
@@ -3187,7 +4271,8 @@ async function saveEditedListing(){
 async function deleteSellerListing(id){
 
  if(!confirm(
- "Delete this product?\n\nThis cannot be undone."
+  "Delete this product?\n\n"+
+  "This cannot be undone."
  ))return;
 
  const result=
@@ -3195,17 +4280,27 @@ async function deleteSellerListing(id){
  .from("listings")
  .delete()
  .eq("id",id)
- .eq("user_id",currentUser.id);
+ .eq(
+  "user_id",
+  currentUser.id
+ );
 
  if(result.error){
 
-  alert("❌ "+result.error.message);
+  alert(
+   "❌ "+
+   result.error.message
+  );
+
   return;
  }
 
- favoritesCache.delete(String(id));
+ favoritesCache.delete(
+  String(id)
+ );
 
  await loadSellerDashboard();
+
  await loadListings();
 
  alert("✅ Product deleted.");
@@ -3222,10 +4317,13 @@ async function openAdminDashboard(){
  if(!(await isAdmin())){
 
   alert("⛔ Access denied.");
+
   return;
  }
 
- document.getElementById("adminDashboard").style.display="block";
+ document.getElementById(
+  "adminDashboard"
+ ).style.display="block";
 
  document.body.style.overflow="hidden";
 
@@ -3234,7 +4332,9 @@ async function openAdminDashboard(){
 
 function closeAdminDashboard(){
 
- document.getElementById("adminDashboard").style.display="none";
+ document.getElementById(
+  "adminDashboard"
+ ).style.display="none";
 
  document.body.style.overflow="auto";
 }
@@ -3242,64 +4342,98 @@ function closeAdminDashboard(){
 async function loadAdminListings(){
 
  const body=
- document.getElementById("adminListingsBody");
+ document.getElementById(
+  "adminListingsBody"
+ );
 
  body.innerHTML=
- `<tr><td colspan="7">⏳ Loading...</td></tr>`;
+ `<tr>
+  <td colspan="7">
+   ⏳ Loading...
+  </td>
+ </tr>`;
 
  const result=
  await supabaseClient
  .from("listings")
  .select("*")
- .order("created_at",{ascending:false});
+ .order(
+  "created_at",
+  {ascending:false}
+ );
 
  if(result.error){
 
   body.innerHTML=
   `<tr>
-  <td colspan="7">
-  ❌ ${escapeHTML(result.error.message)}
-  </td>
+   <td colspan="7">
+   ❌ ${escapeHTML(
+    result.error.message
+   )}
+   </td>
   </tr>`;
 
   return;
  }
 
- adminListingsCache=result.data||[];
+ adminListingsCache=
+ result.data||[];
 
- const listings=adminListingsCache;
+ const listings=
+ adminListingsCache;
 
- document.getElementById("adminTotalListings").innerText=
+ document.getElementById(
+  "adminTotalListings"
+ ).innerText=
  listings.length;
 
- document.getElementById("adminActiveListings").innerText=
- listings.filter(x=>x.status==="active").length;
+ document.getElementById(
+  "adminActiveListings"
+ ).innerText=
+ listings.filter(
+  x=>x.status==="active"
+ ).length;
 
- document.getElementById("adminSellerCount").innerText=
+ document.getElementById(
+  "adminSellerCount"
+ ).innerText=
  new Set(
-  listings.map(x=>x.user_id).filter(Boolean)
+  listings
+  .map(x=>x.user_id)
+  .filter(Boolean)
  ).size;
 
- document.getElementById("adminMarketValue").innerText=
+ document.getElementById(
+  "adminMarketValue"
+ ).innerText=
  "K"+
  listings.reduce(
-  (a,x)=>a+Number(x.price||0),
+  (a,x)=>
+  a+Number(x.price||0),
   0
  ).toLocaleString();
 
- renderAdminListings(listings);
+ renderAdminListings(
+  listings
+ );
 }
 
-function renderAdminListings(listings){
+function renderAdminListings(
+ listings
+){
 
  const body=
- document.getElementById("adminListingsBody");
+ document.getElementById(
+  "adminListingsBody"
+ );
 
  if(!listings.length){
 
   body.innerHTML=
   `<tr>
-  <td colspan="7">No listings found.</td>
+   <td colspan="7">
+    No listings found.
+   </td>
   </tr>`;
 
   return;
@@ -3311,55 +4445,87 @@ function renderAdminListings(listings){
  <tr>
 
  <td>
+
  <img
- src="${escapeAttribute(item.image_url||DEFAULT_IMAGE)}"
- alt="Product">
+  src="${escapeAttribute(
+   getPrimaryImage(item)
+  )}"
+  alt="Product">
+
  </td>
 
  <td>
- <strong>${escapeHTML(item.title||"Product")}</strong>
+ <strong>
+ ${escapeHTML(
+  item.title||
+  "Product"
+ )}
+ </strong>
  </td>
 
- <td>${formatPrice(item.price)}</td>
-
- <td>${escapeHTML(item.seller_name||"Unknown")}</td>
-
- <td>${escapeHTML(item.location||"Sioma")}</td>
+ <td>
+ ${formatPrice(item.price)}
+ </td>
 
  <td>
+ ${escapeHTML(
+  item.seller_name||
+  "Unknown"
+ )}
+ </td>
+
+ <td>
+ ${escapeHTML(
+  item.location||
+  "Sioma"
+ )}
+ </td>
+
+ <td>
+
  <span class="${
- item.status==="active"
- ?"status-active"
- :"status-inactive"
+  item.status==="active"
+  ?"status-active"
+  :"status-inactive"
  }">
- ${escapeHTML(item.status||"active")}
+
+ ${escapeHTML(
+  item.status||
+  "active"
+ )}
+
  </span>
+
  </td>
 
  <td>
 
  <button
- class="small-button view-button"
- onclick="viewListing('${item.id}')">
- 👀
+  class="small-button view-button"
+  onclick="viewListing('${item.id}')">
+  👀
  </button>
 
  <button
- class="small-button edit-button"
- onclick="openEditModal('${item.id}')">
- ✏️
+  class="small-button edit-button"
+  onclick="openEditModal('${item.id}')">
+  ✏️
  </button>
 
  <button
- class="small-button edit-button"
- onclick="toggleListingStatus('${item.id}')">
- ${item.status==="active"?"⏸️":"▶️"}
+  class="small-button edit-button"
+  onclick="toggleListingStatus('${item.id}')">
+  ${
+   item.status==="active"
+   ?"⏸️"
+   :"▶️"
+  }
  </button>
 
  <button
- class="small-button delete-button"
- onclick="adminDeleteListing('${item.id}')">
- 🗑️
+  class="small-button delete-button"
+  onclick="adminDeleteListing('${item.id}')">
+  🗑️
  </button>
 
  </td>
@@ -3369,10 +4535,14 @@ function renderAdminListings(listings){
 }
 
 function showAllAdminListings(){
- renderAdminListings(adminListingsCache);
+
+ renderAdminListings(
+  adminListingsCache
+ );
 }
 
 function showActiveAdminListings(){
+
  renderAdminListings(
   adminListingsCache.filter(
    x=>x.status==="active"
@@ -3397,23 +4567,31 @@ async function toggleListingStatus(id){
  const result=
  await supabaseClient
  .from("listings")
- .update({status:newStatus})
+ .update({
+  status:newStatus
+ })
  .eq("id",id);
 
  if(result.error){
 
-  alert("❌ "+result.error.message);
+  alert(
+   "❌ "+
+   result.error.message
+  );
+
   return;
  }
 
  await loadAdminListings();
+
  await loadListings();
 }
 
 async function adminDeleteListing(id){
 
  if(!confirm(
- "Delete this marketplace listing?\n\nThis cannot be undone."
+  "Delete this marketplace listing?\n\n"+
+  "This cannot be undone."
  ))return;
 
  const result=
@@ -3424,13 +4602,20 @@ async function adminDeleteListing(id){
 
  if(result.error){
 
-  alert("❌ "+result.error.message);
+  alert(
+   "❌ "+
+   result.error.message
+  );
+
   return;
  }
 
- favoritesCache.delete(String(id));
+ favoritesCache.delete(
+  String(id)
+ );
 
  await loadAdminListings();
+
  await loadListings();
 
  alert("✅ Listing deleted.");
@@ -3445,14 +4630,19 @@ function loadMessageReadState(){
  try{
 
   const saved=
-  localStorage.getItem(MESSAGE_READ_KEY);
+  localStorage.getItem(
+   MESSAGE_READ_KEY
+  );
 
   messageReadState=
-  saved?JSON.parse(saved):{};
+  saved?
+  JSON.parse(saved):
+  {};
 
  }catch(error){
 
   console.error(error);
+
   messageReadState={};
  }
 }
@@ -3463,7 +4653,9 @@ function saveMessageReadState(){
 
   localStorage.setItem(
    MESSAGE_READ_KEY,
-   JSON.stringify(messageReadState)
+   JSON.stringify(
+    messageReadState
+   )
   );
 
  }catch(error){
@@ -3472,17 +4664,25 @@ function saveMessageReadState(){
  }
 }
 
-function getConversationReadTime(conversationId){
+function getConversationReadTime(
+ conversationId
+){
 
- return messageReadState[String(conversationId)]||
+ return messageReadState[
+  String(conversationId)
+ ]||
  "1970-01-01T00:00:00Z";
 }
 
-function markConversationRead(conversationId){
+function markConversationRead(
+ conversationId
+){
 
  if(!conversationId)return;
 
- messageReadState[String(conversationId)]=
+ messageReadState[
+  String(conversationId)
+ ]=
  new Date().toISOString();
 
  saveMessageReadState();
@@ -3494,14 +4694,15 @@ function formatMessageTime(date){
 
  const d=new Date(date);
 
- if(Number.isNaN(d.getTime()))return"";
+ if(Number.isNaN(d.getTime()))
+ return"";
 
  return d.toLocaleTimeString(
- "en-ZM",
- {
-  hour:"2-digit",
-  minute:"2-digit"
- }
+  "en-ZM",
+  {
+   hour:"2-digit",
+   minute:"2-digit"
+  }
  );
 }
 
@@ -3509,38 +4710,58 @@ async function getUnreadCountForConversation(
  conversationId
 ){
 
- if(!currentUser)return 0;
+ if(!currentUser)
+ return 0;
 
  const readTime=
- getConversationReadTime(conversationId);
+ getConversationReadTime(
+  conversationId
+ );
 
  const result=
  await supabaseClient
  .from("messages")
  .select("id")
- .eq("conversation_id",conversationId)
- .neq("sender_id",currentUser.id)
- .gt("created_at",readTime);
+ .eq(
+  "conversation_id",
+  conversationId
+ )
+ .neq(
+  "sender_id",
+  currentUser.id
+ )
+ .gt(
+  "created_at",
+  readTime
+ );
 
  if(result.error){
 
-  console.error(result.error);
+  console.error(
+   result.error
+  );
+
   return 0;
  }
 
- return(result.data||[]).length;
+ return(
+  result.data||[]
+ ).length;
 }
 
 async function updateMessageBadge(){
 
  const badge=
- document.getElementById("messageBadge");
+ document.getElementById(
+  "messageBadge"
+ );
 
  if(!badge)return;
 
  if(!currentUser){
 
   badge.style.display="none";
+
   return;
  }
 
@@ -3549,13 +4770,16 @@ async function updateMessageBadge(){
  .from("conversations")
  .select("id")
  .or(
-  "buyer_id.eq."+currentUser.id+
-  ",seller_id.eq."+currentUser.id
+  "buyer_id.eq."+
+  currentUser.id+
+  ",seller_id.eq."+
+  currentUser.id
  );
 
  if(conversations.error){
 
   badge.style.display="none";
+
   return;
  }
 
@@ -3575,13 +4799,17 @@ async function updateMessageBadge(){
  if(totalUnread>0){
 
   badge.innerText=
-  totalUnread>99?"99+":String(totalUnread);
+  totalUnread>99
+  ?"99+"
+  :String(totalUnread);
 
-  badge.style.display="inline-flex";
+  badge.style.display=
+  "inline-flex";
 
  }else{
 
-  badge.style.display="none";
+  badge.style.display=
+  "none";
  }
 }
 
@@ -3596,15 +4824,20 @@ async function openMessages(){
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
 
-  document.getElementById("authMessage").innerText=
+  document.getElementById(
+   "authMessage"
+  ).innerText=
   "🔐 Login to use SiomaMarket Messages.";
 
   return;
  }
 
- document.getElementById("messagesPage").style.display="block";
+ document.getElementById(
+  "messagesPage"
+ ).style.display="block";
 
  document.body.style.overflow="hidden";
 
@@ -3613,43 +4846,54 @@ async function openMessages(){
  await updateMessageBadge();
 
  if(messageRefreshTimer)
- clearInterval(messageRefreshTimer);
+ clearInterval(
+  messageRefreshTimer
+ );
 
  messageRefreshTimer=
- setInterval(async function(){
+ setInterval(
+  async function(){
 
-  if(!currentUser)return;
+   if(!currentUser)return;
 
-  await updateMessageBadge();
+   await updateMessageBadge();
 
-  if(
-   document.getElementById("messagesPage")
-   .style.display==="block"
-  ){
+   if(
+    document.getElementById(
+     "messagesPage"
+    ).style.display==="block"
+   ){
 
-   await loadConversations(false);
+    await loadConversations(false);
 
-   if(currentConversationId){
+    if(currentConversationId){
 
-    await loadMessages(
-     currentConversationId,
-     false
-    );
+     await loadMessages(
+      currentConversationId,
+      false
+     );
+    }
    }
-  }
 
- },5000);
+  },
+  5000
+ );
 }
 
 function closeMessages(){
 
- document.getElementById("messagesPage").style.display="none";
+ document.getElementById(
+  "messagesPage"
+ ).style.display="none";
 
  document.body.style.overflow="auto";
 
  if(messageRefreshTimer){
 
-  clearInterval(messageRefreshTimer);
+  clearInterval(
+   messageRefreshTimer
+  );
+
   messageRefreshTimer=null;
  }
 
@@ -3660,16 +4904,21 @@ function closeMessages(){
    START CONVERSATION
 ========================================================= */
 
-async function startConversation(listing){
+async function startConversation(
+ listing
+){
 
  await loadAuthSession();
 
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
 
-  document.getElementById("authMessage").innerText=
+  document.getElementById(
+   "authMessage"
+  ).innerText=
   "🔐 Login to message the seller.";
 
   return;
@@ -3677,16 +4926,22 @@ async function startConversation(listing){
 
  if(!listing.user_id){
 
-  alert("Seller account unavailable.");
+  alert(
+   "Seller account unavailable."
+  );
+
   return;
  }
 
  if(
- String(listing.user_id)===
- String(currentUser.id)
+  String(listing.user_id)===
+  String(currentUser.id)
  ){
 
-  alert("This is your own product.");
+  alert(
+   "This is your own product."
+  );
+
   return;
  }
 
@@ -3694,9 +4949,18 @@ async function startConversation(listing){
  await supabaseClient
  .from("conversations")
  .select("*")
- .eq("listing_id",listing.id)
- .eq("buyer_id",currentUser.id)
- .eq("seller_id",listing.user_id)
+ .eq(
+  "listing_id",
+  listing.id
+ )
+ .eq(
+  "buyer_id",
+  currentUser.id
+ )
+ .eq(
+  "seller_id",
+  listing.user_id
+ )
  .maybeSingle();
 
  if(existing.error){
@@ -3709,7 +4973,8 @@ async function startConversation(listing){
   return;
  }
 
- let conversation=existing.data;
+ let conversation=
+ existing.data;
 
  if(!conversation){
 
@@ -3717,9 +4982,16 @@ async function startConversation(listing){
   await supabaseClient
   .from("conversations")
   .insert({
-   listing_id:listing.id,
-   buyer_id:currentUser.id,
-   seller_id:listing.user_id
+
+   listing_id:
+   listing.id,
+
+   buyer_id:
+   currentUser.id,
+
+   seller_id:
+   listing.user_id
+
   })
   .select()
   .single();
@@ -3730,12 +5002,24 @@ async function startConversation(listing){
    await supabaseClient
    .from("conversations")
    .select("*")
-   .eq("listing_id",listing.id)
-   .eq("buyer_id",currentUser.id)
-   .eq("seller_id",listing.user_id)
+   .eq(
+    "listing_id",
+    listing.id
+   )
+   .eq(
+    "buyer_id",
+    currentUser.id
+   )
+   .eq(
+    "seller_id",
+    listing.user_id
+   )
    .maybeSingle();
 
-   if(retry.error||!retry.data){
+   if(
+    retry.error||
+    !retry.data
+   ){
 
     alert(
      "❌ Could not start conversation: "+
@@ -3745,27 +5029,32 @@ async function startConversation(listing){
     return;
    }
 
-   conversation=retry.data;
+   conversation=
+   retry.data;
 
   }else{
 
-   conversation=created.data;
+   conversation=
+   created.data;
   }
  }
 
  await openMessages();
 
- setTimeout(async function(){
+ setTimeout(
+  async function(){
 
-  await loadConversations();
+   await loadConversations();
 
-  selectConversation(
-   conversation.id,
-   listing.title,
-   listing.id
-  );
+   selectConversation(
+    conversation.id,
+    listing.title,
+    listing.id
+   );
 
- },250);
+  },
+  250
+ );
 }
 
 /* =========================================================
@@ -3775,40 +5064,51 @@ async function startConversation(listing){
 async function loadConversations(){
 
  const list=
- document.getElementById("conversationList");
+ document.getElementById(
+  "conversationList"
+ );
 
- if(!currentUser)return;
+ if(!currentUser)
+ return;
 
  const result=
  await supabaseClient
  .from("conversations")
  .select("*")
  .or(
-  "buyer_id.eq."+currentUser.id+
-  ",seller_id.eq."+currentUser.id
+  "buyer_id.eq."+
+  currentUser.id+
+  ",seller_id.eq."+
+  currentUser.id
  )
- .order("created_at",{ascending:false});
+ .order(
+  "created_at",
+  {ascending:false}
+ );
 
  if(result.error){
 
   list.innerHTML=
   `<div class="empty-chat">
-  ❌ ${escapeHTML(result.error.message)}
+   ❌ ${escapeHTML(
+    result.error.message
+   )}
   </div>`;
 
   return;
  }
 
- const conversations=result.data||[];
+ const conversations=
+ result.data||[];
 
  if(!conversations.length){
 
   list.innerHTML=
   `<div class="empty-chat">
-  💬 No conversations yet.
-  <br><br>
-  Open a Sioma product and tap
-  <strong>Message Seller</strong>.
+   💬 No conversations yet.
+   <br><br>
+   Open a Sioma product and tap
+   <strong>Message Seller</strong>.
   </div>`;
 
   await updateMessageBadge();
@@ -3830,11 +5130,17 @@ async function loadConversations(){
    const product=
    await supabaseClient
    .from("listings")
-   .select("id,title,image_url")
-   .eq("id",conversation.listing_id)
+   .select(
+    "id,title,image_url"
+   )
+   .eq(
+    "id",
+    conversation.listing_id
+   )
    .maybeSingle();
 
-   listing=product.data;
+   listing=
+   product.data;
   }
 
   const unread=
@@ -3850,13 +5156,20 @@ async function loadConversations(){
   .select(
    "message,content,created_at,sender_id"
   )
-  .eq("conversation_id",conversation.id)
-  .order("created_at",{ascending:false})
+  .eq(
+   "conversation_id",
+   conversation.id
+  )
+  .order(
+   "created_at",
+   {ascending:false}
+  )
   .limit(1)
   .maybeSingle();
 
   if(!latest.error)
-  latestMessage=latest.data;
+  latestMessage=
+  latest.data;
 
   conversationData.push({
    conversation,
@@ -3866,41 +5179,60 @@ async function loadConversations(){
   });
  }
 
- conversationData.sort((a,b)=>{
+ conversationData.sort(
+  (a,b)=>{
 
-  const dateA=
-  new Date(
-   a.latestMessage?.created_at||
-   a.conversation.created_at||0
-  ).getTime();
+   const dateA=
+   new Date(
+    a.latestMessage?.created_at||
+    a.conversation.created_at||
+    0
+   ).getTime();
 
-  const dateB=
-  new Date(
-   b.latestMessage?.created_at||
-   b.conversation.created_at||0
-  ).getTime();
+   const dateB=
+   new Date(
+    b.latestMessage?.created_at||
+    b.conversation.created_at||
+    0
+   ).getTime();
 
-  return dateB-dateA;
- });
+   return dateB-dateA;
+  }
+ );
 
  list.innerHTML=
- conversationData.map(item=>{
+ conversationData
+ .map(item=>{
 
-  const conversation=item.conversation;
-  const listing=item.listing;
-  const unread=item.unread;
-  const latest=item.latestMessage;
+  const conversation=
+  item.conversation;
 
-  let preview="No messages yet.";
+  const listing=
+  item.listing;
+
+  const unread=
+  item.unread;
+
+  const latest=
+  item.latestMessage;
+
+  let preview=
+  "No messages yet.";
 
   if(latest){
 
    const latestText=
-   latest.message||latest.content||"";
+   latest.message||
+   latest.content||
+   "";
 
    preview=
-   String(latest.sender_id)===
-   String(currentUser.id)
+   String(
+    latest.sender_id
+   )===
+   String(
+    currentUser.id
+   )
    ?
    "You: "+latestText
    :
@@ -3910,51 +5242,75 @@ async function loadConversations(){
   return`
 
   <div
-  class="conversation-item ${unread>0?"unread":""}"
-  onclick="selectConversation(
-   '${escapeAttribute(conversation.id)}',
-   '${escapeAttribute(listing?.title||"Sioma Product")}',
-   '${escapeAttribute(conversation.listing_id||"")}'
-  )">
+   class="conversation-item ${
+    unread>0?"unread":""
+   }"
+   onclick="selectConversation(
+    '${escapeAttribute(
+     conversation.id
+    )}',
+    '${escapeAttribute(
+     listing?.title||
+     "Sioma Product"
+    )}',
+    '${escapeAttribute(
+     conversation.listing_id||
+     ""
+    )}'
+   )">
 
-  <div class="conversation-avatar">👤</div>
+   <div class="conversation-avatar">
+    👤
+   </div>
 
-  <div class="conversation-info">
+   <div class="conversation-info">
 
-  <strong>
-  ${escapeHTML(listing?.title||"Sioma Product")}
-  </strong>
+   <strong>
+   ${escapeHTML(
+    listing?.title||
+    "Sioma Product"
+   )}
+   </strong>
 
-  <div class="conversation-meta">
+   <div class="conversation-meta">
 
-  <small>
-  ${escapeHTML(preview)}
-  </small>
+   <small>
+   ${escapeHTML(preview)}
+   </small>
 
-  ${
-   unread>0
-   ?
-   `<span class="unread-badge">
-   ${unread>99?"99+":unread}
-   </span>`
-   :""
-  }
+   ${
+    unread>0
+    ?
+    `<span class="unread-badge">
+     ${
+      unread>99
+      ?"99+"
+      :unread
+     }
+    </span>`
+    :""
+   }
 
-  </div>
+   </div>
 
-  ${
-   latest
-   ?
-   `<small class="conversation-time">
-   ${formatMessageTime(latest.created_at)}
-   </small>`
-   :
-   `<small>Sioma seller</small>`
-  }
+   ${
+    latest
+    ?
+    `<small class="conversation-time">
+     ${formatMessageTime(
+      latest.created_at
+     )}
+    </small>`
+    :
+    `<small>
+     Sioma seller
+    </small>`
+   }
 
-  </div>
+   </div>
   </div>`;
- }).join("");
+ })
+ .join("");
 
  await updateMessageBadge();
 }
@@ -3964,20 +5320,42 @@ async function loadConversations(){
 ========================================================= */
 
 async function selectConversation(
- conversationId,title,listingId
+ conversationId,
+ title,
+ listingId
 ){
 
- currentConversationId=conversationId;
- currentConversationListingId=listingId;
+ currentConversationId=
+ conversationId;
 
- markConversationRead(conversationId);
+ currentConversationListingId=
+ listingId;
 
- document.getElementById("chatHeader").innerHTML=`
- <strong>💬 ${escapeHTML(title||"Sioma Product")}</strong>
- <div class="chat-product">📍 SiomaMarket</div>
+ markConversationRead(
+  conversationId
+ );
+
+ document.getElementById(
+  "chatHeader"
+ ).innerHTML=`
+
+ <strong>
+ 💬 ${escapeHTML(
+  title||
+  "Sioma Product"
+ )}
+ </strong>
+
+ <div class="chat-product">
+ 📍 SiomaMarket
+ </div>
+
  `;
 
- await loadMessages(conversationId,true);
+ await loadMessages(
+  conversationId,
+  true
+ );
 
  await loadConversations();
 
@@ -3994,36 +5372,48 @@ async function loadMessages(
 ){
 
  const box=
- document.getElementById("messageList");
+ document.getElementById(
+  "messageList"
+ );
 
- if(!currentUser)return;
+ if(!currentUser)
+ return;
 
  const result=
  await supabaseClient
  .from("messages")
  .select("*")
- .eq("conversation_id",conversationId)
- .order("created_at",{ascending:true});
+ .eq(
+  "conversation_id",
+  conversationId
+ )
+ .order(
+  "created_at",
+  {ascending:true}
+ );
 
  if(result.error){
 
   box.innerHTML=
   `<div class="empty-chat">
-  ❌ ${escapeHTML(result.error.message)}
+   ❌ ${escapeHTML(
+    result.error.message
+   )}
   </div>`;
 
   return;
  }
 
- const messages=result.data||[];
+ const messages=
+ result.data||[];
 
  if(!messages.length){
 
   box.innerHTML=
   `<div class="empty-chat">
-  💬 No messages yet.
-  <br>
-  Send the first message.
+   💬 No messages yet.
+   <br>
+   Send the first message.
   </div>`;
 
   return;
@@ -4037,22 +5427,38 @@ async function loadMessages(
   String(currentUser.id);
 
   const time=
-  formatMessageTime(item.created_at);
+  formatMessageTime(
+   item.created_at
+  );
 
   const text=
-  item.message||item.content||"";
+  item.message||
+  item.content||
+  "";
 
   return`
-  <div class="message-row ${mine?"mine":""}">
-  <div class="message-bubble">
-  ${escapeHTML(text)}
-  <span class="message-time">${time}</span>
-  </div>
+
+  <div class="message-row ${
+   mine?"mine":""
+  }">
+
+   <div class="message-bubble">
+
+   ${escapeHTML(text)}
+
+   <span class="message-time">
+   ${time}
+   </span>
+
+   </div>
+
   </div>`;
+
  }).join("");
 
  if(scroll)
- box.scrollTop=box.scrollHeight;
+ box.scrollTop=
+ box.scrollHeight;
 }
 
 /* =========================================================
@@ -4066,29 +5472,43 @@ async function sendMessage(){
  if(!currentUser){
 
   openAuthModal();
+
   showLogin();
+
   return;
  }
 
  if(!currentConversationId){
 
-  alert("Select a conversation first.");
+  alert(
+   "Select a conversation first."
+  );
+
   return;
  }
 
  const input=
- document.getElementById("messageInput");
+ document.getElementById(
+  "messageInput"
+ );
 
- const text=input.value.trim();
+ const text=
+ input.value.trim();
 
- if(!text)return;
+ if(!text)
+ return;
 
  const result=
  await supabaseClient
  .from("messages")
  .insert({
-  conversation_id:currentConversationId,
-  sender_id:currentUser.id,
+
+  conversation_id:
+  currentConversationId,
+
+  sender_id:
+  currentUser.id,
+
   message:text
  });
 
@@ -4104,7 +5524,9 @@ async function sendMessage(){
 
  input.value="";
 
- markConversationRead(currentConversationId);
+ markConversationRead(
+  currentConversationId
+ );
 
  await loadMessages(
   currentConversationId,
@@ -4120,77 +5542,98 @@ async function sendMessage(){
    ENTER TO SEND
 ========================================================= */
 
-document.getElementById("messageInput")
-.addEventListener("keydown",function(e){
+document.getElementById(
+ "messageInput"
+)
+.addEventListener(
+ "keydown",
+ function(e){
 
- if(
-  e.key==="Enter" &&
-  !e.shiftKey
- ){
+  if(
+   e.key==="Enter" &&
+   !e.shiftKey
+  ){
 
-  e.preventDefault();
+   e.preventDefault();
 
-  sendMessage();
+   sendMessage();
+  }
+
  }
-});
+);
 
 /* =========================================================
    KEYBOARD / MOBILE UX
 ========================================================= */
 
-window.addEventListener("resize",()=>{
+window.addEventListener(
+ "resize",
+ ()=>{
 
- if(
-  document.activeElement &&
-  (
-   document.activeElement.tagName==="INPUT"||
-   document.activeElement.tagName==="TEXTAREA"
-  )
- ){
+  if(
+   document.activeElement &&
+   (
+    document.activeElement.tagName==="INPUT"||
+    document.activeElement.tagName==="TEXTAREA"
+   )
+  ){
 
-  setTimeout(()=>{
-   document.activeElement.scrollIntoView({
-    behavior:"smooth",
-    block:"center"
-   });
-  },150);
+   setTimeout(
+    ()=>{
+     document.activeElement
+     .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+     });
+    },
+    150
+   );
+  }
  }
-});
+);
 
 /* =========================================================
    START
 ========================================================= */
 
 document.addEventListener(
-"DOMContentLoaded",
-async function(){
+ "DOMContentLoaded",
+ async function(){
 
- loadMessageReadState();
+  loadMessageReadState();
 
- await loadAuthSession();
+  await loadAuthSession();
 
- if(currentUser)
- await loadFavoriteIds();
+  if(currentUser)
+  await loadFavoriteIds();
 
- await loadListings();
+  await loadListings();
 
- refreshFavoriteIcons();
+  refreshFavoriteIcons();
 
- if(currentUser)
- setTimeout(updateMessageBadge,500);
-});
+  if(currentUser)
+  setTimeout(
+   updateMessageBadge,
+   500
+  );
+ }
+);
 
 /* =========================================================
    ESCAPE
 ========================================================= */
 
-document.addEventListener("keydown",function(e){
+document.addEventListener(
+ "keydown",
+ function(e){
 
- if(e.key!=="Escape")return;
+  if(e.key!=="Escape")
+  return;
 
- closeAuthModal();
- closeEditModal();
-});
+  closeAuthModal();
+  closeEditModal();
+ }
+);
 
 </script>
 
