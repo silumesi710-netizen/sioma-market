@@ -98,8 +98,8 @@ button {
 /* SITE IMAGE LOGO */
 
 .site-logo {
-    max-width: 70px;
-    max-height: 70px;
+    max-width: 55px;
+    max-height: 55px;
     width: auto;
     height: auto;
     object-fit: contain;
