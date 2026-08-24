@@ -1,31 +1,37 @@
 /* =========================================================
-   SIOMA MARKET — MODERN UI
-   Clean Consolidated Stylesheet
+   SIOMAMARKET — MODERN CONSOLIDATED STYLE.CSS
+   Clean mobile-first marketplace design
+   ========================================================= */
+
+/* =========================================================
+   ROOT
    ========================================================= */
 
 :root{
     --green:#087f3d;
     --green-dark:#075b2d;
+    --green-light:#e8f6ee;
     --green-soft:#edf8f1;
-    --gold:#f4b400;
-    --ink:#14221a;
-    --muted:#6b756f;
-    --bg:#f6f8f7;
+
+    --gold:#ffb703;
+
+    --dark:#123524;
+    --ink:#17231c;
+    --muted:#69756e;
+
     --white:#fff;
-    --border:#e3e9e5;
-    --shadow:0 2px 10px rgba(20,34,26,.06);
-    --shadow-hover:0 7px 20px rgba(20,34,26,.10);
-    --radius:16px;
+    --bg:#f5f7f6;
+
+    --border:#e1e8e4;
+    --danger:#c62828;
+
+    --shadow:0 4px 16px rgba(18,53,36,.08);
 }
 
 
 /* =========================================================
-   BASE
+   RESET
    ========================================================= */
-
-html{
-    scroll-behavior:smooth;
-}
 
 *{
     box-sizing:border-box;
@@ -33,12 +39,16 @@ html{
     padding:0;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
-    background:var(--bg) !important;
-    color:var(--ink) !important;
-    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,
-    "Segoe UI",Arial,sans-serif !important;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
     line-height:1.5;
+    padding-bottom:70px;
     overflow-x:hidden;
 }
 
@@ -51,35 +61,90 @@ textarea{
 
 button{
     cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+}
+
+img{
+    max-width:100%;
 }
 
 
 /* =========================================================
-   HEADER
+   HEADER / HERO
    ========================================================= */
+
 header{
-    background:rgba(255,255,255,.98) !important;
-    color:var(--ink) !important;
-    padding:5px 12px 25px !important;
-    border-bottom:1px solid var(--border) !important;
-    box-shadow:0 1px 8px rgba(20,34,26,.04) !important;
+    background:
+        radial-gradient(
+            circle at 90% 0%,
+            rgba(255,183,3,.14),
+            transparent 25%
+        ),
+        linear-gradient(
+            145deg,
+            #075b2d 0%,
+            #087f3d 55%,
+            #0a8742 100%
+        );
+
+    color:#fff;
+
+    padding:5px 12px 18px;
+
+    border-radius:0 0 22px 22px;
+
+    box-shadow:
+        0 5px 18px rgba(18,53,36,.12);
 }
+
+.header-inner{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+
 /* =========================================================
-   LOGO
-   Single logo rule — prevents conflicting sizes
+   LOGO CROP
+   Hides the large empty margins inside the PNG
    ========================================================= */
 
-header .header-inner >
-    
-.site-logo{
-    width:260px !important;
-    height:90px !important;
-    max-width:none !important;
-    object-fit:cover !important;
-    object-position:center !important;
-    display:block !important;
-    margin:0 auto !important;
+.logo-crop{
+    width:220px;
+    height:78px;
+
+    margin:0 auto 2px;
+
+    overflow:hidden;
+    position:relative;
+
+    flex-shrink:0;
 }
+
+.logo-crop .site-logo{
+    position:absolute;
+
+    width:478px !important;
+    height:161px !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    left:-100px;
+    top:-53px;
+
+    object-fit:fill !important;
+
+    display:block !important;
+
+    margin:0 !important;
+    padding:0 !important;
+}
+
 
 /* =========================================================
    TOP BAR
@@ -87,12 +152,44 @@ header .header-inner >
 
 .topbar{
     width:100%;
-    min-height:40px !important;
-    margin-bottom:8px !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin-bottom:10px;
 }
 
-.topbar > div:first-child{
-    min-width:0;
+.logo{
+    font-size:24px;
+    font-weight:900;
+    letter-spacing:-1px;
+}
+
+.logo span{
+    color:var(--gold);
+}
+
+.tagline{
+    font-size:11px;
+    opacity:.9;
+}
+
+.location-pill{
+    display:inline-block;
+
+    margin-top:4px;
+
+    padding:4px 9px;
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,.14);
+
+    font-size:10px;
+    font-weight:bold;
 }
 
 
@@ -101,31 +198,69 @@ header .header-inner >
    ========================================================= */
 
 .account-actions{
-    gap:6px !important;
-}
+    display:flex;
+    gap:5px;
 
-.account-actions > .account-button:not(#dashboardButton):not(#messagesButton):not(#adminButton){
-    display:none !important;
+    justify-content:flex-end;
+
+    flex-wrap:wrap;
 }
 
 .account-button{
-    border:1px solid var(--border) !important;
-    border-radius:10px !important;
-    background:var(--white) !important;
-    color:var(--green) !important;
-    box-shadow:none !important;
-    padding:7px 10px !important;
+    border:0;
+    border-radius:9px;
+
+    padding:8px 9px;
+
+    background:#fff;
+    color:var(--green);
+
+    font-size:11px;
+    font-weight:bold;
+
+    min-height:38px;
+
+    position:relative;
 }
 
 .account-button.gold{
-    background:var(--green) !important;
-    color:#fff !important;
+    background:var(--gold);
+    color:#222;
 }
 
 .account-button.soft{
-    background:var(--green-soft) !important;
-    color:var(--green) !important;
-    border-color:#d5eadc !important;
+    background:var(--green-light);
+    color:var(--green);
+}
+
+
+/* =========================================================
+   MESSAGE BADGE
+   ========================================================= */
+
+.message-badge{
+    display:none;
+
+    position:absolute;
+
+    top:-7px;
+    right:-6px;
+
+    min-width:20px;
+    height:20px;
+
+    border-radius:20px;
+
+    background:var(--danger);
+    color:#fff;
+
+    font-size:10px;
+    font-weight:900;
+
+    line-height:16px;
+    text-align:center;
+
+    border:2px solid #fff;
 }
 
 
@@ -134,26 +269,51 @@ header .header-inner >
    ========================================================= */
 
 .hero{
-    max-width:920px !important;
-    text-align:left !important;
-    margin:auto !important;
-    padding:4px 0 0 !important;
+    width:100%;
+    max-width:900px;
+
+    margin:auto;
+
+    text-align:center;
+
+    padding:2px 0 0;
 }
 
 .hero h1{
-    color:var(--ink) !important;
-    font-size:29px !important;
-    line-height:1.04 !important;
-    letter-spacing:-1.5px !important;
-    margin:4px 0 8px !important;
+    font-size:clamp(30px,8vw,50px);
+
+    line-height:1.02;
+
+    margin-bottom:7px;
+
+    letter-spacing:-1.2px;
 }
 
 .hero h1 span{
-    color:var(--green) !important;
+    color:var(--gold);
 }
 
 .hero p{
-    color:var(--muted) !important;
+    font-size:13px;
+    color:rgba(255,255,255,.9);
+}
+
+
+/* =========================================================
+   SIOMA BANNER
+   ========================================================= */
+
+.sioma-banner{
+    margin:10px auto 0;
+
+    padding:8px 12px;
+
+    border-radius:11px;
+
+    background:rgba(255,255,255,.12);
+
+    font-size:12px;
+    font-weight:bold;
 }
 
 
@@ -162,68 +322,89 @@ header .header-inner >
    ========================================================= */
 
 .search-box{
-    max-width:100% !important;
-    margin:14px 0 0 !important;
-    padding:4px !important;
-    background:#f3f6f4 !important;
-    border:1px solid var(--border) !important;
-    border-radius:14px !important;
-    box-shadow:none !important;
+    width:100%;
+    max-width:780px;
+
+    margin:14px auto 0;
+
+    display:flex;
+
+    background:#fff;
+
+    border-radius:13px;
+
+    padding:4px;
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.16);
 }
 
 .search-box input{
-    background:transparent !important;
-    color:var(--ink) !important;
-    padding:12px !important;
+    flex:1;
+    min-width:0;
+
+    border:0;
+    outline:0;
+
+    padding:12px 11px;
+
+    font-size:15px;
+
+    color:var(--ink);
+    background:transparent;
 }
 
 .search-box button{
-    min-width:76px !important;
-    min-height:40px !important;
-    border:1px solid var(--green) !important;
-    border-radius:10px !important;
-    background:var(--green) !important;
-    color:#fff !important;
-    font-weight:800 !important;
+    border:0;
+
+    border-radius:9px;
+
+    padding:0 15px;
+
+    background:var(--gold);
+    color:#222;
+
+    font-weight:900;
+
+    min-width:82px;
 }
 
 
 /* =========================================================
-   BUY / SELL
+   HERO ACTIONS
    ========================================================= */
 
 .hero-actions{
-    grid-template-columns:1fr 1fr !important;
-    gap:8px !important;
-    margin-top:9px !important;
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:8px;
+
+    margin-top:9px;
 }
 
 .hero-actions button{
-    min-height:43px !important;
-    border-radius:11px !important;
-    font-size:12px !important;
-    font-weight:850 !important;
+    border:0;
 
-    transition:
-        transform .15s ease,
-        box-shadow .15s ease,
-        background .15s ease !important;
-}
+    border-radius:10px;
 
-.hero-actions button:active{
-    transform:scale(.98);
+    padding:12px 7px;
+
+    min-height:46px;
+
+    font-size:12px;
+    font-weight:900;
 }
 
 .buy-btn{
-    background:var(--green) !important;
-    color:#fff !important;
-    border:1px solid var(--green) !important;
+    background:#fff;
+    color:var(--green);
 }
 
 .sell-btn{
-    background:#fff !important;
-    color:var(--green) !important;
-    border:1.5px solid var(--green) !important;
+    background:var(--gold);
+    color:#222;
 }
 
 
@@ -232,26 +413,37 @@ header .header-inner >
    ========================================================= */
 
 main{
-    max-width:1120px !important;
-    padding:18px 12px 45px !important;
+    width:100%;
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:20px 11px 45px;
 }
 
 .section{
-    margin-bottom:24px !important;
+    margin-bottom:28px;
 }
 
 .section-heading{
-    margin-bottom:10px !important;
+    display:flex;
+
+    justify-content:space-between;
+    align-items:flex-end;
+
+    gap:8px;
+
+    margin-bottom:12px;
 }
 
 .section-heading h2{
-    color:var(--ink) !important;
-    font-size:18px !important;
-    letter-spacing:-.2px;
+    color:var(--dark);
+    font-size:19px;
 }
 
 .section-heading p{
-    color:var(--muted) !important;
+    color:var(--muted);
+    font-size:11px;
 }
 
 
@@ -260,106 +452,243 @@ main{
    ========================================================= */
 
 .categories{
-    gap:8px !important;
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:8px;
 }
 
 .category{
-    min-height:88px !important;
-    background:#fff !important;
-    border:1px solid var(--border) !important;
-    border-radius:14px !important;
-    box-shadow:none !important;
+    min-height:100px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+    align-items:center;
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:13px;
+
+    padding:12px 5px;
+
+    text-align:center;
+
+    box-shadow:var(--shadow);
 
     transition:
         transform .15s ease,
-        box-shadow .15s ease,
-        border-color .15s ease !important;
+        box-shadow .15s ease;
 }
 
-.category:hover{
-    border-color:#cfe0d5 !important;
-    box-shadow:var(--shadow) !important;
+.category:active{
+    transform:scale(.97);
 }
 
 .category-icon{
-    font-size:25px !important;
+    font-size:28px;
 }
 
 .category-name{
-    color:var(--ink) !important;
+    display:block;
+
+    font-size:13px;
+    font-weight:800;
+
+    margin-top:3px;
+}
+
+.category-count{
+    display:block;
+
+    color:var(--muted);
+
+    font-size:10px;
 }
 
 
 /* =========================================================
-   PRODUCT CARDS
+   PRODUCTS
    ========================================================= */
 
 .results-grid{
-    gap:10px !important;
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:9px;
 }
 
 .result-card{
-    background:#fff !important;
-    border:1px solid var(--border) !important;
-    border-radius:15px !important;
-    box-shadow:none !important;
+    min-width:0;
 
-    transition:
-        transform .15s ease,
-        box-shadow .15s ease !important;
-}
+    overflow:hidden;
 
-.result-card:hover{
-    box-shadow:var(--shadow-hover) !important;
-    transform:translateY(-1px);
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:13px;
+
+    box-shadow:var(--shadow);
 }
 
 .product-image-wrap{
-    background:#eef2ef !important;
+    position:relative;
+
+    background:#edf1ef;
+
+    aspect-ratio:1/1;
+}
+
+.result-card img{
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
 }
 
 .favorite-card{
-    width:34px !important;
-    height:34px !important;
-    top:7px !important;
-    right:7px !important;
-    box-shadow:0 2px 7px rgba(20,34,26,.12) !important;
+    position:absolute;
+
+    top:7px;
+    right:7px;
+
+    width:36px;
+    height:36px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.96);
+
+    box-shadow:
+        0 2px 7px rgba(0,0,0,.15);
+}
+
+.favorite-card.saved{
+    color:var(--danger);
+}
+
+.photo-count-badge{
+    position:absolute;
+
+    bottom:7px;
+    left:7px;
+
+    padding:4px 7px;
+
+    border-radius:20px;
+
+    background:rgba(0,0,0,.68);
+
+    color:#fff;
+
+    font-size:10px;
+    font-weight:bold;
 }
 
 .result-info{
-    padding:10px !important;
+    padding:9px;
+}
+
+.category-badge,
+.sioma-badge{
+    display:inline-block;
+
+    padding:3px 6px;
+
+    border-radius:20px;
+
+    font-size:9px;
+    font-weight:bold;
 }
 
 .category-badge{
-    background:var(--green-soft) !important;
-    color:var(--green) !important;
+    background:var(--green-light);
+    color:var(--green);
 }
 
 .sioma-badge{
-    background:#fff6d9 !important;
-    color:#765800 !important;
-    border:1px solid #f2df9a !important;
+    margin-left:2px;
+
+    background:var(--gold);
+    color:#222;
 }
 
 .result-info h3{
-    color:var(--ink) !important;
+    margin:6px 0 3px;
+
+    font-size:13px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .result-price{
-    color:var(--green) !important;
+    color:var(--green);
+
+    font-size:17px;
+
+    font-weight:900;
 }
 
 .result-location{
-    color:var(--muted) !important;
+    color:var(--muted);
+
+    font-size:10px;
+
+    margin:3px 0 8px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 }
 
 .buy-result{
-    min-height:38px !important;
-    border:1px solid var(--green) !important;
-    border-radius:9px !important;
-    background:var(--green) !important;
-    color:#fff !important;
+    width:100%;
+
+    min-height:40px;
+
+    border:0;
+
+    border-radius:8px;
+
+    padding:8px 4px;
+
+    background:var(--green);
+    color:#fff;
+
+    font-size:11px;
+    font-weight:bold;
+}
+
+.no-results{
+    padding:25px 14px;
+
+    text-align:center;
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:13px;
+
+    color:var(--muted);
+
+    font-size:13px;
 }
 
 
@@ -368,48 +697,201 @@ main{
    ========================================================= */
 
 #searchResults{
-    padding:0 12px 8px !important;
+    width:100%;
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:0 11px 10px;
 }
 
 .results-title{
-    color:var(--ink) !important;
+    margin:5px 0 12px;
+
+    color:var(--dark);
+
+    font-size:19px;
 }
 
 
 /* =========================================================
-   PAGE HEADERS
+   FULL PAGES
    ========================================================= */
 
+.full-page{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:5000;
+
+    overflow-y:auto;
+
+    background:var(--bg);
+
+    -webkit-overflow-scrolling:touch;
+}
+
 .page-header{
-    background:#fff !important;
-    color:var(--ink) !important;
-    border-bottom:1px solid var(--border) !important;
-    box-shadow:0 1px 8px rgba(20,34,26,.05) !important;
+    position:sticky;
+
+    top:0;
+
+    z-index:20;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 11px;
+
+    padding-top:
+        max(10px,env(safe-area-inset-top));
+
+    background:var(--green);
+
+    color:#fff;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.12);
 }
 
 .page-header h2{
-    color:var(--ink) !important;
+    font-size:17px;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
 }
 
 .back-button{
-    background:var(--green-soft) !important;
-    color:var(--green) !important;
-    border:1px solid #d5eadc !important;
+    border:0;
+
+    border-radius:8px;
+
+    padding:9px 12px;
+
+    background:#fff;
+
+    color:var(--green);
+
+    font-weight:bold;
+}
+
+.page-container{
+    width:100%;
+
+    max-width:1100px;
+
+    margin:auto;
+
+    padding:17px 11px 90px;
 }
 
 
 /* =========================================================
-   FORMS
+   MODALS
    ========================================================= */
 
+.auth-modal,
+.edit-modal{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:10000;
+
+    overflow-y:auto;
+
+    background:rgba(0,0,0,.65);
+
+    padding:12px;
+}
+
 .auth-box,
-.edit-box,
-.sell-form,
-.dashboard-section,
-.product-details{
-    border:1px solid var(--border) !important;
-    box-shadow:var(--shadow) !important;
-    border-radius:16px !important;
+.edit-box{
+    width:100%;
+
+    max-width:450px;
+
+    margin:18px auto;
+
+    padding:19px;
+
+    border-radius:15px;
+
+    background:#fff;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.25);
+}
+
+.auth-box h2,
+.edit-box h2{
+    text-align:center;
+
+    color:var(--green);
+
+    margin-bottom:5px;
+
+    font-size:20px;
+}
+
+.auth-subtitle{
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-bottom:15px;
+}
+
+.auth-tabs{
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:6px;
+
+    margin-bottom:13px;
+}
+
+.auth-tab{
+    border:0;
+
+    padding:11px;
+
+    border-radius:8px;
+
+    background:#eee;
+
+    font-weight:bold;
+}
+
+.auth-tab.active{
+    background:var(--green);
+    color:#fff;
+}
+
+.auth-form label,
+.sell-form label,
+.edit-box label{
+    display:block;
+
+    margin:11px 0 5px;
+
+    font-weight:bold;
+
+    font-size:13px;
 }
 
 .auth-form input,
@@ -420,32 +902,123 @@ main{
 .edit-box select,
 .edit-box textarea,
 .message-input{
-    border-color:#d5ded8 !important;
-    border-radius:10px !important;
-    background:#fff !important;
-}
+    width:100%;
 
-.auth-form input:focus,
-.sell-form input:focus,
-.sell-form select:focus,
-.sell-form textarea:focus,
-.edit-box input:focus,
-.edit-box select:focus,
-.edit-box textarea:focus,
-.message-input:focus{
-    border-color:var(--green) !important;
-    box-shadow:0 0 0 3px rgba(8,127,61,.10) !important;
+    border:1px solid #ccd6d0;
+
+    border-radius:8px;
+
+    padding:12px;
+
+    outline:0;
+
+    background:#fff;
+
+    font-size:15px;
 }
 
 .auth-submit,
 .publish-button{
-    background:var(--green) !important;
-    border-radius:10px !important;
+    width:100%;
+
+    min-height:46px;
+
+    border:0;
+
+    border-radius:8px;
+
+    padding:12px;
+
+    margin-top:15px;
+
+    background:var(--green);
+
+    color:#fff;
+
+    font-weight:bold;
+}
+
+.auth-submit:disabled,
+.publish-button:disabled{
+    opacity:.6;
 }
 
 .auth-close{
-    background:#f2f4f3 !important;
-    color:var(--ink) !important;
+    width:100%;
+
+    min-height:44px;
+
+    border:0;
+
+    border-radius:8px;
+
+    padding:10px;
+
+    margin-top:8px;
+
+    background:#eee;
+}
+
+.auth-message,
+.sell-message{
+    margin-top:11px;
+
+    text-align:center;
+
+    font-weight:bold;
+
+    font-size:13px;
+}
+
+
+/* =========================================================
+   SELL
+   ========================================================= */
+
+.sell-container{
+    width:100%;
+
+    max-width:650px;
+
+    margin:auto;
+}
+
+.sell-intro{
+    text-align:center;
+
+    margin-bottom:14px;
+}
+
+.sell-intro-icon{
+    font-size:40px;
+}
+
+.sell-intro h1{
+    color:var(--green);
+
+    font-size:25px;
+}
+
+.sell-intro p{
+    color:var(--muted);
+
+    font-size:13px;
+}
+
+.sell-form{
+    background:#fff;
+
+    padding:16px;
+
+    border-radius:14px;
+
+    box-shadow:var(--shadow);
+}
+
+.sell-form textarea{
+    min-height:100px;
+
+    resize:vertical;
 }
 
 
@@ -454,9 +1027,151 @@ main{
    ========================================================= */
 
 .photo-upload-box{
-    background:#f8faf9 !important;
-    border-color:#c9d8ce !important;
-    border-radius:12px !important;
+    margin-top:8px;
+
+    padding:12px;
+
+    border:2px dashed #b9c8bf;
+
+    border-radius:12px;
+
+    background:#f8faf9;
+}
+
+.photo-upload-title{
+    font-weight:900;
+
+    color:var(--green);
+
+    font-size:14px;
+
+    margin-bottom:4px;
+}
+
+.photo-upload-help{
+    color:var(--muted);
+
+    font-size:11px;
+
+    margin-bottom:10px;
+}
+
+.photo-upload-input{
+    width:100%;
+
+    padding:10px;
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+}
+
+.image-preview-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:7px;
+
+    margin-top:12px;
+}
+
+.preview-item{
+    position:relative;
+
+    min-width:0;
+
+    aspect-ratio:1/1;
+
+    border-radius:9px;
+
+    overflow:hidden;
+
+    background:#edf1ef;
+
+    border:1px solid var(--border);
+}
+
+.preview-item img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+.preview-number{
+    position:absolute;
+
+    left:5px;
+    top:5px;
+
+    padding:3px 6px;
+
+    border-radius:20px;
+
+    background:var(--green);
+
+    color:#fff;
+
+    font-size:9px;
+
+    font-weight:900;
+}
+
+.preview-remove{
+    position:absolute;
+
+    right:5px;
+    top:5px;
+
+    width:28px;
+    height:28px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:rgba(198,40,40,.95);
+
+    color:#fff;
+
+    font-weight:900;
+}
+
+.preview-main{
+    position:absolute;
+
+    left:5px;
+    bottom:5px;
+
+    padding:3px 6px;
+
+    border-radius:20px;
+
+    background:rgba(0,0,0,.7);
+
+    color:#fff;
+
+    font-size:8px;
+
+    font-weight:bold;
+}
+
+.photo-counter{
+    margin-top:8px;
+
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    font-weight:bold;
 }
 
 
@@ -465,33 +1180,209 @@ main{
    ========================================================= */
 
 .product-details{
-    background:#fff !important;
+    width:100%;
+
+    max-width:1050px;
+
+    margin:12px auto;
+
+    background:#fff;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+}
+
+.details-gallery{
+    background:#edf1ef;
+}
+
+.details-main-image{
+    display:block;
+
+    width:100%;
+
+    height:300px;
+
+    object-fit:contain;
+
+    background:#edf1ef;
+}
+
+.details-thumbnails{
+    display:flex;
+
+    gap:7px;
+
+    padding:8px;
+
+    overflow-x:auto;
+
+    background:#e6ece8;
+}
+
+.details-thumb{
+    width:70px;
+    height:60px;
+
+    min-width:70px;
+
+    object-fit:cover;
+
+    border-radius:7px;
+
+    border:3px solid transparent;
+
+    cursor:pointer;
+
+    background:#fff;
+}
+
+.details-thumb.active{
+    border-color:var(--green);
+}
+
+.details-content{
+    padding:17px;
+}
+
+.details-category{
+    display:inline-block;
+
+    background:var(--green-light);
+
+    color:var(--green);
+
+    padding:4px 8px;
+
+    border-radius:20px;
+
+    font-size:10px;
+
+    font-weight:bold;
 }
 
 .details-content h1{
-    color:var(--ink) !important;
+    font-size:24px;
+
+    margin:7px 0;
+
+    line-height:1.2;
 }
 
 .details-price{
-    color:var(--green) !important;
+    color:var(--green);
+
+    font-size:27px;
+
+    font-weight:900;
+}
+
+.details-location{
+    color:var(--muted);
+
+    margin:5px 0 14px;
+
+    font-size:13px;
+}
+
+.details-description{
+    color:#555;
+
+    margin-top:6px;
+
+    white-space:pre-wrap;
+
+    font-size:14px;
+}
+
+.details-content hr{
+    border:0;
+
+    border-top:1px solid #eee;
+
+    margin:15px 0;
 }
 
 .seller-box{
-    background:#f5f8f6 !important;
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px;
+
+    margin-top:8px;
+
+    background:#f4f6f5;
+
+    border-radius:10px;
+}
+
+.seller-icon{
+    width:42px;
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:var(--green);
+
+    color:#fff;
+}
+
+.whatsapp-button,
+.call-button,
+.favorite-button,
+.message-button{
+    width:100%;
+
+    min-height:46px;
+
+    padding:11px;
+
+    border-radius:9px;
+
+    margin-top:8px;
+
+    font-weight:bold;
+}
+
+.whatsapp-button{
+    border:0;
+
+    background:#25d366;
+
+    color:#fff;
 }
 
 .call-button{
-    border:1.5px solid var(--green) !important;
-    color:var(--green) !important;
-    background:#fff !important;
+    border:2px solid var(--green);
+
+    background:#fff;
+
+    color:var(--green);
 }
 
 .favorite-button{
-    background:#f1f4f2 !important;
+    border:0;
+
+    background:#eef2ef;
 }
 
 .message-button{
-    background:var(--green) !important;
+    border:0;
+
+    background:var(--green);
+
+    color:#fff;
 }
 
 
@@ -499,40 +1390,173 @@ main{
    DASHBOARD
    ========================================================= */
 
+.dashboard-title{
+    text-align:center;
+
+    color:var(--green);
+
+    font-size:25px;
+}
+
+.dashboard-subtitle{
+    text-align:center;
+
+    color:var(--muted);
+
+    margin-bottom:17px;
+
+    font-size:13px;
+}
+
+.stats-grid{
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:8px;
+
+    margin-bottom:15px;
+}
+
 .stat-card{
-    background:#fff !important;
-    border:1px solid var(--border) !important;
-    box-shadow:none !important;
+    background:#fff;
+
+    padding:14px 5px;
+
+    text-align:center;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    box-shadow:var(--shadow);
+}
+
+.stat-icon{
+    font-size:23px;
+}
+
+.stat-number{
+    color:var(--green);
+
+    font-size:21px;
+
+    font-weight:900;
+}
+
+.stat-label{
+    color:var(--muted);
+
+    font-size:10px;
 }
 
 .dashboard-section{
-    background:#fff !important;
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:14px;
+
+    margin-bottom:14px;
+
+    box-shadow:var(--shadow);
 }
 
+.dashboard-section h3{
+    color:var(--green);
 
-/* =========================================================
-   MESSAGES
-   ========================================================= */
+    margin-bottom:8px;
 
-.conversations,
-.chat{
-    background:#fff !important;
-    border:1px solid var(--border) !important;
-    box-shadow:none !important;
+    font-size:16px;
 }
 
-.conversations-header,
-.chat-header{
-    color:var(--green) !important;
+.dashboard-listing{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px 0;
+
+    border-bottom:1px solid #eee;
 }
 
-.conversation-item.unread{
-    background:var(--green-soft) !important;
-    border-left-color:var(--green) !important;
+.dashboard-listing img{
+    width:65px;
+    height:58px;
+
+    object-fit:cover;
+
+    border-radius:7px;
 }
 
-.send-message{
-    background:var(--green) !important;
+.dashboard-listing-info{
+    flex:1;
+
+    min-width:0;
+}
+
+.dashboard-listing-info h4{
+    font-size:13px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.dashboard-listing-info p{
+    color:var(--green);
+
+    font-weight:bold;
+
+    font-size:13px;
+}
+
+.dashboard-listing-info small{
+    color:var(--muted);
+
+    font-size:9px;
+}
+
+.dashboard-actions{
+    display:flex;
+
+    gap:3px;
+
+    flex-wrap:wrap;
+}
+
+.small-button{
+    border:0;
+
+    min-width:34px;
+
+    min-height:34px;
+
+    padding:6px;
+
+    border-radius:7px;
+
+    font-weight:bold;
+}
+
+.view-button{
+    background:#eee;
+}
+
+.edit-button{
+    background:var(--green-light);
+
+    color:var(--green);
+}
+
+.delete-button{
+    background:#ffebee;
+
+    color:var(--danger);
 }
 
 
@@ -541,44 +1565,399 @@ main{
    ========================================================= */
 
 .admin-badge{
-    background:#fff6d9 !important;
-    color:#765800 !important;
-    border:1px solid #f2df9a !important;
+    display:inline-block;
+
+    background:var(--gold);
+
+    padding:5px 10px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:bold;
+}
+
+.admin-controls{
+    display:flex;
+
+    gap:6px;
+
+    flex-wrap:wrap;
 }
 
 .admin-controls button{
-    background:var(--green) !important;
+    border:0;
+
+    border-radius:8px;
+
+    padding:9px 11px;
+
+    background:var(--green);
+
+    color:#fff;
+
+    font-weight:bold;
+}
+
+.admin-controls .secondary{
+    background:#eee;
+
+    color:#333;
+}
+
+.admin-table-wrap{
+    overflow-x:auto;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+.admin-table{
+    width:100%;
+
+    min-width:700px;
+
+    border-collapse:collapse;
+}
+
+.admin-table th,
+.admin-table td{
+    padding:8px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:left;
+
+    font-size:12px;
 }
 
 .admin-table th{
-    background:var(--green-dark) !important;
+    background:var(--green);
+
+    color:#fff;
+}
+
+.admin-table img{
+    width:52px;
+    height:43px;
+
+    object-fit:cover;
+
+    border-radius:6px;
+}
+
+.status-active{
+    color:var(--green);
+
+    font-weight:bold;
+}
+
+.status-inactive{
+    color:var(--danger);
+
+    font-weight:bold;
 }
 
 
 /* =========================================================
-   MOBILE BOTTOM NAV
+   MESSAGING
    ========================================================= */
 
-.mobile-nav{
-    background:rgba(255,255,255,.98) !important;
-    border-top:1px solid var(--border) !important;
-    box-shadow:0 -4px 18px rgba(20,34,26,.07) !important;
-    backdrop-filter:blur(10px);
+.messages-page{
+    z-index:6500;
 }
 
-.mobile-nav button{
-    color:#6b756f !important;
-    font-size:10px !important;
+.message-layout{
+    max-width:1100px;
+
+    margin:auto;
+
+    padding:10px;
+
+    height:calc(100vh - 57px);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
 }
 
-.mobile-nav button strong{
-    color:var(--green) !important;
-    font-size:18px !important;
+.conversations{
+    background:#fff;
+
+    border-radius:12px;
+
+    overflow-y:auto;
+
+    box-shadow:var(--shadow);
+
+    flex:0 0 210px;
 }
 
-.mobile-nav button:active{
-    background:var(--green-soft) !important;
-    border-radius:12px !important;
+.conversations-header{
+    padding:12px;
+
+    border-bottom:1px solid var(--border);
+
+    font-weight:900;
+
+    color:var(--green);
+}
+
+.conversation-item{
+    display:flex;
+
+    gap:8px;
+
+    padding:10px;
+
+    border-bottom:1px solid #eee;
+
+    cursor:pointer;
+}
+
+.conversation-item.unread{
+    background:var(--green-light);
+
+    border-left:4px solid var(--green);
+}
+
+.conversation-avatar{
+    width:39px;
+    height:39px;
+
+    min-width:39px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:var(--green);
+
+    color:#fff;
+}
+
+.conversation-info{
+    min-width:0;
+
+    flex:1;
+}
+
+.conversation-info strong{
+    display:block;
+
+    font-size:13px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.conversation-info small{
+    display:block;
+
+    color:var(--muted);
+
+    font-size:10px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.conversation-meta{
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+}
+
+.conversation-meta small{
+    flex:1;
+}
+
+.unread-badge{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    min-width:20px;
+
+    height:20px;
+
+    padding:2px 5px;
+
+    border-radius:20px;
+
+    background:var(--danger);
+
+    color:#fff !important;
+
+    font-size:9px !important;
+
+    font-weight:900;
+}
+
+.conversation-time{
+    font-size:9px !important;
+}
+
+.chat{
+    background:#fff;
+
+    border-radius:12px;
+
+    box-shadow:var(--shadow);
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+    flex:1;
+
+    min-height:0;
+}
+
+.chat-header{
+    padding:11px;
+
+    border-bottom:1px solid var(--border);
+
+    font-weight:bold;
+
+    color:var(--green);
+
+    font-size:13px;
+}
+
+.chat-product{
+    font-size:10px;
+
+    color:var(--muted);
+}
+
+.messages{
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:11px;
+
+    background:#f4f7f5;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+.message-row{
+    display:flex;
+
+    margin-bottom:7px;
+}
+
+.message-row.mine{
+    justify-content:flex-end;
+}
+
+.message-bubble{
+    max-width:82%;
+
+    padding:8px 10px;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.06);
+
+    word-wrap:break-word;
+
+    font-size:13px;
+}
+
+.message-row.mine .message-bubble{
+    background:var(--green);
+
+    color:#fff;
+}
+
+.message-time{
+    display:block;
+
+    font-size:8px;
+
+    margin-top:2px;
+
+    opacity:.65;
+}
+
+.chat-input{
+    display:flex;
+
+    gap:5px;
+
+    padding:7px;
+
+    border-top:1px solid var(--border);
+
+    padding-bottom:
+        max(7px,env(safe-area-inset-bottom));
+}
+
+.chat-input textarea{
+    flex:1;
+
+    resize:none;
+
+    min-height:43px;
+
+    max-height:90px;
+
+    font-size:14px;
+}
+
+.send-message{
+    border:0;
+
+    border-radius:8px;
+
+    padding:0 12px;
+
+    background:var(--green);
+
+    color:#fff;
+
+    font-weight:bold;
+}
+
+.empty-chat{
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:20px;
+
+    color:var(--muted);
+
+    font-size:12px;
 }
 
 
@@ -587,134 +1966,276 @@ main{
    ========================================================= */
 
 footer{
-    background:#fff !important;
-    color:var(--muted) !important;
-    border-top:1px solid var(--border) !important;
+    background:var(--dark);
+
+    color:#fff;
+
+    text-align:center;
+
+    padding:28px 12px;
 }
 
 footer h3{
-    color:var(--ink) !important;
+    font-size:20px;
 }
 
 footer h3 span{
-    color:var(--green) !important;
+    color:var(--gold);
+}
+
+footer p{
+    color:#c8d1cc;
+
+    margin-top:3px;
+
+    font-size:11px;
 }
 
 
 /* =========================================================
-   RESPONSIVE — TABLET
+   MOBILE NAVIGATION
    ========================================================= */
 
-@media (min-width:600px){
+.mobile-nav{
+    position:fixed;
 
-    header{
-        padding:10px 20px 20px !important;
-    }
+    left:0;
+    right:0;
+    bottom:0;
 
-    .categories{
-        grid-template-columns:repeat(4,1fr) !important;
-    }
+    z-index:4000;
 
-    .results-grid{
-        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-    }
+    display:flex;
+
+    background:rgba(255,255,255,.98);
+
+    border-top:1px solid var(--border);
+
+    box-shadow:
+        0 -4px 15px rgba(0,0,0,.09);
+
+    padding:
+        5px 2px
+        max(5px,env(safe-area-inset-bottom));
+}
+
+.mobile-nav button{
+    flex:1;
+
+    border:0;
+
+    background:none;
+
+    color:#647069;
+
+    font-size:9px;
+
+    font-weight:bold;
+
+    min-height:50px;
+}
+
+.mobile-nav strong{
+    display:block;
+
+    font-size:19px;
+
+    line-height:22px;
+
+    margin-bottom:2px;
 }
 
 
 /* =========================================================
-   RESPONSIVE — DESKTOP
+   TABLET
    ========================================================= */
 
-@media (min-width:850px){
+@media(min-width:600px){
 
-    header{
-        padding-left:28px !important;
-        padding-right:28px !important;
+    body{
+        padding-bottom:0;
+    }
+
+    .mobile-nav{
+        display:none;
     }
 
     main{
-        padding-left:20px !important;
-        padding-right:20px !important;
+        padding-left:15px;
+        padding-right:15px;
     }
 
-    .hero{
-        padding-top:6px !important;
+    #searchResults{
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .categories{
+        grid-template-columns:
+            repeat(4,1fr);
+
+        gap:10px;
+    }
+
+    .results-grid{
+        grid-template-columns:
+            repeat(3,1fr);
+
+        gap:12px;
+    }
+
+    .result-card img{
+        aspect-ratio:auto;
+
+        height:200px;
+    }
+
+    .product-image-wrap{
+        aspect-ratio:auto;
+    }
+
+    .stats-grid{
+        grid-template-columns:
+            repeat(4,1fr);
+    }
+
+    .product-details{
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .details-gallery{
+        min-width:0;
+    }
+
+    .details-main-image{
+        height:500px;
+    }
+
+    .message-layout{
+        display:grid;
+
+        grid-template-columns:
+            300px 1fr;
+
+        flex-direction:initial;
+    }
+
+    .conversations{
+        height:auto;
+
+        flex:auto;
+    }
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media(min-width:900px){
+
+    .topbar{
+        margin-bottom:18px;
+    }
+
+    .logo{
+        font-size:27px;
     }
 
     .hero h1{
-        font-size:44px !important;
+        font-size:54px;
     }
 
-    .hero-actions{
-        max-width:420px !important;
+    .results-grid{
+        grid-template-columns:
+            repeat(4,1fr);
+    }
+
+    .result-card img{
+        height:220px;
+    }
+
+    header{
+        padding-left:20px;
+        padding-right:20px;
     }
 }
+
+
 /* =========================================================
-   SIOMAMARKET LOGO — FINAL HEADER FIX
+   SMALL PHONES
    ========================================================= */
 
-header .header-inner{
-    width:100%;
-    max-width:1200px;
-    margin:0 auto;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
+@media(max-width:360px){
 
-header .header-inner > img.site-logo{
-    display:block !important;
+    .logo{
+        font-size:20px;
+    }
 
-    width:260px !important;
-    height:90px !important;
+    .account-button{
+        padding:7px 6px;
 
-    max-width:260px !important;
-    max-height:90px !important;
+        font-size:10px;
+    }
 
-    min-width:260px !important;
-    min-height:90px !important;
+    .hero h1{
+        font-size:30px;
+    }
 
-    object-fit:contain !important;
-    object-position:center !important;
+    .search-box button{
+        min-width:70px;
 
-    margin:0 auto 8px !important;
-    padding:0 !important;
+        padding:0 9px;
+    }
 
-    flex:none !important;
-}
-/* =========================================================
-   SIOMAMARKET LOGO — CROP EMPTY PNG SPACE
-   ========================================================= */
+    .result-info{
+        padding:8px;
+    }
 
-.logo-crop{
-    width:220px;
-    height:78px;
-    margin:0 auto 8px;
-    overflow:hidden;
-    position:relative;
-    flex-shrink:0;
-}
+    .result-info h3{
+        font-size:12px;
+    }
 
-.logo-crop .site-logo{
-    position:absolute;
+    .result-price{
+        font-size:16px;
+    }
 
-    /* Enlarge the original PNG */
-    width:478px !important;
-    height:161px !important;
+    .buy-result{
+        font-size:10px;
+    }
 
-    max-width:none !important;
-    max-height:none !important;
+    .category{
+        min-height:92px;
+    }
 
-    /*
-       Move the actual logo into the visible crop.
-       These values compensate for the large PNG margins.
-    */
-    left:-100px;
-    top:-53px;
+    .category-icon{
+        font-size:25px;
+    }
 
-    object-fit:fill !important;
-    display:block !important;
-}
-/* =========================================================
-   END OF SIOMA MARKET CSS
-   ========================================================= */
+    .image-preview-grid{
+        gap:4px;
+    }
+
+    .preview-remove{
+        width:25px;
+        height:25px;
+
+        font-size:11px;
+    }
+
+    .logo-crop{
+        width:205px;
+        height:74px;
+    }
+
+    .logo-crop .site-logo{
+        width:450px !important;
+        height:152px !important;
+
+        left:-94px;
+        top:-50px;
+    }
+       }
