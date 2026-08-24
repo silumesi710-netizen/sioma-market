@@ -1592,106 +1592,111 @@ Cancel
 
 </div>
 </div>
-
 <!-- HEADER -->
 <header>
-  
-<div class="header-inner">
- <div class="topbar">
-  
-<div class="logo-crop">
-    <img class="site-logo" src="SiomaMarket-logo.png" alt="SiomaMarket Logo">
-</div>
+
+    <div class="header-inner">
+
+        <div class="topbar">
+
+            <!-- LOGO -->
+            <div class="logo-crop">
+                <img
+                    class="site-logo"
+                    src="SiomaMarket-logo.png"
+                    alt="SiomaMarket Logo">
+            </div>
+
+            <!-- ACCOUNT BUTTONS -->
+            <div class="account-actions">
+
+                <button
+                    id="dashboardButton"
+                    class="account-button soft"
+                    onclick="openSellerDashboard()"
+                    style="display:none">
+                    🏪 Dashboard
+                </button>
+
+                <button
+                    id="messagesButton"
+                    class="account-button soft"
+                    onclick="openMessages()"
+                    style="display:none">
+                    💬 Messages
+                    <span id="messageBadge" class="message-badge">0</span>
+                </button>
+
+                <button
+                    id="adminButton"
+                    class="account-button gold"
+                    onclick="openAdminDashboard()"
+                    style="display:none">
+                    🛡️ Admin
+                </button>
+
+                <button
+                    class="account-button"
+                    onclick="showFavorites()">
+                    ❤️ Favorites
+                </button>
+
+                <button
+                    id="accountButton"
+                    class="account-button"
+                    onclick="openAccount()">
+                    🔐 Login
+                </button>
+
+            </div>
+
+        </div>
 
 
+        <!-- HERO -->
+        <div class="hero">
 
-    
-<div>
+            <h1>
+                Sioma Buys.<br>
+                Sioma <span>Sells.</span>
+            </h1>
 
+            <!-- SEARCH -->
+            <div class="search-box">
 
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search products in Sioma..."
+                    autocomplete="off">
 
+                <button onclick="searchMarket()">
+                    🔍 Search
+                </button>
 
-</div>
+            </div>
 
-<div class="account-actions">
+            <!-- HERO ACTIONS -->
+            <div class="hero-actions">
 
-<button
- id="dashboardButton"
- class="account-button soft"
- onclick="openSellerDashboard()"
- style="display:none">
-🏪 Dashboard
-</button>
+                <button
+                    class="buy-btn"
+                    onclick="buyNow()">
+                    🛒 BUY
+                </button>
 
-<button
- id="messagesButton"
- class="account-button soft"
- onclick="openMessages()"
- style="display:none">
-💬 Messages
-<span id="messageBadge" class="message-badge">0</span>
-</button>
+                <button
+                    class="sell-btn"
+                    onclick="sellNow()">
+                    🏷️ SELL
+                </button>
 
-<button
- id="adminButton"
- class="account-button gold"
- onclick="openAdminDashboard()"
- style="display:none">
-🛡️ Admin
-</button>
+            </div>
 
-<button
- class="account-button"
- onclick="showFavorites()">
-❤️ Favorites
-</button>
+        </div>
 
-<button
- id="accountButton"
- class="account-button"
- onclick="openAccount()">
-🔐 Login
-</button>
+    </div>
 
-</div>
-</div>
-
-<div class="hero">
-
-<h1>
-Sioma Buys.<br>
-Sioma <span>Sells.</span>
-</h1>
-
-
-
-<div class="search-box">
-
-<input
- id="searchInput"
- type="search"
- placeholder="Search products in Sioma..."
- autocomplete="off">
-
-<button onclick="searchMarket()">
-🔍 Search
-</button>
-
-</div>
-
-<div class="hero-actions">
-
-<button class="buy-btn" onclick="buyNow()">
-🛒 BUY
-</button>
-
-<button class="sell-btn" onclick="sellNow()">
-🏷️ SELL
-</button>
-<div class="hero">
-</div>
-
-</div>
 </header>
 
 <div id="searchResults"></div>
