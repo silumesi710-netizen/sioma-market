@@ -561,3 +561,19 @@ header .site-logo {
     display: block !important;
     margin: 0 auto 6px !important;
 }
+/* FINAL SIOMAMARKET LOGO */
+header .site-logo {
+    display: block !important;
+    width: 100px !important;
+    height: 100px !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+    min-width: 100px !important;
+    min-height: 100px !important;
+
+    object-fit: fill !important;
+    object-position: center !important;
+
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+}
