@@ -61,37 +61,36 @@ header{
     border-bottom:1px solid var(--border) !important;
     box-shadow:0 1px 8px rgba(20,34,26,.04) !important;
 }
-
-
 /* =========================================================
-   SIOMAMARKET — LOGO FIX
-   Crops the large background around the actual logo
+   SIOMAMARKET — LOGO POSITION + SIZE
    ========================================================= */
 
-header .site-logo,
-header img.site-logo {
-    display: block !important;
-
-    width: 240px !important;
-    height: 80px !important;
-
-    max-width: 240px !important;
-    max-height: 80px !important;
-
-    min-width: 240px !important;
-    min-height: 80px !important;
-
-    object-fit: cover !important;
-    object-position: center center !important;
-
-    margin: 0 auto 6px !important;
-    padding: 0 !important;
-
-    flex: 0 0 240px !important;
-    flex-shrink: 0 !important;
-
-    border-radius: 0 !important;
+header .header-inner{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
 }
+
+header .header-inner > .site-logo{
+    display:block !important;
+
+    width:220px !important;
+    height:78px !important;
+
+    max-width:220px !important;
+    max-height:78px !important;
+
+    object-fit:contain !important;
+    object-position:center center !important;
+
+    margin:0 auto 4px !important;
+    padding:0 !important;
+
+    flex:0 0 auto !important;
+}
+
+
 .header-inner{
     max-width:1120px !important;
     margin:auto !important;
