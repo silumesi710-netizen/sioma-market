@@ -1,3 +1,4 @@
+
 /* =========================================================
 SIOMA MARKET — MODERN UI
 Clean Consolidated Stylesheet
@@ -56,34 +57,24 @@ cursor:pointer;
 
 /* =========================================================
 HEADER
-========================================================= /
-/ =========================================================
-SIOMAMARKET — MODERN HERO HEADER
-Lighter, tighter and more integrated
 ========================================================= */
 
 header{
-background:
-radial-gradient(
-circle at 90% 0%,
-rgba(255,183,3,.14),
-transparent 25%
-),
-linear-gradient(
-145deg,
-#075b2d 0%,
-#087f3d 55%,
-#0a8742 100%
-);
+background:rgba(255,255,255,.98) !important;
+color:var(--ink) !important;
+padding:8px 12px 16px !important;
+border-bottom:1px solid var(--border) !important;
+box-shadow:0 1px 8px rgba(20,34,26,.04) !important;
+}
 
-color:#fff;
+.header-inner{
+max-width:1120px !important;
+margin:auto !important;
 
-padding:5px 12px 18px;
-
-border-radius:0 0 22px 22px;
-
-box-shadow:
-0 5px 18px rgba(18,53,36,.12);
+display:flex !important;
+flex-direction:column !important;
+align-items:center !important;
+justify-content:flex-start !important;
 }
 
 
@@ -117,13 +108,7 @@ flex:0 0 80px !important;
 /* =========================================================
 TOP BAR
 ========================================================= */
-.topbar{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-margin-bottom:10px;
-}
+
 .topbar{
 width:100%;
 min-height:40px !important;
@@ -173,23 +158,28 @@ HERO
 ========================================================= */
 
 .hero{
-max-width:900px;
-margin:auto;
-text-align:center;
-padding:2px 0 0;
+max-width:920px !important;
+text-align:left !important;
+margin:auto !important;
+padding:4px 0 0 !important;
 }
 
 .hero h1{
-font-size:clamp(30px,8vw,50px);
-line-height:1.02;
-margin-bottom:7px;
-letter-spacing:-1.2px;
+color:var(--ink) !important;
+font-size:29px !important;
+line-height:1.04 !important;
+letter-spacing:-1.5px !important;
+margin:4px 0 8px !important;
+}
+
+.hero h1 span{
+color:var(--green) !important;
 }
 
 .hero p{
-font-size:13px;
-color:rgba(255,255,255,.9);
+color:var(--muted) !important;
 }
+
 
 /* =========================================================
 SEARCH
@@ -683,39 +673,3 @@ font-size:44px !important;
 max-width:420px !important;
 }
 }
-
-/* =========================================================
-SIOMAMARKET LOGO — CROP EMPTY PNG SPACE
-========================================================= */
-
-.logo-crop{
-width:220px;
-height:78px;
-margin:0 auto 2px;
-overflow:hidden;
-position:relative;
-flex-shrink:0;
-}
-
-.logo-crop .site-logo{
-position:absolute;
-
-/* Enlarge the original PNG */
-width:478px !important;
-height:161px !important;
-
-max-width:none !important;
-max-height:none !important;
-
-/*
-Move the actual logo into the visible crop.
-These values compensate for the large PNG margins.
-*/
-left:-100px;
-top:-53px;
-
-object-fit:fill !important;
-display:block !important;
-}
-
-
