@@ -40,16 +40,18 @@ header{
   border-bottom:1px solid var(--border) !important;
   box-shadow:0 1px 8px rgba(20,34,26,.04) !important;
 }
-
 header > img,
 header .site-logo{
   display:block !important;
-  width:auto !important;
-  height:auto !important;
+  width:60px !important;
+  height:60px !important;
   max-width:60px !important;
   max-height:60px !important;
+  min-width:60px !important;
+  min-height:60px !important;
   margin:0 0 6px !important;
   object-fit:contain !important;
+  flex-shrink:0 !important;
 }
 
 .header-inner{
