@@ -69,27 +69,17 @@ header{
    Single logo rule — prevents conflicting sizes
    ========================================================= */
 
-header .header-inner > .site-logo{
-    display:block !important;
-
-    width:80px !important;
-    height:80px !important;
-
-    min-width:80px !important;
-    min-height:80px !important;
-
-    max-width:80px !important;
-    max-height:80px !important;
-
-    object-fit:contain !important;
+header .header-inner >
+    
+.site-logo{
+    width:260px !important;
+    height:90px !important;
+    max-width:none !important;
+    object-fit:cover !important;
     object-position:center !important;
-
-    margin:0 auto 6px !important;
-    padding:0 !important;
-
-    flex:0 0 80px !important;
+    display:block !important;
+    margin:0 auto !important;
 }
-
 
 /* =========================================================
    TOP BAR
