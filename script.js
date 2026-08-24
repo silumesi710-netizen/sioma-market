@@ -1,5 +1,6 @@
 /* =========================================
    SIOMA MARKET - SCRIPT.JS
+   Cleaned & Corrected Version
 ========================================= */
 
 
@@ -51,17 +52,47 @@ async function searchMarket() {
     results.innerHTML =
         "<p>🔎 Searching...</p>";
 
-    const { data, error } =
-        await supabaseClient
-            .from("listings")
-            .select("*")
-            .eq("status", "active")
-            .ilike(
-                "title",
-                "%" + search + "%"
-            );
+    try {
 
-    if (error) {
+        const { data, error } =
+            await supabaseClient
+                .from("listings")
+                .select("*")
+                .eq("status", "active")
+                .ilike(
+                    "title",
+                    `%${search}%`
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            results.innerHTML =
+                "<p>🔍 No products found.</p>";
+
+            return;
+        }
+
+        displayProducts(
+            data,
+            "🔎 Search Results"
+        );
+
+        results.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    } catch (error) {
 
         console.error(
             "SEARCH ERROR:",
@@ -69,27 +100,8 @@ async function searchMarket() {
         );
 
         results.innerHTML =
-            "<p>❌ Search failed.</p>";
-
-        return;
+            "<p>❌ Search failed. Please try again.</p>";
     }
-
-    if (!data || data.length === 0) {
-
-        results.innerHTML =
-            "<p>🔍 No products found.</p>";
-
-        return;
-    }
-
-    displayProducts(
-        data,
-        "🔎 Search Results"
-    );
-
-    results.scrollIntoView({
-        behavior: "smooth"
-    });
 }
 
 
@@ -119,19 +131,46 @@ async function buyNow() {
         </div>
     `;
 
-    const { data, error } =
-        await supabaseClient
-            .from("listings")
-            .select("*")
-            .eq("status", "active")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
+    try {
 
-    if (error) {
+        const { data, error } =
+            await supabaseClient
+                .from("listings")
+                .select("*")
+                .eq("status", "active")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            results.innerHTML = `
+                <div class="no-results">
+                    🛒 No products are currently available.
+                </div>
+            `;
+
+            return;
+        }
+
+        displayProducts(
+            data,
+            "🛒 Products for Sale"
+        );
+
+        results.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    } catch (error) {
 
         console.error(
             "BUY NOW ERROR:",
@@ -143,29 +182,7 @@ async function buyNow() {
                 ❌ Unable to load products.
             </div>
         `;
-
-        return;
     }
-
-    if (!data || data.length === 0) {
-
-        results.innerHTML = `
-            <div class="no-results">
-                🛒 No products are currently available.
-            </div>
-        `;
-
-        return;
-    }
-
-    displayProducts(
-        data,
-        "🛒 Products for Sale"
-    );
-
-    results.scrollIntoView({
-        behavior: "smooth"
-    });
 }
 
 
@@ -183,8 +200,16 @@ function displayProducts(
             "searchResults"
         );
 
+    if (!results) {
+        return;
+    }
+
+    if (!Array.isArray(products)) {
+        products = [];
+    }
+
     let html = `
-        <h2>${heading}</h2>
+        <h2>${escapeHTML(heading)}</h2>
 
         <div class="results-grid">
     `;
@@ -196,50 +221,48 @@ function displayProducts(
                 product.image_url ||
                 "https://via.placeholder.com/600x400?text=SiomaMarket";
 
+            const title =
+                product.title ||
+                "Product";
+
+            const location =
+                product.location ||
+                "Sioma";
+
+            const price =
+                Number(product.price || 0);
+
             html += `
 
                 <div class="result-card">
 
                     <img
-                        src="${image}"
-                        alt="${escapeHTML(
-                            product.title ||
-                            "Product"
-                        )}"
+                        src="${escapeHTML(image)}"
+                        alt="${escapeHTML(title)}"
+                        loading="lazy"
+                        onerror="this.src='https://via.placeholder.com/600x400?text=SiomaMarket'"
                     >
 
                     <div class="result-info">
 
                         <h3>
-                            ${escapeHTML(
-                                product.title ||
-                                "Product"
-                            )}
+                            ${escapeHTML(title)}
                         </h3>
 
                         <p class="result-price">
-
-                            K${Number(
-                                product.price || 0
-                            ).toLocaleString()}
-
+                            K${price.toLocaleString()}
                         </p>
 
                         <p>
-                            📍 ${
-                                escapeHTML(
-                                    product.location ||
-                                    "Sioma"
-                                )
-                            }
+                            📍 ${escapeHTML(location)}
                         </p>
 
                         <button
+                            type="button"
                             class="buy-result"
-                            onclick="viewListing('${product.id}')">
-
+                            onclick="viewListing('${escapeHTML(product.id)}')"
+                        >
                             🛒 VIEW PRODUCT
-
                         </button>
 
                     </div>
@@ -288,192 +311,265 @@ async function viewListing(id) {
     document.body.style.overflow =
         "hidden";
 
+    const detailsTitle =
+        document.getElementById(
+            "detailsTitle"
+        );
 
-    document.getElementById(
-        "detailsTitle"
-    ).textContent =
-        "Loading product...";
+    if (detailsTitle) {
+        detailsTitle.textContent =
+            "Loading product...";
+    }
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("listings")
+                .select("*")
+                .eq("id", id)
+                .single();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            throw new Error(
+                "Product was not found."
+            );
+        }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("listings")
-            .select("*")
-            .eq("id", id)
-            .single();
+        /* =====================================
+           IMAGE
+        ===================================== */
+
+        const detailsImage =
+            document.getElementById(
+                "detailsImage"
+            );
+
+        if (detailsImage) {
+
+            detailsImage.src =
+                data.image_url ||
+                "https://via.placeholder.com/800x500?text=SiomaMarket";
+
+            detailsImage.alt =
+                data.title ||
+                "SiomaMarket product";
+
+            detailsImage.onerror =
+                function () {
+
+                    this.src =
+                        "https://via.placeholder.com/800x500?text=SiomaMarket";
+                };
+        }
 
 
-    if (error) {
+        /* =====================================
+           TITLE
+        ===================================== */
+
+        if (detailsTitle) {
+
+            detailsTitle.textContent =
+                data.title ||
+                "Product";
+        }
+
+
+        /* =====================================
+           PRICE
+        ===================================== */
+
+        const detailsPrice =
+            document.getElementById(
+                "detailsPrice"
+            );
+
+        if (detailsPrice) {
+
+            detailsPrice.textContent =
+                "K" +
+                Number(
+                    data.price || 0
+                ).toLocaleString();
+        }
+
+
+        /* =====================================
+           CATEGORY
+        ===================================== */
+
+        const detailsCategory =
+            document.getElementById(
+                "detailsCategory"
+            );
+
+        if (detailsCategory) {
+
+            detailsCategory.textContent =
+                data.category ||
+                "";
+        }
+
+
+        /* =====================================
+           LOCATION
+        ===================================== */
+
+        const detailsLocation =
+            document.getElementById(
+                "detailsLocation"
+            );
+
+        if (detailsLocation) {
+
+            detailsLocation.textContent =
+                "📍 " +
+                (
+                    data.location ||
+                    "Sioma"
+                );
+        }
+
+
+        /* =====================================
+           DESCRIPTION
+        ===================================== */
+
+        const detailsDescription =
+            document.getElementById(
+                "detailsDescription"
+            );
+
+        if (detailsDescription) {
+
+            detailsDescription.textContent =
+                data.description ||
+                "No description provided.";
+        }
+
+
+        /* =====================================
+           SELLER
+        ===================================== */
+
+        const detailsSeller =
+            document.getElementById(
+                "detailsSeller"
+            );
+
+        if (detailsSeller) {
+
+            detailsSeller.textContent =
+                data.seller_name ||
+                "Sioma Seller";
+        }
+
+
+        /* =====================================
+           PHONE
+        ===================================== */
+
+        const detailsPhone =
+            document.getElementById(
+                "detailsPhone"
+            );
+
+        if (detailsPhone) {
+
+            detailsPhone.textContent =
+                data.seller_phone ||
+                "Phone number not provided";
+        }
+
+
+        /* =====================================
+           WHATSAPP
+        ===================================== */
+
+        const whatsappButton =
+            document.getElementById(
+                "whatsappButton"
+            );
+
+        if (
+            whatsappButton &&
+            data.seller_phone
+        ) {
+
+            whatsappButton.style.display =
+                "block";
+
+            whatsappButton.onclick =
+                function () {
+
+                    contactSeller(
+                        data.seller_phone,
+                        data.title || "product"
+                    );
+                };
+
+        } else if (whatsappButton) {
+
+            whatsappButton.style.display =
+                "none";
+        }
+
+
+        /* =====================================
+           CALL BUTTON
+        ===================================== */
+
+        const callButton =
+            document.getElementById(
+                "callButton"
+            );
+
+        if (
+            callButton &&
+            data.seller_phone
+        ) {
+
+            callButton.style.display =
+                "block";
+
+            callButton.onclick =
+                function () {
+
+                    window.location.href =
+                        "tel:" +
+                        cleanPhoneNumber(
+                            data.seller_phone
+                        );
+                };
+
+        } else if (callButton) {
+
+            callButton.style.display =
+                "none";
+        }
+
+    } catch (error) {
 
         console.error(
             "PRODUCT ERROR:",
             error
         );
 
-        document.getElementById(
-            "detailsTitle"
-        ).textContent =
-            "Unable to load product.";
+        if (detailsTitle) {
 
-        return;
-    }
+            detailsTitle.textContent =
+                "Unable to load product.";
+        }
 
-
-    /* IMAGE */
-
-    document.getElementById(
-        "detailsImage"
-    ).src =
-
-        data.image_url ||
-
-        "https://via.placeholder.com/800x500?text=SiomaMarket";
-
-
-    /* TITLE */
-
-    document.getElementById(
-        "detailsTitle"
-    ).textContent =
-
-        data.title ||
-        "Product";
-
-
-    /* PRICE */
-
-    document.getElementById(
-        "detailsPrice"
-    ).textContent =
-
-        "K" +
-
-        Number(
-            data.price || 0
-        ).toLocaleString();
-
-
-    /* CATEGORY */
-
-    document.getElementById(
-        "detailsCategory"
-    ).textContent =
-
-        data.category ||
-        "";
-
-
-    /* LOCATION */
-
-    document.getElementById(
-        "detailsLocation"
-    ).textContent =
-
-        "📍 " +
-
-        (
-            data.location ||
-            "Sioma"
+        alert(
+            "Unable to load this product. Please try again."
         );
-
-
-    /* DESCRIPTION */
-
-    document.getElementById(
-        "detailsDescription"
-    ).textContent =
-
-        data.description ||
-
-        "No description provided.";
-
-
-    /* SELLER */
-
-    document.getElementById(
-        "detailsSeller"
-    ).textContent =
-
-        data.seller_name ||
-
-        "Sioma Seller";
-
-
-    /* PHONE */
-
-    document.getElementById(
-        "detailsPhone"
-    ).textContent =
-
-        data.seller_phone ||
-
-        "Phone number not provided";
-
-
-    /* WHATSAPP */
-
-    const whatsappButton =
-        document.getElementById(
-            "whatsappButton"
-        );
-
-
-    if (
-        whatsappButton &&
-        data.seller_phone
-    ) {
-
-        whatsappButton.style.display =
-            "block";
-
-        whatsappButton.onclick =
-            function () {
-
-                contactSeller(
-                    data.seller_phone,
-                    data.title
-                );
-
-            };
-
-    }
-    else if (whatsappButton) {
-
-        whatsappButton.style.display =
-            "none";
-    }
-
-
-    /* CALL BUTTON */
-
-    const callButton =
-        document.getElementById(
-            "callButton"
-        );
-
-
-    if (
-        callButton &&
-        data.seller_phone
-    ) {
-
-        callButton.style.display =
-            "block";
-
-        callButton.onclick =
-            function () {
-
-                window.location.href =
-                    "tel:" +
-                    data.seller_phone;
-
-            };
-
-    }
-    else if (callButton) {
-
-        callButton.style.display =
-            "none";
     }
 }
 
@@ -489,7 +585,9 @@ function closeProductPage() {
             "productPage"
         );
 
-    if (!productPage) return;
+    if (!productPage) {
+        return;
+    }
 
     productPage.style.display =
         "none";
@@ -509,35 +607,53 @@ function contactSeller(
 ) {
 
     let number =
-        String(phone)
-            .replace(/\D/g, "");
+        cleanPhoneNumber(phone);
 
+    if (!number) {
 
-    if (
-        number.startsWith("0")
-    ) {
+        alert(
+            "Seller phone number is not available."
+        );
+
+        return;
+    }
+
+    if (number.startsWith("0")) {
 
         number =
             "260" +
             number.substring(1);
     }
 
-
     const message =
         encodeURIComponent(
             "Hello, I found your " +
-            product +
+            (product || "product") +
             " on SiomaMarket. Is it still available?"
         );
 
-
-    window.open(
+    const whatsappURL =
         "https://wa.me/" +
         number +
         "?text=" +
-        message,
-        "_blank"
+        message;
+
+    window.open(
+        whatsappURL,
+        "_blank",
+        "noopener,noreferrer"
     );
+}
+
+
+/* =========================================
+   CLEAN PHONE NUMBER
+========================================= */
+
+function cleanPhoneNumber(phone) {
+
+    return String(phone || "")
+        .replace(/\D/g, "");
 }
 
 
@@ -592,7 +708,9 @@ function closeSellPage() {
             "sellPage"
         );
 
-    if (!sellPage) return;
+    if (!sellPage) {
+        return;
+    }
 
     sellPage.style.display =
         "none";
@@ -615,9 +733,9 @@ document.addEventListener(
                 "sellForm"
             );
 
-
-        if (!sellForm) return;
-
+        if (!sellForm) {
+            return;
+        }
 
         sellForm.addEventListener(
             "submit",
@@ -625,12 +743,10 @@ document.addEventListener(
 
                 event.preventDefault();
 
-
                 const message =
                     document.getElementById(
                         "sellMessage"
                     );
-
 
                 const button =
                     sellForm.querySelector(
@@ -638,62 +754,222 @@ document.addEventListener(
                     );
 
 
-                button.disabled =
-                    true;
+                /* =================================
+                   CHECK REQUIRED ELEMENTS
+                ================================= */
 
-                button.textContent =
-                    "⏳ Publishing...";
+                const titleInput =
+                    document.getElementById(
+                        "sellTitle"
+                    );
 
+                const descriptionInput =
+                    document.getElementById(
+                        "sellDescription"
+                    );
+
+                const priceInput =
+                    document.getElementById(
+                        "sellPrice"
+                    );
+
+                const categoryInput =
+                    document.getElementById(
+                        "sellCategory"
+                    );
+
+                const locationInput =
+                    document.getElementById(
+                        "sellLocation"
+                    );
+
+                const imageInput =
+                    document.getElementById(
+                        "sellImage"
+                    );
+
+                const sellerNameInput =
+                    document.getElementById(
+                        "sellerName"
+                    );
+
+                const sellerPhoneInput =
+                    document.getElementById(
+                        "sellerPhone"
+                    );
+
+
+                if (
+                    !titleInput ||
+                    !descriptionInput ||
+                    !priceInput ||
+                    !categoryInput ||
+                    !locationInput ||
+                    !sellerNameInput ||
+                    !sellerPhoneInput
+                ) {
+
+                    console.error(
+                        "SELL FORM ERROR: Required form fields are missing."
+                    );
+
+                    if (message) {
+
+                        message.innerHTML =
+                            "❌ Some sell form fields are missing.";
+
+                        message.style.color =
+                            "#c62828";
+                    }
+
+                    return;
+                }
+
+
+                /* =================================
+                   DISABLE BUTTON
+                ================================= */
+
+                if (button) {
+
+                    button.disabled =
+                        true;
+
+                    button.textContent =
+                        "⏳ Publishing...";
+                }
+
+
+                /* =================================
+                   PRODUCT DATA
+                ================================= */
 
                 const product = {
 
                     title:
-                        document.getElementById(
-                            "sellTitle"
-                        ).value.trim(),
+                        titleInput.value.trim(),
 
                     description:
-                        document.getElementById(
-                            "sellDescription"
-                        ).value.trim(),
+                        descriptionInput.value.trim(),
 
                     price:
                         Number(
-                            document.getElementById(
-                                "sellPrice"
-                            ).value
+                            priceInput.value
                         ),
 
                     category:
-                        document.getElementById(
-                            "sellCategory"
-                        ).value,
+                        categoryInput.value,
 
                     location:
-                        document.getElementById(
-                            "sellLocation"
-                        ).value.trim(),
+                        locationInput.value.trim() ||
+                        "Sioma",
 
                     image_url:
-                        document.getElementById(
-                            "sellImage"
-                        ).value.trim() ||
-                        null,
+                        imageInput
+                            ? imageInput.value.trim() || null
+                            : null,
 
                     seller_name:
-                        document.getElementById(
-                            "sellerName"
-                        ).value.trim(),
+                        sellerNameInput.value.trim(),
 
                     seller_phone:
-                        document.getElementById(
-                            "sellerPhone"
-                        ).value.trim(),
+                        sellerPhoneInput.value.trim(),
 
                     status:
                         "active"
                 };
 
+
+                /* =================================
+                   VALIDATION
+                ================================= */
+
+                if (!product.title) {
+
+                    showSellMessage(
+                        message,
+                        "❌ Please enter a product name.",
+                        "#c62828"
+                    );
+
+                    resetPublishButton(
+                        button
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !product.price ||
+                    product.price <= 0
+                ) {
+
+                    showSellMessage(
+                        message,
+                        "❌ Please enter a valid price.",
+                        "#c62828"
+                    );
+
+                    resetPublishButton(
+                        button
+                    );
+
+                    return;
+                }
+
+
+                if (!product.category) {
+
+                    showSellMessage(
+                        message,
+                        "❌ Please select a category.",
+                        "#c62828"
+                    );
+
+                    resetPublishButton(
+                        button
+                    );
+
+                    return;
+                }
+
+
+                if (!product.seller_name) {
+
+                    showSellMessage(
+                        message,
+                        "❌ Please enter your name.",
+                        "#c62828"
+                    );
+
+                    resetPublishButton(
+                        button
+                    );
+
+                    return;
+                }
+
+
+                if (!product.seller_phone) {
+
+                    showSellMessage(
+                        message,
+                        "❌ Please enter your phone number.",
+                        "#c62828"
+                    );
+
+                    resetPublishButton(
+                        button
+                    );
+
+                    return;
+                }
+
+
+                /* =================================
+                   PUBLISH TO SUPABASE
+                ================================= */
 
                 try {
 
@@ -701,45 +977,52 @@ document.addEventListener(
                         data,
                         error
                     } =
-                    await supabaseClient
-                        .from("listings")
-                        .insert([
-                            product
-                        ])
-                        .select();
+                        await supabaseClient
+                            .from("listings")
+                            .insert([
+                                product
+                            ])
+                            .select();
 
 
                     if (error) {
-
                         throw error;
                     }
 
 
-                    message.innerHTML = `
-                        ✅ <strong>
-                        Product published successfully!
-                        </strong>
-                        <br><br>
-                        Your product is now available
-                        on SiomaMarket.
-                    `;
+                    console.log(
+                        "PRODUCT PUBLISHED:",
+                        data
+                    );
 
 
-                    message.style.color =
-                        "#087f3d";
+                    if (message) {
+
+                        message.innerHTML = `
+                            ✅ <strong>
+                            Product published successfully!
+                            </strong>
+                            <br><br>
+                            Your product is now available
+                            on SiomaMarket.
+                        `;
+
+                        message.style.color =
+                            "#087f3d";
+                    }
 
 
                     sellForm.reset();
 
 
-                    document.getElementById(
-                        "sellLocation"
-                    ).value =
-                        "Sioma";
+                    if (locationInput) {
+
+                        locationInput.value =
+                            "Sioma";
+                    }
 
 
-                }
-                catch (error) {
+                } catch (error) {
 
                     console.error(
                         "SELL ERROR:",
@@ -747,31 +1030,76 @@ document.addEventListener(
                     );
 
 
-                    message.innerHTML = `
-                        ❌ Could not publish product.
-                        <br><br>
-                        ${escapeHTML(
-                            error.message
-                        )}
-                    `;
+                    if (message) {
 
+                        message.innerHTML = `
+                            ❌ Could not publish product.
+                            <br><br>
+                            ${escapeHTML(
+                                error.message ||
+                                "Unknown error"
+                            )}
+                        `;
 
-                    message.style.color =
-                        "#c62828";
+                        message.style.color =
+                            "#c62828";
+                    }
                 }
 
 
-                button.disabled =
-                    false;
+                /* =================================
+                   RESTORE BUTTON
+                ================================= */
 
-                button.textContent =
-                    "🚀 PUBLISH PRODUCT";
-
+                resetPublishButton(
+                    button
+                );
             }
         );
-
     }
 );
+
+
+/* =========================================
+   SELL MESSAGE HELPER
+========================================= */
+
+function showSellMessage(
+    element,
+    text,
+    color
+) {
+
+    if (!element) {
+        return;
+    }
+
+    element.innerHTML =
+        text;
+
+    element.style.color =
+        color;
+}
+
+
+/* =========================================
+   RESET PUBLISH BUTTON
+========================================= */
+
+function resetPublishButton(
+    button
+) {
+
+    if (!button) {
+        return;
+    }
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "🚀 PUBLISH PRODUCT";
+}
 
 
 /* =========================================
@@ -780,7 +1108,7 @@ document.addEventListener(
 
 function escapeHTML(value) {
 
-    return String(value)
+    return String(value ?? "")
         .replace(
             /&/g,
             "&amp;"
@@ -801,4 +1129,4 @@ function escapeHTML(value) {
             /'/g,
             "&#039;"
         );
-        }
+       }
