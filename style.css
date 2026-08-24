@@ -671,10 +671,10 @@ footer h3 span{
 header .header-inner > .site-logo{
     display:block !important;
     width:180px !important;
-    height:70px !important;
-    max-width:180px !important;
-    max-height:70px !important;
-    min-width:180px !important;
+    height:75px !important;
+    max-width:240px !important;
+    max-height:75px !important;
+    min-width:240px !important;
     min-height:70px !important;
     object-fit:contain !important;
     object-position:center !important;
