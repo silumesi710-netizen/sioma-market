@@ -533,8 +533,8 @@ footer h3 span{
 @media (max-width:600px){
   header > img,
   header .site-logo{
-    max-width:44px !important;
-    max-height:44px !important;
+    max-width:58px !important;
+    max-height:58px !important;
   }
 
   .hero h1{
