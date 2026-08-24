@@ -96,16 +96,19 @@ button {
 
 
 /* SITE IMAGE LOGO */
+header {
+    min-height: 58px;
+    padding: 6px 12px;
+}
 
 .site-logo {
-    max-width: 35px;
-    max-height: 35px;
+    max-width: 48px;
+    max-height: 48px;
     width: auto;
     height: auto;
     object-fit: contain;
     display: block;
 }
-
 
 /* MOBILE MENU BUTTON */
 
