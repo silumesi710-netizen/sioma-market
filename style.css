@@ -2403,43 +2403,46 @@ footer p{
   }
 }
 /* =========================================================
-   SIOMAMARKET — FINAL LOGO POSITION & SIZE
+   SIOMAMARKET — FINAL LOGO
    ========================================================= */
 
-header .header-inner{
-    width:100%;
-    max-width:1200px;
-    margin:0 auto;
-}
-
 header .topbar{
-    width:100%;
     display:flex !important;
     align-items:center !important;
     justify-content:space-between !important;
-    gap:12px;
-    margin-bottom:18px;
+    width:100% !important;
+    gap:12px !important;
 }
 
 header .logo-crop{
     width:64px !important;
     height:64px !important;
+    min-width:64px !important;
     flex:0 0 64px !important;
+
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
+
     overflow:hidden !important;
+    margin:0 !important;
+    padding:0 !important;
 }
 
 header .site-logo{
     display:block !important;
+
     width:64px !important;
     height:64px !important;
-    max-width:64px !important;
-    max-height:64px !important;
+
     min-width:64px !important;
     min-height:64px !important;
+
+    max-width:64px !important;
+    max-height:64px !important;
+
     object-fit:contain !important;
+
     margin:0 !important;
     padding:0 !important;
 }
@@ -2449,22 +2452,4 @@ header .account-actions{
     display:flex !important;
     align-items:center !important;
     justify-content:flex-end !important;
-    gap:5px;
-    flex-wrap:wrap;
-}
-
-/* Small phones */
-@media(max-width:420px){
-    header .logo-crop{
-        width:58px !important;
-        height:58px !important;
-        flex-basis:58px !important;
-    }
-
-    header .site-logo{
-        width:58px !important;
-        height:58px !important;
-        min-width:58px !important;
-        min-height:58px !important;
-    }
 }
