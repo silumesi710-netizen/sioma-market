@@ -58,24 +58,12 @@ button{
    HEADER
    ========================================================= */
 header{
- background:radial-gradient(circle at 90% 10%,rgba(255,183,3,.18),transparent 28%),
- linear-gradient(135deg,var(--green-dark),var(--green));
- color:#fff;
- padding:5px 12px 25px;
+    background:rgba(255,255,255,.98) !important;
+    color:var(--ink) !important;
+    padding:5px 12px 25px !important;
+    border-bottom:1px solid var(--border) !important;
+    box-shadow:0 1px 8px rgba(20,34,26,.04) !important;
 }
-
-
-.header-inner{
-    max-width:1120px !important;
-    margin:auto !important;
-
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-}
-
-
 /* =========================================================
    LOGO
    Single logo rule — prevents conflicting sizes
