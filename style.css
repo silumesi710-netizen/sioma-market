@@ -545,3 +545,36 @@ footer h3 span{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
   }
 }
+/* =========================================================
+   SIOMAMARKET LOGO — CROP EMPTY PNG SPACE
+   ========================================================= */
+
+.logo-crop{
+    width:220px;
+    height:78px;
+    margin:0 auto 8px;
+    overflow:hidden;
+    position:relative;
+    flex-shrink:0;
+}
+
+.logo-crop .site-logo{
+    position:absolute;
+
+    /* Enlarge the original PNG */
+    width:478px !important;
+    height:161px !important;
+
+    max-width:none !important;
+    max-height:none !important;
+
+    /*
+       Move the actual logo into the visible crop.
+       These values compensate for the large PNG margins.
+    */
+    left:-100px;
+    top:-53px;
+
+    object-fit:fill !important;
+    display:block !important;
+}
