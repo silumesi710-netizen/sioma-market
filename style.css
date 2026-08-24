@@ -552,36 +552,25 @@ footer h3 span{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
   }
 }
-.logo-container {
-  display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center;
-  padding: 12px 0;
-  width: 100%;
-}
+/* =========================================================
+   SIOMAMARKET — FINAL LOGO SIZE FIX
+   ========================================================= */
 
-.site-logo {
-  height: 40px;          /* Set an explicit, crisp height */
-  width: auto;           /* Keep aspect ratio intact */
-  max-width: 80%;        /* Prevent overflow on small screens */
-  object-fit: contain;  
-}
+header .site-logo {
+    display: block !important;
 
-/* ===== FINAL SIOMAMARKET LOGO FIX ===== */
+    width: 92px !important;
+    height: 92px !important;
 
-header .header-inner > .site-logo,
-header .site-logo,
-header > img{
-    display:block !important;
-    width:90px !important;
-    height:90px !important;
-    max-width:90px !important;
-    max-height:90px !important;
-    min-width:90px !important;
-    min-height:90px !important;
-    object-fit:contain !important;
-    object-position:center !important;
-    margin:0 auto 8px !important;
-    padding:0 !important;
-    transform:none !important;
+    max-width: 92px !important;
+    max-height: 92px !important;
+
+    min-width: 92px !important;
+    min-height: 92px !important;
+
+    object-fit: contain !important;
+    object-position: center !important;
+
+    margin: 0 auto 4px !important;
+    flex-shrink: 0 !important;
 }
