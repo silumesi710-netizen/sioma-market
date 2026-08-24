@@ -46,8 +46,8 @@ header .site-logo{
   display:block !important;
   width:auto !important;
   height:auto !important;
-  max-width:48px !important;
-  max-height:48px !important;
+  max-width:60px !important;
+  max-height:60px !important;
   margin:0 0 6px !important;
   object-fit:contain !important;
 }
