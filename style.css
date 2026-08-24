@@ -2403,49 +2403,68 @@ footer p{
   }
 }
 /* =========================================================
-   SIOMAMARKET LOGO — FINAL HEADER POSITION
+   SIOMAMARKET — FINAL LOGO POSITION & SIZE
    ========================================================= */
 
-.logo-crop{
-    width:70px !important;
-    height:70px !important;
+header .header-inner{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
+}
+
+header .topbar{
+    width:100%;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+header .logo-crop{
+    width:64px !important;
+    height:64px !important;
+    flex:0 0 64px !important;
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
-    flex-shrink:0 !important;
     overflow:hidden !important;
 }
 
-.site-logo{
+header .site-logo{
     display:block !important;
-    width:70px !important;
-    height:70px !important;
-    max-width:70px !important;
-    max-height:70px !important;
-    min-width:0 !important;
-    min-height:0 !important;
+    width:64px !important;
+    height:64px !important;
+    max-width:64px !important;
+    max-height:64px !important;
+    min-width:64px !important;
+    min-height:64px !important;
     object-fit:contain !important;
     margin:0 !important;
     padding:0 !important;
 }
 
-/* Keep logo and account buttons on the same header row */
-.topbar{
+header .account-actions{
+    margin-left:auto !important;
     display:flex !important;
     align-items:center !important;
-    justify-content:space-between !important;
-    gap:12px !important;
-}
-
-/* Prevent account buttons from pushing the logo out */
-.account-actions{
-    flex:1 !important;
-    display:flex !important;
     justify-content:flex-end !important;
-    align-items:center !important;
-    gap:5px !important;
+    gap:5px;
+    flex-wrap:wrap;
 }
 
-/* =========================================================
-   END OF SIOMAMARKET STYLE
-   ========================================================= */
+/* Small phones */
+@media(max-width:420px){
+    header .logo-crop{
+        width:58px !important;
+        height:58px !important;
+        flex-basis:58px !important;
+    }
+
+    header .site-logo{
+        width:58px !important;
+        height:58px !important;
+        min-width:58px !important;
+        min-height:58px !important;
+    }
+}
