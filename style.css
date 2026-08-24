@@ -2402,7 +2402,32 @@ footer p{
     font-size:11px;
   }
 }
+/* =========================================================
+   SIOMAMARKET LOGO — CONTROLLED SIZE
+   ========================================================= */
 
+.logo-crop{
+    width:56px !important;
+    height:56px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-shrink:0 !important;
+    overflow:hidden !important;
+}
+
+.site-logo{
+    display:block !important;
+    width:56px !important;
+    height:56px !important;
+    max-width:56px !important;
+    max-height:56px !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    object-fit:contain !important;
+    margin:0 !important;
+    padding:0 !important;
+}
 
 /* =========================================================
    END OF SIOMAMARKET STYLE
