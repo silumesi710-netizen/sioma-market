@@ -552,6 +552,20 @@ footer h3 span{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
   }
 }
+.logo-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.site-logo {
+  height: 40px;          /* Set an explicit, crisp height */
+  width: auto;           /* Keep aspect ratio intact */
+  max-width: 80%;        /* Prevent overflow on small screens */
+  object-fit: contain;  
+}
 
 /* ===== FINAL SIOMAMARKET LOGO FIX ===== */
 
