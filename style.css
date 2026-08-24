@@ -43,16 +43,16 @@ header{
 header > img,
 header .site-logo{
   display:block !important;
-  width:60px !important;
-  height:60px !important;
-  max-width:60px !important;
-  max-height:60px !important;
-  min-width:60px !important;
-  min-height:60px !important;
-  margin:0 0 6px !important;
+  width:64px !important;
+  height:64px !important;
+  max-width:none !important;
+  max-height:none !important;
+  min-width:64px !important;
+  min-height:64px !important;
   object-fit:contain !important;
+  margin:0 auto 8px !important;
   flex-shrink:0 !important;
-}
+  }
 
 .header-inner{
   max-width:1120px !important;
