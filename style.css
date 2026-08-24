@@ -2403,12 +2403,12 @@ footer p{
   }
 }
 /* =========================================================
-   SIOMAMARKET LOGO — CONTROLLED SIZE
+   SIOMAMARKET LOGO — FINAL HEADER POSITION
    ========================================================= */
 
 .logo-crop{
-    width:56px !important;
-    height:56px !important;
+    width:70px !important;
+    height:70px !important;
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
@@ -2418,15 +2418,32 @@ footer p{
 
 .site-logo{
     display:block !important;
-    width:56px !important;
-    height:56px !important;
-    max-width:56px !important;
-    max-height:56px !important;
+    width:70px !important;
+    height:70px !important;
+    max-width:70px !important;
+    max-height:70px !important;
     min-width:0 !important;
     min-height:0 !important;
     object-fit:contain !important;
     margin:0 !important;
     padding:0 !important;
+}
+
+/* Keep logo and account buttons on the same header row */
+.topbar{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:12px !important;
+}
+
+/* Prevent account buttons from pushing the logo out */
+.account-actions{
+    flex:1 !important;
+    display:flex !important;
+    justify-content:flex-end !important;
+    align-items:center !important;
+    gap:5px !important;
 }
 
 /* =========================================================
