@@ -1,188 +1,503 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#087f3d">
-<meta name="description" content="SiomaMarket - Sioma's local marketplace">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
+
+<meta
+  name="theme-color"
+  content="#087f3d"
+>
+
+<meta
+  name="description"
+  content="SiomaMarket - Sioma's local marketplace"
+>
+
 <title>SiomaMarket 🇿🇲 | Sioma's Local Marketplace</title>
+
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- MAIN CSS -->
 <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
+<!-- =====================================================
+     AUTH MODAL
+===================================================== -->
+
 <div id="authModal" class="auth-modal">
+
   <div class="auth-box">
+
     <h2>🔐 SiomaMarket Account</h2>
-    <p class="auth-subtitle">Your local Sioma marketplace.</p>
+
+    <p class="auth-subtitle">
+      Your local Sioma marketplace.
+    </p>
+
     <div class="auth-tabs">
-      <button id="loginTab" class="auth-tab active" type="button" onclick="showLogin()">Login</button>
-      <button id="registerTab" class="auth-tab" type="button" onclick="showRegister()">Register</button>
+
+      <button
+        id="loginTab"
+        class="auth-tab active"
+        onclick="showLogin()"
+      >
+        Login
+      </button>
+
+      <button
+        id="registerTab"
+        class="auth-tab"
+        onclick="showRegister()"
+      >
+        Register
+      </button>
+
     </div>
+
+    <!-- LOGIN -->
+
     <form id="loginForm" class="auth-form">
-      <label>Email</label><input type="email" id="loginEmail" autocomplete="email" required>
-      <label>Password</label><input type="password" id="loginPassword" autocomplete="current-password" required>
-      <button id="loginButton" class="auth-submit">🔐 LOGIN</button>
+
+      <label for="loginEmail">Email</label>
+
+      <input
+        type="email"
+        id="loginEmail"
+        autocomplete="email"
+        required
+      >
+
+      <label for="loginPassword">Password</label>
+
+      <input
+        type="password"
+        id="loginPassword"
+        autocomplete="current-password"
+        required
+      >
+
+      <button
+        id="loginButton"
+        class="auth-submit"
+        type="submit"
+      >
+        🔐 LOGIN
+      </button>
+
     </form>
-    <form id="registerForm" class="auth-form" style="display:none">
-      <label>Full Name</label><input id="registerName" autocomplete="name" required>
-      <label>Phone / WhatsApp</label><input type="tel" id="registerPhone" autocomplete="tel" required>
-      <label>Location</label><input id="registerLocation" value="Sioma" required>
-      <label>Email</label><input type="email" id="registerEmail" autocomplete="email" required>
-      <label>Password</label><input type="password" id="registerPassword" minlength="6" autocomplete="new-password" required>
-      <button id="registerButton" class="auth-submit">📝 CREATE ACCOUNT</button>
+
+    <!-- REGISTER -->
+
+    <form
+      id="registerForm"
+      class="auth-form"
+      style="display:none"
+    >
+
+      <label for="registerName">
+        Full Name
+      </label>
+
+      <input
+        id="registerName"
+        autocomplete="name"
+        required
+      >
+
+      <label for="registerPhone">
+        Phone / WhatsApp
+      </label>
+
+      <input
+        type="tel"
+        id="registerPhone"
+        autocomplete="tel"
+        required
+      >
+
+      <label for="registerLocation">
+        Location
+      </label>
+
+      <input
+        id="registerLocation"
+        value="Sioma"
+        required
+      >
+
+      <label for="registerEmail">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="registerEmail"
+        autocomplete="email"
+        required
+      >
+
+      <label for="registerPassword">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="registerPassword"
+        minlength="6"
+        autocomplete="new-password"
+        required
+      >
+
+      <button
+        id="registerButton"
+        class="auth-submit"
+        type="submit"
+      >
+        📝 CREATE ACCOUNT
+      </button>
+
     </form>
-    <div id="authMessage" class="auth-message"></div>
-    <button class="auth-close" type="button" onclick="closeAuthModal()">Close</button>
+
+    <div
+      id="authMessage"
+      class="auth-message"
+    ></div>
+
+    <button
+      class="auth-close"
+      type="button"
+      onclick="closeAuthModal()"
+    >
+      Close
+    </button>
+
   </div>
+
 </div>
+
+
+<!-- =====================================================
+     SELL PAGE
+===================================================== -->
 
 <div id="sellPage" class="full-page">
-  <div class="page-header"><button class="back-button" onclick="closeSellPage()">← Back</button><h2>Sell in Sioma</h2></div>
-  <div class="sell-container page-container">
-    <div class="sell-intro"><div class="sell-intro-icon">🏷️</div><h1>Sell in Sioma</h1><p>Reach buyers in Sioma.</p></div>
-    <form id="sellForm" class="sell-form">
-      <label>Product Name</label><input id="sellTitle" placeholder="e.g. Fresh Fish" required>
-      <label>Description</label><textarea id="sellDescription" placeholder="Describe your product..." required></textarea>
-      <label>Price (ZMW)</label><input type="number" id="sellPrice" min="0" inputmode="decimal" required>
-      <label>Category</label>
-      <select id="sellCategory" required>
-        <option value="">Select category</option><option>Agriculture</option><option>Livestock</option><option>Fish</option>
-        <option>Phones</option><option>Vehicles</option><option>Houses</option><option>Clothes</option><option>Services</option><option>timber</option><option>Other</option>
-      </select>
-      <label>Location</label><input id="sellLocation" value="Sioma" required>
-      <label>Product Photos</label>
-      <div class="photo-upload-box">
-        <div class="photo-upload-title">📸 Add up to 3 product photos</div>
-        <div class="photo-upload-help">Use clear photos. The first photo will be the main product photo. Maximum 6MB per photo.</div>
-        <input type="file" id="sellImage" class="photo-upload-input" accept="image/*" multiple>
-        <div id="imagePreview" class="image-preview-grid"></div>
-        <div id="photoCounter" class="photo-counter">0 / 3 photos selected</div>
-      </div>
-      <label>Your Name</label><input id="sellerName" required>
-      <label>WhatsApp / Phone</label><input id="sellerPhone" type="tel" inputmode="tel" required>
-      <button id="publishButton" class="publish-button">🚀 PUBLISH IN SIOMA</button>
-      <div id="sellMessage" class="sell-message"></div>
-    </form>
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeSellPage()"
+    >
+      ← Back
+    </button>
+
+    <h2>Sell in Sioma</h2>
+
   </div>
+
+  <div class="sell-container page-container">
+
+    <div class="sell-intro">
+
+      <div class="sell-intro-icon">
+        🏷️
+      </div>
+
+      <h1>Sell in Sioma</h1>
+
+      <p>
+        Reach buyers in Sioma.
+      </p>
+
+    </div>
+
+    <form
+      id="sellForm"
+      class="sell-form"
+    >
+
+      <label for="sellTitle">
+        Product Name
+      </label>
+
+      <input
+        id="sellTitle"
+        placeholder="e.g. Fresh Fish"
+        required
+      >
+
+      <label for="sellDescription">
+        Description
+      </label>
+
+      <textarea
+        id="sellDescription"
+        placeholder="Describe your product..."
+        required
+      ></textarea>
+
+      <label for="sellPrice">
+        Price (ZMW)
+      </label>
+
+      <input
+        type="number"
+        id="sellPrice"
+        min="0"
+        inputmode="decimal"
+        required
+      >
+
+      <label for="sellCategory">
+        Category
+      </label>
+
+      <select
+        id="sellCategory"
+        required
+      >
+
+        <option value="">
+          Select category
+        </option>
+
+        <option value="Agriculture">
+          Agriculture
+        </option>
+
+        <option value="Livestock">
+          Livestock
+        </option>
+
+        <option value="Fish">
+          Fish
+        </option>
+
+        <option value="Phones">
+          Phones
+        </option>
+
+        <option value="Vehicles">
+          Vehicles
+        </option>
+
+        <option value="Houses">
+          Houses
+        </option>
+
+        <option value="Clothes">
+          Clothes
+        </option>
+
+        <option value="Services">
+          Services
+        </option>
+
+        <option value="timber">
+          Timber
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+
+      </select>
+
+      <label for="sellLocation">
+        Location
+      </label>
+
+      <input
+        id="sellLocation"
+        value="Sioma"
+        required
+      >
+
+      <label for="sellImage">
+        Product Photos
+      </label>
+
+      <div class="photo-upload-box">
+
+        <div class="photo-upload-title">
+          📸 Add up to 3 product photos
+        </div>
+
+        <div class="photo-upload-help">
+          Use clear photos. The first photo will be
+          the main product photo. Maximum 6MB per photo.
+        </div>
+
+        <input
+          type="file"
+          id="sellImage"
+          class="photo-upload-input"
+          accept="image/*"
+          multiple
+        >
+
+        <div
+          id="imagePreview"
+          class="image-preview-grid"
+        ></div>
+
+        <div
+          id="photoCounter"
+          class="photo-counter"
+        >
+          0 / 3 photos selected
+        </div>
+
+      </div>
+
+      <label for="sellerName">
+        Your Name
+      </label>
+
+      <input
+        id="sellerName"
+        required
+      >
+
+      <label for="sellerPhone">
+        WhatsApp / Phone
+      </label>
+
+      <input
+        id="sellerPhone"
+        type="tel"
+        inputmode="tel"
+        required
+      >
+
+      <button
+        id="publishButton"
+        class="publish-button"
+        type="submit"
+      >
+        🚀 PUBLISH IN SIOMA
+      </button>
+
+      <div
+        id="sellMessage"
+        class="sell-message"
+      ></div>
+
+    </form>
+
+  </div>
+
 </div>
+
+
+<!-- =====================================================
+     SELLER DASHBOARD
+===================================================== -->
 
 <div id="sellerDashboard" class="full-page">
-  <div class="page-header"><button class="back-button" onclick="closeSellerDashboard()">← Back</button><h2>Seller Dashboard</h2></div>
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeSellerDashboard()"
+    >
+      ← Back
+    </button>
+
+    <h2>Seller Dashboard</h2>
+
+  </div>
+
   <div class="page-container">
-    <h1 class="dashboard-title">🏪 My Sioma Shop</h1><p class="dashboard-subtitle">Manage your SiomaMarket products.</p>
+
+    <h1 class="dashboard-title">
+      🏪 My Sioma Shop
+    </h1>
+
+    <p class="dashboard-subtitle">
+      Manage your SiomaMarket products.
+    </p>
+
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">📦</div><div id="sellerTotalListings" class="stat-number">0</div><div class="stat-label">Products</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div id="sellerActiveListings" class="stat-number">0</div><div class="stat-label">Active</div></div>
-      <div class="stat-card"><div class="stat-icon">❤️</div><div id="sellerFavoriteCount" class="stat-number">0</div><div class="stat-label">Favorites</div></div>
-      <div class="stat-card"><div class="stat-icon">💰</div><div id="sellerValue" class="stat-number">K0</div><div class="stat-label">Listed Value</div></div>
-    </div>
-    <div class="dashboard-section"><h3>📦 My Products</h3><div id="sellerListings"></div></div>
-  </div>
-</div>
 
-<div id="adminDashboard" class="full-page">
-  <div class="page-header"><button class="back-button" onclick="closeAdminDashboard()">← Back</button><h2>Admin Dashboard</h2></div>
-  <div class="page-container">
-    <div class="admin-heading"><div class="admin-badge">🛡️ ADMINISTRATOR</div><h1 class="dashboard-title">SiomaMarket Admin</h1><p class="dashboard-subtitle">Manage Sioma marketplace listings.</p></div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">📦</div><div id="adminTotalListings" class="stat-number">0</div><div class="stat-label">Listings</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div id="adminActiveListings" class="stat-number">0</div><div class="stat-label">Active</div></div>
-      <div class="stat-card"><div class="stat-icon">👥</div><div id="adminSellerCount" class="stat-number">0</div><div class="stat-label">Sellers</div></div>
-      <div class="stat-card"><div class="stat-icon">💰</div><div id="adminMarketValue" class="stat-number">K0</div><div class="stat-label">Market Value</div></div>
-    </div>
-    <div class="dashboard-section"><h3>⚙️ Controls</h3><div class="admin-controls"><button onclick="loadAdminListings()">🔄 Refresh</button><button class="secondary" onclick="showAllAdminListings()">📦 All</button><button class="secondary" onclick="showActiveAdminListings()">✅ Active</button></div></div>
-    <div class="dashboard-section"><h3>📦 Sioma Listings</h3><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Photo</th><th>Product</th><th>Price</th><th>Seller</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adminListingsBody"></tbody></table></div></div>
-  </div>
-</div>
-
-<div id="productPage" class="full-page">
-  <div class="page-header"><button class="back-button" onclick="closeProductPage()">← Back</button><h2>Product Details</h2></div>
-  <div class="product-details">
-    <div class="details-gallery"><img id="detailsImage" class="details-main-image" src="" alt="Product"><div id="detailsThumbnails" class="details-thumbnails"></div></div>
-    <div class="details-content">
-      <div id="detailsCategory" class="details-category"></div><h1 id="detailsTitle">Product</h1><div id="detailsPrice" class="details-price">K0</div><div id="detailsLocation" class="details-location">📍 Sioma</div>
-      <hr><h3>Description</h3><p id="detailsDescription" class="details-description"></p><hr><h3>Seller</h3>
-      <div class="seller-box"><div class="seller-icon">👤</div><div><strong id="detailsSeller">Seller</strong><div id="detailsPhone"></div></div></div>
-      <button id="whatsappButton" class="whatsapp-button">💬 WhatsApp Seller</button>
-      <button id="callButton" class="call-button">📞 Call Seller</button>
-      <button id="messageButton" class="message-button">💬 Message Seller</button>
-      <button id="favoriteButton" class="favorite-button" onclick="saveFavorite()">❤️ Save Product</button>
-    </div>
-  </div>
-</div>
-
-<div id="favoritesPage" class="full-page"><div class="page-header"><button class="back-button" onclick="closeFavorites()">← Back</button><h2>❤️ My Favorites</h2></div><div id="favoritesResults" class="page-container"></div></div>
-
-<div id="messagesPage" class="full-page messages-page">
-  <div class="page-header"><button class="back-button" onclick="closeMessages()">← Back</button><h2>💬 Sioma Messages</h2></div>
-  <div class="message-layout">
-    <div class="conversations"><div class="conversations-header">💬 Conversations</div><div id="conversationList"><div class="empty-chat">Loading conversations...</div></div></div>
-    <div class="chat">
-      <div id="chatHeader" class="chat-header">Select a conversation</div>
-      <div id="messageList" class="messages"><div class="empty-chat">💬 Select a conversation to start messaging.</div></div>
-      <div class="chat-input"><textarea id="messageInput" class="message-input" placeholder="Write a message..." rows="1"></textarea><button class="send-message" onclick="sendMessage()">Send</button></div>
-    </div>
-  </div>
-</div>
-
-<div id="editModal" class="edit-modal">
-  <div class="edit-box"><h2>✏️ Edit Product</h2><input type="hidden" id="editListingId">
-    <label>Product Name</label><input id="editTitle"><label>Description</label><textarea id="editDescription"></textarea><label>Price</label><input type="number" id="editPrice" inputmode="decimal">
-    <label>Category</label><select id="editCategory"><option>Agriculture</option><option>Livestock</option><option>Fish</option><option>Phones</option><option>Vehicles</option><option>Houses</option><option>Clothes</option><option>Services</option><option>timber</option><option>Other</option></select>
-    <label>Location</label><input id="editLocation"><label>Seller Name</label><input id="editSellerName"><label>Seller Phone</label><input id="editSellerPhone">
-    <div class="edit-actions"><button class="auth-submit" onclick="saveEditedListing()">💾 SAVE</button><button class="auth-close" onclick="closeEditModal()">Cancel</button></div>
-    <div id="editMessage" class="auth-message"></div>
-  </div>
-</div>
-
-<header>
-  <div class="header-inner">
-    <div class="topbar">
-      <div><div class="logo">🛍️ Sioma<span>Market</span></div><div class="tagline">Sioma's local marketplace</div><div class="location-pill">📍 proudly Sioma</div></div>
-      <div class="account-actions">
-        <button id="dashboardButton" class="account-button soft" onclick="openSellerDashboard()" style="display:none">🏪 Dashboard</button>
-        <button id="messagesButton" class="account-button soft" onclick="openMessages()" style="display:none">💬 Messages<span id="messageBadge" class="message-badge">0</span></button>
-        <button id="adminButton" class="account-button gold" onclick="openAdminDashboard()" style="display:none">🛡️ Admin</button>
-        <button class="account-button" onclick="showFavorites()">❤️ Favorites</button>
-        <button id="accountButton" class="account-button" onclick="openAccount()">🔐 Login</button>
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div
+          id="sellerTotalListings"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Products
+        </div>
       </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div
+          id="sellerActiveListings"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Active
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">❤️</div>
+        <div
+          id="sellerFavoriteCount"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Favorites
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div
+          id="sellerValue"
+          class="stat-number"
+        >
+          K0
+        </div>
+        <div class="stat-label">
+          Listed Value
+        </div>
+      </div>
+
     </div>
-    <div class="hero">
-      <h1>Sioma Buys.<br>Sioma <span>Sells.</span></h1><p>The local marketplace built for people in Sioma.</p>
-      <div class="sioma-banner">📍 Buy and sell locally in Sioma</div>
-      <div class="search-box"><input id="searchInput" type="search" placeholder="Search products in Sioma..." autocomplete="off"><button onclick="searchMarket()">🔍 Search</button></div>
-      <div class="hero-actions"><button class="buy-btn" onclick="buyNow()">🛒 BUY IN SIOMAMARKET</button><button class="sell-btn" onclick="sellNow()">🏷️ SELL IN SIOMAMARKET</button></div>
+
+    <div class="dashboard-section">
+
+      <h3>
+        📦 My Products
+      </h3>
+
+      <div id="sellerListings"></div>
+
     </div>
+
   </div>
-</header>
 
-<div id="searchResults"></div>
-<main>
-  <section class="section"><div class="section-heading"><div><h2>📍 Sioma Categories</h2><p>Find products around Sioma.</p></div></div>
-    <div class="categories">
-      <div class="category" onclick="searchCategory('Agriculture')"><span class="category-icon">🌾</span><span class="category-name">Agriculture</span><span class="category-count">Farm products</span></div>
-      <div class="category" onclick="searchCategory('Livestock')"><span class="category-icon">🐔</span><span class="category-name">Livestock</span><span class="category-count">Animals & poultry</span></div>
-      <div class="category" onclick="searchCategory('Fish')"><span class="category-icon">🐟</span><span class="category-name">Fish</span><span class="category-count">Fresh & dried fish</span></div>
-      <div class="category" onclick="searchCategory('Phones')"><span class="category-icon">📱</span><span class="category-name">Phones</span><span class="category-count">Phones & accessories</span></div>
-      <div class="category" onclick="searchCategory('Vehicles')"><span class="category-icon">🚗</span><span class="category-name">Vehicles</span><span class="category-count">Cars & motorcycles</span></div>
-      <div class="category" onclick="searchCategory('Houses')"><span class="category-icon">🏠</span><span class="category-name">Houses</span><span class="category-count">Property</span></div>
-      <div class="category" onclick="searchCategory('Clothes')"><span class="category-icon">👕</span><span class="category-name">Clothes</span><span class="category-count">Fashion</span></div>
-      <div class="category" onclick="searchCategory('Services')"><span class="category-icon">🛠️</span><span class="category-name">Services</span><span class="category-count">Local services</span></div>
-    </div>
-  </section>
-  <section class="section"><div class="section-heading"><div><h2>🔥 Latest in Sioma</h2><p>Fresh products from Sioma sellers.</p></div></div><div id="homeProducts"><div class="no-results">⏳ Loading Sioma products...</div></div></section>
-</main>
-
-<nav class="mobile-nav">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><strong>🏠</strong>Home</button>
-  <button onclick="buyNow()"><strong>🔍</strong>Search</button>
-  <button onclick="sellNow()"><strong>➕</strong>Sell</button>
-  <button onclick="showFavorites()"><strong>❤️</strong>Favorites</button>
-  <button onclick="openAccount()"><strong>👤</strong>Account</button>
-</nav>
-
-<footer><h3>🛍️ Sioma<span>Market</span></h3><p>📍 Sioma's local marketplace</p><p>Buy local. Sell local. Grow together.</p><p>🇿🇲 Sioma today. Zambia tomorrow.</p><p>© 2026 SiomaMarket</p></footer>
-<script src="script.js"></script>
-</body>
-</html>
+</div>
