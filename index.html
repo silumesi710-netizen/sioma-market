@@ -1067,3 +1067,419 @@
   </div>
 
 </div>
+<!-- =====================================================
+     MAIN HEADER
+===================================================== -->
+
+<header>
+
+  <div class="header-inner">
+
+    <div class="topbar">
+
+      <div>
+
+        <div class="logo">
+          🛍️ Sioma<span>Market</span>
+        </div>
+
+        <div class="tagline">
+          Sioma's local marketplace
+        </div>
+
+        <div class="location-pill">
+          📍 proudly Sioma
+        </div>
+
+      </div>
+
+      <div class="account-actions">
+
+        <button
+          id="dashboardButton"
+          class="account-button soft"
+          type="button"
+          onclick="openSellerDashboard()"
+          style="display:none"
+        >
+          🏪 Dashboard
+        </button>
+
+        <button
+          id="messagesButton"
+          class="account-button soft"
+          type="button"
+          onclick="openMessages()"
+          style="display:none"
+        >
+          💬 Messages
+
+          <span
+            id="messageBadge"
+            class="message-badge"
+          >
+            0
+          </span>
+
+        </button>
+
+        <button
+          id="adminButton"
+          class="account-button gold"
+          type="button"
+          onclick="openAdminDashboard()"
+          style="display:none"
+        >
+          🛡️ Admin
+        </button>
+
+        <button
+          class="account-button"
+          type="button"
+          onclick="showFavorites()"
+        >
+          ❤️ Favorites
+        </button>
+
+        <button
+          id="accountButton"
+          class="account-button"
+          type="button"
+          onclick="openAccount()"
+        >
+          🔐 Login
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- HERO -->
+
+    <div class="hero">
+
+      <h1>
+        Sioma Buys.<br>
+        Sioma <span>Sells.</span>
+      </h1>
+
+      <p>
+        The local marketplace built for people in Sioma.
+      </p>
+
+      <div class="sioma-banner">
+        📍 Buy and sell locally in Sioma
+      </div>
+
+      <div class="search-box">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search products in Sioma..."
+          autocomplete="off"
+        >
+
+        <button
+          type="button"
+          onclick="searchMarket()"
+        >
+          🔍 Search
+        </button>
+
+      </div>
+
+      <div class="hero-actions">
+
+        <button
+          class="buy-btn"
+          type="button"
+          onclick="buyNow()"
+        >
+          🛒 BUY IN SIOMAMARKET
+        </button>
+
+        <button
+          class="sell-btn"
+          type="button"
+          onclick="sellNow()"
+        >
+          🏷️ SELL IN SIOMAMARKET
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- =====================================================
+     SEARCH RESULTS
+===================================================== -->
+
+<div id="searchResults"></div>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main>
+
+  <!-- CATEGORIES -->
+
+  <section class="section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <h2>
+          📍 Sioma Categories
+        </h2>
+
+        <p>
+          Find products around Sioma.
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="categories">
+
+      <div
+        class="category"
+        onclick="searchCategory('Agriculture')"
+      >
+        <span class="category-icon">🌾</span>
+        <span class="category-name">
+          Agriculture
+        </span>
+        <span class="category-count">
+          Farm products
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Livestock')"
+      >
+        <span class="category-icon">🐔</span>
+        <span class="category-name">
+          Livestock
+        </span>
+        <span class="category-count">
+          Animals & poultry
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Fish')"
+      >
+        <span class="category-icon">🐟</span>
+        <span class="category-name">
+          Fish
+        </span>
+        <span class="category-count">
+          Fresh & dried fish
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Phones')"
+      >
+        <span class="category-icon">📱</span>
+        <span class="category-name">
+          Phones
+        </span>
+        <span class="category-count">
+          Phones & accessories
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Vehicles')"
+      >
+        <span class="category-icon">🚗</span>
+        <span class="category-name">
+          Vehicles
+        </span>
+        <span class="category-count">
+          Cars & motorcycles
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Houses')"
+      >
+        <span class="category-icon">🏠</span>
+        <span class="category-name">
+          Houses
+        </span>
+        <span class="category-count">
+          Property
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Clothes')"
+      >
+        <span class="category-icon">👕</span>
+        <span class="category-name">
+          Clothes
+        </span>
+        <span class="category-count">
+          Fashion
+        </span>
+      </div>
+
+      <div
+        class="category"
+        onclick="searchCategory('Services')"
+      >
+        <span class="category-icon">🛠️</span>
+        <span class="category-name">
+          Services
+        </span>
+        <span class="category-count">
+          Local services
+        </span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LATEST PRODUCTS -->
+
+  <section class="section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <h2>
+          🔥 Latest in Sioma
+        </h2>
+
+        <p>
+          Fresh products from Sioma sellers.
+        </p>
+
+      </div>
+
+    </div>
+
+    <div id="homeProducts">
+
+      <div class="no-results">
+        ⏳ Loading Sioma products...
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- =====================================================
+     MOBILE NAVIGATION
+===================================================== -->
+
+<nav class="mobile-nav">
+
+  <button
+    type="button"
+    onclick="window.scrollTo({
+      top:0,
+      behavior:'smooth'
+    })"
+  >
+    <strong>🏠</strong>
+    Home
+  </button>
+
+  <button
+    type="button"
+    onclick="buyNow()"
+  >
+    <strong>🔍</strong>
+    Search
+  </button>
+
+  <button
+    type="button"
+    onclick="sellNow()"
+  >
+    <strong>➕</strong>
+    Sell
+  </button>
+
+  <button
+    type="button"
+    onclick="showFavorites()"
+  >
+    <strong>❤️</strong>
+    Favorites
+  </button>
+
+  <button
+    type="button"
+    onclick="openAccount()"
+  >
+    <strong>👤</strong>
+    Account
+  </button>
+
+</nav>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  <h3>
+    🛍️ Sioma<span>Market</span>
+  </h3>
+
+  <p>
+    📍 Sioma's local marketplace
+  </p>
+
+  <p>
+    Buy local. Sell local. Grow together.
+  </p>
+
+  <p>
+    🇿🇲 Sioma today. Zambia tomorrow.
+  </p>
+
+  <p>
+    © 2026 SiomaMarket
+  </p>
+
+</footer>
+
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+===================================================== -->
+
+<script src="script.js"></script>
+
+</body>
+</html>
