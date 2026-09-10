@@ -501,3 +501,569 @@
   </div>
 
 </div>
+<!-- =====================================================
+     ADMIN DASHBOARD
+===================================================== -->
+
+<div id="adminDashboard" class="full-page">
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeAdminDashboard()"
+    >
+      ← Back
+    </button>
+
+    <h2>Admin Dashboard</h2>
+
+  </div>
+
+  <div class="page-container">
+
+    <div style="text-align:center">
+
+      <div class="admin-badge">
+        🛡️ ADMINISTRATOR
+      </div>
+
+      <h1 class="dashboard-title">
+        SiomaMarket Admin
+      </h1>
+
+      <p class="dashboard-subtitle">
+        Manage Sioma marketplace listings.
+      </p>
+
+    </div>
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div
+          id="adminTotalListings"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Listings
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div
+          id="adminActiveListings"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Active
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div
+          id="adminSellerCount"
+          class="stat-number"
+        >
+          0
+        </div>
+        <div class="stat-label">
+          Sellers
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div
+          id="adminMarketValue"
+          class="stat-number"
+        >
+          K0
+        </div>
+        <div class="stat-label">
+          Market Value
+        </div>
+      </div>
+
+    </div>
+
+    <div class="dashboard-section">
+
+      <h3>
+        ⚙️ Controls
+      </h3>
+
+      <div class="admin-controls">
+
+        <button
+          type="button"
+          onclick="loadAdminListings()"
+        >
+          🔄 Refresh
+        </button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="showAllAdminListings()"
+        >
+          📦 All
+        </button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="showActiveAdminListings()"
+        >
+          ✅ Active
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="dashboard-section">
+
+      <h3>
+        📦 Sioma Listings
+      </h3>
+
+      <div class="admin-table-wrap">
+
+        <table class="admin-table">
+
+          <thead>
+
+            <tr>
+              <th>Photo</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Seller</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="adminListingsBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCT DETAILS
+===================================================== -->
+
+<div id="productPage" class="full-page">
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeProductPage()"
+    >
+      ← Back
+    </button>
+
+    <h2>Product Details</h2>
+
+  </div>
+
+  <div class="product-details">
+
+    <div class="details-gallery">
+
+      <img
+        id="detailsImage"
+        class="details-main-image"
+        src=""
+        alt="Product"
+      >
+
+      <div
+        id="detailsThumbnails"
+        class="details-thumbnails"
+      ></div>
+
+    </div>
+
+    <div class="details-content">
+
+      <div
+        id="detailsCategory"
+        class="details-category"
+      ></div>
+
+      <h1 id="detailsTitle">
+        Product
+      </h1>
+
+      <div
+        id="detailsPrice"
+        class="details-price"
+      >
+        K0
+      </div>
+
+      <div
+        id="detailsLocation"
+        class="details-location"
+      >
+        📍 Sioma
+      </div>
+
+      <hr>
+
+      <h3>
+        Description
+      </h3>
+
+      <p
+        id="detailsDescription"
+        class="details-description"
+      ></p>
+
+      <hr>
+
+      <h3>
+        Seller
+      </h3>
+
+      <div class="seller-box">
+
+        <div class="seller-icon">
+          👤
+        </div>
+
+        <div>
+
+          <strong id="detailsSeller">
+            Seller
+          </strong>
+
+          <div id="detailsPhone"></div>
+
+        </div>
+
+      </div>
+
+      <button
+        id="whatsappButton"
+        class="whatsapp-button"
+        type="button"
+      >
+        💬 WhatsApp Seller
+      </button>
+
+      <button
+        id="callButton"
+        class="call-button"
+        type="button"
+      >
+        📞 Call Seller
+      </button>
+
+      <button
+        id="messageButton"
+        class="message-button"
+        type="button"
+      >
+        💬 Message Seller
+      </button>
+
+      <button
+        id="favoriteButton"
+        class="favorite-button"
+        type="button"
+        onclick="saveFavorite()"
+      >
+        ❤️ Save Product
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     FAVORITES
+===================================================== -->
+
+<div id="favoritesPage" class="full-page">
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeFavorites()"
+    >
+      ← Back
+    </button>
+
+    <h2>
+      ❤️ My Favorites
+    </h2>
+
+  </div>
+
+  <div
+    id="favoritesResults"
+    class="page-container"
+  ></div>
+
+</div>
+
+
+<!-- =====================================================
+     MESSAGES
+===================================================== -->
+
+<div
+  id="messagesPage"
+  class="full-page messages-page"
+>
+
+  <div class="page-header">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="closeMessages()"
+    >
+      ← Back
+    </button>
+
+    <h2>
+      💬 Sioma Messages
+    </h2>
+
+  </div>
+
+  <div class="message-layout">
+
+    <div class="conversations">
+
+      <div class="conversations-header">
+        💬 Conversations
+      </div>
+
+      <div id="conversationList">
+
+        <div class="empty-chat">
+          Loading conversations...
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="chat">
+
+      <div
+        id="chatHeader"
+        class="chat-header"
+      >
+        Select a conversation
+      </div>
+
+      <div
+        id="messageList"
+        class="messages"
+      >
+
+        <div class="empty-chat">
+          💬 Select a conversation to start messaging.
+        </div>
+
+      </div>
+
+      <div class="chat-input">
+
+        <textarea
+          id="messageInput"
+          class="message-input"
+          placeholder="Write a message..."
+          rows="1"
+        ></textarea>
+
+        <button
+          class="send-message"
+          type="button"
+          onclick="sendMessage()"
+        >
+          Send
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     EDIT PRODUCT MODAL
+===================================================== -->
+
+<div
+  id="editModal"
+  class="edit-modal"
+>
+
+  <div class="edit-box">
+
+    <h2>
+      ✏️ Edit Product
+    </h2>
+
+    <input
+      type="hidden"
+      id="editListingId"
+    >
+
+    <label for="editTitle">
+      Product Name
+    </label>
+
+    <input id="editTitle">
+
+    <label for="editDescription">
+      Description
+    </label>
+
+    <textarea id="editDescription"></textarea>
+
+    <label for="editPrice">
+      Price
+    </label>
+
+    <input
+      type="number"
+      id="editPrice"
+      inputmode="decimal"
+    >
+
+    <label for="editCategory">
+      Category
+    </label>
+
+    <select id="editCategory">
+
+      <option value="Agriculture">
+        Agriculture
+      </option>
+
+      <option value="Livestock">
+        Livestock
+      </option>
+
+      <option value="Fish">
+        Fish
+      </option>
+
+      <option value="Phones">
+        Phones
+      </option>
+
+      <option value="Vehicles">
+        Vehicles
+      </option>
+
+      <option value="Houses">
+        Houses
+      </option>
+
+      <option value="Clothes">
+        Clothes
+      </option>
+
+      <option value="Services">
+        Services
+      </option>
+
+      <option value="timber">
+        Timber
+      </option>
+
+      <option value="Other">
+        Other
+      </option>
+
+    </select>
+
+    <label for="editLocation">
+      Location
+    </label>
+
+    <input id="editLocation">
+
+    <label for="editSellerName">
+      Seller Name
+    </label>
+
+    <input id="editSellerName">
+
+    <label for="editSellerPhone">
+      Seller Phone
+    </label>
+
+    <input id="editSellerPhone">
+
+    <div
+      style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+        margin-top:15px;
+      "
+    >
+
+      <button
+        class="auth-submit"
+        type="button"
+        onclick="saveEditedListing()"
+      >
+        💾 SAVE
+      </button>
+
+      <button
+        class="auth-close"
+        type="button"
+        onclick="closeEditModal()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+    <div
+      id="editMessage"
+      class="auth-message"
+    ></div>
+
+  </div>
+
+</div>
