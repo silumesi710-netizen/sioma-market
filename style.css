@@ -1,14 +1,14 @@
 /* =========================================================
-   SIOMAMARKET
-   COMPLETE REPLACEMENT STYLE.CSS
-   Mobile-first marketplace design
-   Matches current index.html
-   ========================================================= */
+SIOMAMARKET
+COMPLETE REPLACEMENT STYLE.CSS
+Mobile-first marketplace design
+Matches current index.html
+========================================================= */
 
 
 /* =========================================================
-   1. VARIABLES
-   ========================================================= */
+1. VARIABLES
+========================================================= */
 
 :root{
   --green:#087f3d;
@@ -44,8 +44,8 @@
 
 
 /* =========================================================
-   2. RESET
-   ========================================================= */
+2. RESET
+========================================================= */
 
 *{
   box-sizing:border-box;
@@ -106,21 +106,16 @@ a{
 
 
 /* =========================================================
-   3. HEADER
-   ========================================================= */
+3. HEADER
+========================================================= */
 
 header{
   position:relative;
   z-index:1000;
-
   width:100%;
-
   background:rgba(255,255,255,.98);
-
   border-bottom:1px solid var(--border);
-
-  box-shadow:
-    0 1px 8px rgba(20,34,26,.05);
+  box-shadow:0 1px 8px rgba(20,34,26,.05);
 }
 
 .header-inner{
@@ -131,18 +126,15 @@ header{
 
 
 /* =========================================================
-   4. TOP BAR / BRAND
-   ========================================================= */
+4. TOP BAR / BRAND
+========================================================= */
 
 .topbar{
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:12px;
-
   min-height:42px;
-
   margin-bottom:8px;
 }
 
@@ -150,18 +142,14 @@ header{
   display:flex;
   align-items:center;
   gap:8px;
-
   min-width:0;
 }
 
 .logo{
   color:var(--green-dark);
-
   font-size:20px;
   font-weight:900;
-
   line-height:1;
-
   white-space:nowrap;
 }
 
@@ -171,91 +159,66 @@ header{
 
 .tagline{
   display:none;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
 .location-pill{
   display:none;
-
   padding:4px 8px;
-
   border-radius:999px;
-
   background:var(--green-soft);
   color:var(--green-dark);
-
   font-size:10px;
   font-weight:700;
-
   white-space:nowrap;
 }
 
 
 /* =========================================================
-   5. SITE LOGO IMAGE
-   ========================================================= */
+5. SITE LOGO IMAGE
+========================================================= */
 
 .site-logo{
   display:none;
-
   width:52px;
   height:52px;
-
   max-width:52px;
   max-height:52px;
-
   object-fit:contain;
   object-position:center;
-
   flex:0 0 52px;
 }
 
-
-/*
-   If JavaScript supplies the actual logo image,
-   the image can appear without breaking the text brand.
-*/
-
+/* Fix: Preserves flex behavior inside .brand container when loaded */
 .site-logo[src]:not([src=""]){
   display:block;
+  flex-shrink:0;
 }
 
 
 /* =========================================================
-   6. ACCOUNT BUTTONS
-   ========================================================= */
+6. ACCOUNT BUTTONS
+========================================================= */
 
 .account-actions{
   display:flex;
   align-items:center;
-
   gap:6px;
-
   flex-shrink:0;
 }
 
 .account-button{
   position:relative;
-
   min-height:36px;
-
   padding:7px 10px;
-
   border:1px solid var(--border);
-
   border-radius:10px;
-
   background:var(--white);
   color:var(--green);
-
   font-size:11px;
   font-weight:800;
-
   white-space:nowrap;
-
   transition:
     transform .15s ease,
     background .15s ease,
@@ -273,86 +236,61 @@ header{
 .account-button.soft{
   background:var(--green-soft);
   color:var(--green-dark);
-
   border-color:#d4e8da;
 }
 
 .account-button.gold{
   background:var(--green);
   color:#fff;
-
   border-color:var(--green);
 }
 
-
-/* Hide Login from the top area on small screens.
-   Account remains accessible through bottom navigation. */
-
 @media(max-width:600px){
-
-  #loginButton{
-    display:none;
-  }
-
+  #loginButton,
   #messagesButton{
     display:none;
   }
-
 }
 
 
 /* =========================================================
-   7. MESSAGE BADGE
-   ========================================================= */
+7. MESSAGE BADGE
+========================================================= */
 
 .message-badge{
   display:inline-flex;
-
   align-items:center;
   justify-content:center;
-
   min-width:17px;
   height:17px;
-
   margin-left:3px;
-
   padding:0 4px;
-
   border-radius:999px;
-
   background:var(--gold);
   color:#222;
-
   font-size:9px;
   font-weight:900;
 }
 
 
 /* =========================================================
-   8. HERO
-   ========================================================= */
+8. HERO
+========================================================= */
 
 .hero{
   width:100%;
   max-width:920px;
-
   margin:0 auto;
-
   padding:2px 0 0;
-
   text-align:left;
 }
 
 .hero h1{
   margin:4px 0 7px;
-
   color:var(--ink);
-
   font-size:clamp(29px,8vw,46px);
   font-weight:900;
-
   line-height:1.02;
-
   letter-spacing:-1.5px;
 }
 
@@ -362,9 +300,7 @@ header{
 
 .hero p{
   margin-bottom:9px;
-
   color:var(--muted);
-
   font-size:13px;
   font-weight:500;
 }
@@ -372,61 +308,42 @@ header{
 .sioma-banner{
   display:inline-flex;
   align-items:center;
-
   margin-bottom:10px;
-
   padding:5px 9px;
-
   border-radius:999px;
-
   background:var(--green-soft);
   color:var(--green-dark);
-
   border:1px solid #d9ebdf;
-
   font-size:10px;
   font-weight:800;
 }
 
 
 /* =========================================================
-   9. SEARCH
-   ========================================================= */
+9. SEARCH
+========================================================= */
 
 .search-box{
   display:flex;
   align-items:center;
-
   width:100%;
-
   margin-top:2px;
   padding:4px;
-
   background:#f1f5f2;
-
   border:1px solid var(--border);
-
   border-radius:14px;
-
   box-shadow:none;
 }
 
 .search-box input{
   flex:1;
-
   min-width:0;
-
   height:42px;
-
   padding:0 11px;
-
   border:0;
   outline:0;
-
   background:transparent;
-
   color:var(--ink);
-
   font-size:13px;
 }
 
@@ -440,22 +357,15 @@ header{
 
 .search-box button{
   flex-shrink:0;
-
   min-width:70px;
   min-height:38px;
-
   padding:8px 10px;
-
   border:0;
-
   border-radius:10px;
-
   background:var(--green);
   color:#fff;
-
   font-size:11px;
   font-weight:850;
-
   transition:background .15s ease;
 }
 
@@ -465,31 +375,23 @@ header{
 
 
 /* =========================================================
-   10. BUY / SELL ACTIONS
-   ========================================================= */
+10. BUY / SELL ACTIONS
+========================================================= */
 
 .hero-actions{
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:8px;
-
   width:100%;
-
   margin-top:8px;
 }
 
 .hero-actions button{
   min-height:43px;
-
   padding:9px 10px;
-
   border-radius:11px;
-
   font-size:12px;
   font-weight:900;
-
   transition:
     transform .15s ease,
     background .15s ease,
@@ -503,7 +405,6 @@ header{
 .buy-btn{
   background:var(--green);
   color:#fff;
-
   border:1px solid var(--green);
 }
 
@@ -514,7 +415,6 @@ header{
 .sell-btn{
   background:#fff;
   color:var(--green);
-
   border:1.5px solid var(--green);
 }
 
@@ -524,14 +424,12 @@ header{
 
 
 /* =========================================================
-   11. MAIN
-   ========================================================= */
+11. MAIN
+========================================================= */
 
 main{
   width:min(var(--max-width),calc(100% - 24px));
-
   margin:0 auto;
-
   padding:18px 0 35px;
 }
 
@@ -543,61 +441,45 @@ main{
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
-
   margin-bottom:10px;
 }
 
 .section-heading h2{
   color:var(--ink);
-
   font-size:18px;
   font-weight:900;
-
   line-height:1.2;
 }
 
 .section-heading p{
   margin-top:2px;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
 
 /* =========================================================
-   12. CATEGORIES
-   ========================================================= */
+12. CATEGORIES
+========================================================= */
 
 .categories{
   display:grid;
-
   grid-template-columns:repeat(2,minmax(0,1fr));
-
   gap:8px;
 }
 
 .category{
   display:flex;
-
   flex-direction:column;
   align-items:center;
   justify-content:center;
-
   min-height:96px;
-
   padding:11px 7px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:14px;
-
   box-shadow:none;
-
   text-align:center;
-
   transition:
     transform .15s ease,
     border-color .15s ease,
@@ -607,9 +489,7 @@ main{
 
 .category:hover{
   transform:translateY(-1px);
-
   border-color:#bcd4c5;
-
   box-shadow:var(--shadow);
 }
 
@@ -619,71 +499,52 @@ main{
 
 .category-icon{
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   width:38px;
   height:38px;
-
   margin-bottom:5px;
-
   font-size:25px;
-
   line-height:1;
 }
 
 .category-name{
   color:var(--ink);
-
   font-size:12px;
   font-weight:850;
-
   line-height:1.2;
 }
 
 .category-count{
   margin-top:2px;
-
   color:var(--muted);
-
   font-size:9px;
 }
 
 
 /* =========================================================
-   13. PRODUCT GRID
-   ========================================================= */
+13. PRODUCT GRID
+========================================================= */
 
 .results-grid{
   display:grid;
-
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
 }
 
 
 /* =========================================================
-   14. PRODUCT CARD
-   ========================================================= */
+14. PRODUCT CARD
+========================================================= */
 
 .result-card{
   position:relative;
-
   min-width:0;
-
   overflow:hidden;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:15px;
-
   box-shadow:none;
-
   transition:
     transform .15s ease,
     box-shadow .15s ease;
@@ -691,7 +552,6 @@ main{
 
 .result-card:hover{
   transform:translateY(-1px);
-
   box-shadow:var(--shadow-medium);
 }
 
@@ -701,47 +561,32 @@ main{
 
 
 /* =========================================================
-   15. PRODUCT IMAGE
-   ========================================================= */
+15. PRODUCT IMAGE
+========================================================= */
 
 .product-image-wrap{
   position:relative;
-
   width:100%;
-
   aspect-ratio:1 / 1;
-
   overflow:hidden;
-
   background:#edf2ef;
 }
 
 .product-image-wrap img{
   width:100%;
   height:100%;
-
   object-fit:cover;
 }
 
 .product-placeholder{
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   width:100%;
   height:100%;
-
   color:#78847d;
-
   font-size:43px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #eef3ef,
-      #e5ece7
-    );
+  background:linear-gradient(135deg,#eef3ef,#e5ece7);
 }
 
 .product-placeholder.large{
@@ -750,78 +595,56 @@ main{
 
 
 /* =========================================================
-   16. FAVORITE BUTTON ON CARD
-   ========================================================= */
+16. FAVORITE BUTTON ON CARD
+========================================================= */
 
 .favorite-card{
   position:absolute;
-
   top:7px;
   right:7px;
-
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   width:34px;
   height:34px;
-
   padding:0;
-
   border:1px solid rgba(255,255,255,.8);
-
   border-radius:50%;
-
   background:rgba(255,255,255,.94);
-
   color:#68736c;
-
-  box-shadow:
-    0 2px 8px rgba(20,34,26,.14);
-
+  box-shadow:0 2px 8px rgba(20,34,26,.14);
   font-size:20px;
   line-height:1;
-
   z-index:3;
 }
 
-.favorite-card:hover{
-  color:#c62828;
-}
-
+.favorite-card:hover,
 .favorite-card.active{
   color:#c62828;
 }
 
 
 /* =========================================================
-   17. PHOTO COUNT
-   ========================================================= */
+17. PHOTO COUNT
+========================================================= */
 
 .photo-count-badge{
   position:absolute;
-
   left:7px;
   bottom:7px;
-
   padding:4px 7px;
-
   border-radius:999px;
-
   background:rgba(20,34,26,.72);
   color:#fff;
-
   font-size:9px;
   font-weight:800;
-
   backdrop-filter:blur(5px);
 }
 
 
 /* =========================================================
-   18. PRODUCT INFO
-   ========================================================= */
+18. PRODUCT INFO
+========================================================= */
 
 .result-info{
   padding:9px;
@@ -829,96 +652,65 @@ main{
 
 .result-info h3{
   margin:7px 0 4px;
-
   overflow:hidden;
-
   color:var(--ink);
-
   font-size:14px;
   font-weight:850;
-
   line-height:1.25;
-
   text-overflow:ellipsis;
   white-space:nowrap;
 }
 
 .category-badge{
   display:inline-flex;
-
   align-items:center;
-
   padding:3px 7px;
-
   border-radius:999px;
-
   background:var(--green-soft);
   color:var(--green-dark);
-
   font-size:9px;
   font-weight:800;
 }
 
 .sioma-badge{
   display:inline-flex;
-
   align-items:center;
-
   margin-left:3px;
-
   padding:3px 6px;
-
   border-radius:999px;
-
   background:var(--gold-soft);
   color:#755900;
-
   border:1px solid #f0dda0;
-
   font-size:8px;
   font-weight:850;
 }
 
 .result-price{
   margin-top:1px;
-
   color:var(--green-dark);
-
   font-size:17px;
   font-weight:900;
-
   line-height:1.2;
 }
 
 .result-location{
   margin-top:3px;
-
   overflow:hidden;
-
   color:var(--muted);
-
   font-size:10px;
-
   white-space:nowrap;
   text-overflow:ellipsis;
 }
 
 .buy-result{
   width:100%;
-
   min-height:37px;
-
   margin-top:8px;
-
   padding:8px 6px;
-
   border:1px solid var(--green);
-
   border-radius:9px;
-
   background:var(--green);
   color:#fff;
-
   font-size:9px;
   font-weight:900;
 }
@@ -929,36 +721,30 @@ main{
 
 
 /* =========================================================
-   19. SEARCH RESULTS
-   ========================================================= */
+19. SEARCH RESULTS
+========================================================= */
 
 #searchResults{
   width:min(var(--max-width),calc(100% - 24px));
-
   margin:0 auto 30px;
-
   padding:0;
 }
 
 .results-title{
   margin-bottom:10px;
-
   color:var(--ink);
-
   font-size:18px;
   font-weight:900;
 }
 
 
 /* =========================================================
-   20. FULL PAGE SECTIONS
-   ========================================================= */
+20. FULL PAGE SECTIONS
+========================================================= */
 
 .full-page{
   display:none;
-
   min-height:100vh;
-
   background:var(--bg);
 }
 
@@ -968,53 +754,34 @@ main{
 
 .page-header{
   position:sticky;
-
   top:0;
-
   z-index:900;
-
   display:flex;
-
   align-items:center;
-
   gap:10px;
-
   min-height:54px;
-
   padding:8px 12px;
-
   background:#fff;
-
   border-bottom:1px solid var(--border);
-
   box-shadow:0 1px 7px rgba(20,34,26,.05);
 }
 
 .page-header h2{
   flex:1;
-
   color:var(--ink);
-
   font-size:17px;
   font-weight:900;
-
   text-align:center;
 }
 
 .back-button{
   flex-shrink:0;
-
   min-height:36px;
-
   padding:7px 11px;
-
   border:1px solid #d5e8da;
-
   border-radius:10px;
-
   background:var(--green-soft);
   color:var(--green-dark);
-
   font-size:11px;
   font-weight:850;
 }
@@ -1025,16 +792,14 @@ main{
 
 .page-container{
   width:min(100% - 24px,900px);
-
   margin:0 auto;
-
   padding:20px 0 50px;
 }
 
 
 /* =========================================================
-   21. SELL PAGE INTRO
-   ========================================================= */
+21. SELL PAGE INTRO
+========================================================= */
 
 .sell-container{
   width:100%;
@@ -1042,69 +807,51 @@ main{
 
 .sell-intro{
   margin-bottom:15px;
-
   text-align:center;
 }
 
 .sell-intro-icon{
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   width:54px;
   height:54px;
-
   margin:0 auto 8px;
-
   border-radius:15px;
-
   background:var(--green-soft);
-
   font-size:27px;
 }
 
 .sell-intro h1{
   color:var(--ink);
-
   font-size:24px;
   font-weight:900;
-
   line-height:1.15;
 }
 
 .sell-intro p{
   margin-top:5px;
-
   color:var(--muted);
-
   font-size:12px;
 }
 
 
 /* =========================================================
-   22. SELL FORM
-   ========================================================= */
+22. SELL FORM
+========================================================= */
 
 .sell-form{
   padding:17px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:16px;
-
   box-shadow:var(--shadow);
 }
 
 .sell-form label{
   display:block;
-
   margin:0 0 5px;
-
   color:var(--ink);
-
   font-size:11px;
   font-weight:850;
 }
@@ -1113,26 +860,18 @@ main{
 .sell-form select,
 .sell-form textarea{
   width:100%;
-
   margin-bottom:13px;
-
   padding:11px 12px;
-
   border:1px solid var(--border-dark);
-
   border-radius:10px;
-
   outline:none;
-
   background:#fff;
   color:var(--ink);
-
   font-size:13px;
 }
 
 .sell-form textarea{
   min-height:105px;
-
   resize:vertical;
 }
 
@@ -1140,31 +879,24 @@ main{
 .sell-form select:focus,
 .sell-form textarea:focus{
   border-color:var(--green);
-
-  box-shadow:
-    0 0 0 3px rgba(8,127,61,.10);
+  box-shadow:0 0 0 3px rgba(8,127,61,.10);
 }
 
 
 /* =========================================================
-   23. PHOTO UPLOAD
-   ========================================================= */
+23. PHOTO UPLOAD
+========================================================= */
 
 .photo-upload-box{
   margin:3px 0 15px;
-
   padding:13px;
-
   background:#f8faf9;
-
   border:1px dashed #bfd1c5;
-
   border-radius:12px;
 }
 
 .photo-upload-title{
   color:var(--ink);
-
   font-size:13px;
   font-weight:900;
 }
@@ -1172,78 +904,55 @@ main{
 .photo-upload-help{
   margin-top:3px;
   margin-bottom:10px;
-
   color:var(--muted);
-
   font-size:10px;
 }
 
 .photo-upload-input{
   width:100%;
-
   padding:8px;
-
   border:1px solid var(--border);
-
   border-radius:9px;
-
   background:#fff;
-
   font-size:11px;
 }
 
 .image-preview-grid{
   display:grid;
-
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
-
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:7px;
-
   margin-top:10px;
 }
 
 .image-preview-grid img{
   width:100%;
   aspect-ratio:1/1;
-
   object-fit:cover;
-
   border-radius:9px;
-
   border:1px solid var(--border);
 }
 
 .photo-counter{
   margin-top:7px;
-
   color:var(--muted);
-
   font-size:10px;
   font-weight:700;
-
   text-align:right;
 }
 
 
 /* =========================================================
-   24. PUBLISH BUTTON
-   ========================================================= */
+24. PUBLISH BUTTON
+========================================================= */
 
 .publish-button{
   width:100%;
-
   min-height:44px;
-
   padding:10px 14px;
-
   border:0;
-
   border-radius:10px;
-
   background:var(--green);
   color:#fff;
-
   font-size:13px;
   font-weight:900;
 }
@@ -1254,33 +963,24 @@ main{
 
 .sell-message{
   margin-top:10px;
-
   font-size:12px;
   font-weight:700;
-
   text-align:center;
 }
 
 
 /* =========================================================
-   25. PRODUCT DETAILS
-   ========================================================= */
+25. PRODUCT DETAILS
+========================================================= */
 
 .product-details{
   display:grid;
-
   grid-template-columns:1fr;
-
   gap:18px;
-
   padding:14px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:16px;
-
   box-shadow:var(--shadow);
 }
 
@@ -1290,46 +990,32 @@ main{
 
 .details-main-image-wrap{
   position:relative;
-
   width:100%;
-
   aspect-ratio:1/1;
-
   overflow:hidden;
-
   border-radius:13px;
-
   background:#edf2ef;
 }
 
 .details-main-image{
   width:100%;
   height:100%;
-
   object-fit:cover;
 }
 
 .details-thumbnails{
   display:grid;
-
-  grid-template-columns:
-    repeat(4,minmax(0,1fr));
-
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:7px;
-
   margin-top:8px;
 }
 
 .details-thumbnails img{
   width:100%;
   aspect-ratio:1/1;
-
   object-fit:cover;
-
   border:2px solid transparent;
-
   border-radius:8px;
-
   cursor:pointer;
 }
 
@@ -1343,136 +1029,100 @@ main{
 
 .details-category{
   display:inline-flex;
-
   padding:4px 8px;
-
   border-radius:999px;
-
   background:var(--green-soft);
   color:var(--green-dark);
-
   font-size:10px;
   font-weight:850;
 }
 
 .details-content h1{
   margin:8px 0 4px;
-
   color:var(--ink);
-
   font-size:25px;
   font-weight:900;
-
   line-height:1.15;
 }
 
 .details-price{
   color:var(--green-dark);
-
   font-size:23px;
   font-weight:900;
 }
 
 .details-location{
   margin-top:4px;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
 .details-description{
   margin-top:12px;
-
   color:#3f4943;
-
   font-size:13px;
-
   white-space:pre-wrap;
 }
 
 .details-content hr{
   margin:16px 0;
-
   border:0;
-
   border-top:1px solid var(--border);
 }
 
 
 /* =========================================================
-   26. SELLER BOX
-   ========================================================= */
+26. SELLER BOX
+========================================================= */
 
 .seller-box{
   display:flex;
-
   align-items:center;
-
   gap:10px;
-
   margin-bottom:12px;
-
   padding:11px;
-
   border-radius:11px;
-
   background:#f4f8f5;
 }
 
 .seller-icon{
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   width:38px;
   height:38px;
-
   flex-shrink:0;
-
   border-radius:50%;
-
   background:var(--green-soft);
-
   font-size:18px;
 }
 
 .seller-box strong{
   display:block;
-
   color:var(--ink);
-
   font-size:13px;
 }
 
 .muted-text{
   margin-top:1px;
-
   color:var(--muted);
-
   font-size:10px;
 }
 
 
 /* =========================================================
-   27. PRODUCT ACTION BUTTONS
-   ========================================================= */
+27. PRODUCT ACTION BUTTONS
+========================================================= */
 
 .whatsapp-button,
 .call-button,
 .favorite-button,
 .message-button{
   width:100%;
-
   min-height:42px;
-
   margin-top:7px;
-
   padding:9px 12px;
-
   border-radius:10px;
-
   font-size:12px;
   font-weight:850;
 }
@@ -1480,28 +1130,24 @@ main{
 .whatsapp-button{
   background:#168a4a;
   color:#fff;
-
   border:1px solid #168a4a;
 }
 
 .call-button{
   background:#fff;
   color:var(--green);
-
   border:1.5px solid var(--green);
 }
 
 .favorite-button{
   background:#f1f4f2;
   color:var(--ink);
-
   border:1px solid var(--border);
 }
 
 .message-button{
   background:var(--green);
   color:#fff;
-
   border:1px solid var(--green);
 }
 
@@ -1512,25 +1158,18 @@ main{
 
 
 /* =========================================================
-   28. AUTH MODAL
-   ========================================================= */
+28. AUTH MODAL
+========================================================= */
 
 .auth-modal{
   position:fixed;
-
   inset:0;
-
   z-index:3000;
-
   display:none;
-
   align-items:center;
   justify-content:center;
-
   padding:15px;
-
   background:rgba(10,25,17,.55);
-
   backdrop-filter:blur(4px);
 }
 
@@ -1540,75 +1179,51 @@ main{
 
 .auth-box{
   width:min(440px,100%);
-
   max-height:92vh;
-
   overflow-y:auto;
-
   padding:20px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:18px;
-
   box-shadow:0 20px 60px rgba(0,0,0,.22);
 }
 
 .auth-box h2{
   color:var(--ink);
-
   font-size:21px;
   font-weight:900;
-
   text-align:center;
 }
 
 .auth-subtitle{
   margin:5px 0 15px;
-
   color:var(--muted);
-
   font-size:11px;
-
   text-align:center;
 }
 
 
 /* =========================================================
-   29. AUTH TABS
-   ========================================================= */
+29. AUTH TABS
+========================================================= */
 
 .auth-tabs{
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:5px;
-
   margin-bottom:15px;
-
   padding:4px;
-
   border-radius:11px;
-
   background:#f1f5f2;
 }
 
 .auth-tab{
   min-height:37px;
-
   padding:7px;
-
   border:0;
-
   border-radius:8px;
-
   background:transparent;
-
   color:var(--muted);
-
   font-size:11px;
   font-weight:800;
 }
@@ -1616,66 +1231,47 @@ main{
 .auth-tab.active{
   background:#fff;
   color:var(--green);
-
   box-shadow:0 1px 5px rgba(20,34,26,.08);
 }
 
 
 /* =========================================================
-   30. AUTH FORM
-   ========================================================= */
+30. AUTH FORM
+========================================================= */
 
 .auth-form label{
   display:block;
-
   margin-bottom:5px;
-
   color:var(--ink);
-
   font-size:11px;
   font-weight:800;
 }
 
 .auth-form input{
   width:100%;
-
   margin-bottom:12px;
-
   padding:11px 12px;
-
   border:1px solid var(--border-dark);
-
   border-radius:10px;
-
   outline:none;
-
   background:#fff;
   color:var(--ink);
-
   font-size:13px;
 }
 
 .auth-form input:focus{
   border-color:var(--green);
-
-  box-shadow:
-    0 0 0 3px rgba(8,127,61,.10);
+  box-shadow:0 0 0 3px rgba(8,127,61,.10);
 }
 
 .auth-submit{
   width:100%;
-
   min-height:43px;
-
   margin-top:3px;
-
   border:0;
-
   border-radius:10px;
-
   background:var(--green);
   color:#fff;
-
   font-size:13px;
   font-weight:900;
 }
@@ -1686,78 +1282,55 @@ main{
 
 .auth-message{
   min-height:18px;
-
   margin-top:8px;
-
   color:var(--muted);
-
   font-size:11px;
-
   text-align:center;
 }
 
 .auth-close{
   width:100%;
-
   min-height:40px;
-
   margin-top:9px;
-
   border:1px solid var(--border);
-
   border-radius:10px;
-
   background:#f2f4f3;
   color:var(--ink);
-
   font-size:12px;
   font-weight:800;
 }
 
 
 /* =========================================================
-   31. DASHBOARD
-   ========================================================= */
+31. DASHBOARD
+========================================================= */
 
 .dashboard-title{
   color:var(--ink);
-
   font-size:25px;
   font-weight:900;
-
   line-height:1.15;
 }
 
 .dashboard-subtitle{
   margin-top:4px;
-
   color:var(--muted);
-
   font-size:11px;
 }
 
 .stats-grid{
   display:grid;
-
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:9px;
-
   margin:16px 0;
 }
 
 .stat-card{
   padding:13px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:14px;
-
   box-shadow:none;
-
   text-align:center;
 }
 
@@ -1767,151 +1340,111 @@ main{
 
 .stat-number{
   margin-top:2px;
-
   color:var(--green-dark);
-
   font-size:21px;
   font-weight:900;
 }
 
 .stat-label{
   color:var(--muted);
-
   font-size:10px;
   font-weight:700;
 }
 
 .dashboard-section{
   margin-top:13px;
-
   padding:14px;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:15px;
-
   box-shadow:var(--shadow);
 }
 
 .dashboard-section h3{
   margin-bottom:10px;
-
   color:var(--ink);
-
   font-size:15px;
   font-weight:900;
 }
 
 .empty-state{
   padding:22px 10px;
-
   color:var(--muted);
-
   font-size:11px;
-
   text-align:center;
 }
 
 
 /* =========================================================
-   32. DASHBOARD LISTINGS
-   ========================================================= */
+32. DASHBOARD LISTINGS
+========================================================= */
 
 #dashboardListings{
   display:flex;
-
   flex-direction:column;
-
   gap:8px;
 }
 
 .dashboard-listing{
   display:flex;
-
   align-items:center;
-
   gap:9px;
-
   padding:9px;
-
   border:1px solid var(--border);
-
   border-radius:11px;
-
   background:#fafcfb;
 }
 
 .dashboard-listing img{
   width:58px;
   height:58px;
-
   flex-shrink:0;
-
   object-fit:cover;
-
   border-radius:9px;
-
   background:#edf2ef;
 }
 
 .dashboard-listing-info{
   flex:1;
-
   min-width:0;
 }
 
 .dashboard-listing-info strong{
   display:block;
-
   overflow:hidden;
-
   color:var(--ink);
-
   font-size:12px;
-
   white-space:nowrap;
   text-overflow:ellipsis;
 }
 
 .dashboard-listing-info span{
   display:block;
-
   margin-top:2px;
-
   color:var(--muted);
-
   font-size:10px;
 }
 
 .dashboard-listing-actions{
   display:flex;
-
   gap:4px;
 }
 
 .dashboard-listing-actions button{
   min-height:31px;
-
   padding:5px 7px;
-
   border:1px solid var(--border);
-
   border-radius:7px;
-
   background:#fff;
-
   color:var(--green);
-
   font-size:9px;
   font-weight:800;
 }
 
 
 /* =========================================================
-   33. MESSAGES PAGE
-   ========================================================= */
+33. MESSAGES PAGE
+========================================================= */
 
 .messages-page{
   min-height:100vh;
@@ -1919,65 +1452,44 @@ main{
 
 .message-layout{
   display:grid;
-
   grid-template-columns:1fr;
-
   width:min(100% - 24px,1000px);
-
   min-height:calc(100vh - 55px);
-
   margin:0 auto;
-
   padding:12px 0 40px;
-
   gap:10px;
 }
 
 .conversations,
 .chat{
   min-width:0;
-
   background:#fff;
-
   border:1px solid var(--border);
-
   border-radius:14px;
-
   box-shadow:var(--shadow);
-
   overflow:hidden;
 }
 
 .conversations{
   max-height:260px;
-
   overflow-y:auto;
 }
 
 .conversations-header{
   padding:11px 12px;
-
   border-bottom:1px solid var(--border);
-
   color:var(--green-dark);
-
   font-size:13px;
   font-weight:900;
 }
 
 .conversation-item{
   display:flex;
-
   align-items:center;
-
   gap:8px;
-
   padding:11px;
-
   border-bottom:1px solid var(--border);
-
   cursor:pointer;
-
   transition:background .15s ease;
 }
 
@@ -1987,228 +1499,161 @@ main{
 
 .conversation-item.unread{
   background:var(--green-soft);
-
   border-left:3px solid var(--green);
 }
 
 .conversation-item strong{
   display:block;
-
   color:var(--ink);
-
   font-size:11px;
 }
 
 .conversation-item span{
   display:block;
-
   margin-top:2px;
-
   overflow:hidden;
-
   color:var(--muted);
-
   font-size:9px;
-
   white-space:nowrap;
   text-overflow:ellipsis;
 }
 
 
 /* =========================================================
-   34. CHAT
-   ========================================================= */
+34. CHAT
+========================================================= */
 
 .chat{
   display:flex;
-
   flex-direction:column;
-
   min-height:430px;
 }
 
 .chat-header{
   padding:11px 12px;
-
   border-bottom:1px solid var(--border);
-
   color:var(--green-dark);
-
   font-size:13px;
   font-weight:900;
 }
 
 .chat-product{
   margin-top:2px;
-
   color:var(--muted);
-
   font-size:9px;
   font-weight:500;
 }
 
 .messages{
   flex:1;
-
   min-height:280px;
-
   max-height:55vh;
-
   overflow-y:auto;
-
   padding:12px;
-
   background:#f7faf8;
 }
 
 .empty-chat{
   padding:35px 10px;
-
   color:var(--muted);
-
   font-size:11px;
-
   text-align:center;
 }
 
 .message{
   max-width:80%;
-
   margin-bottom:8px;
-
   padding:8px 10px;
-
   border-radius:12px;
-
   font-size:11px;
-
   line-height:1.4;
 }
 
 .message.sent{
   margin-left:auto;
-
   background:var(--green);
   color:#fff;
-
   border-bottom-right-radius:4px;
 }
 
 .message.received{
   margin-right:auto;
-
   background:#fff;
   color:var(--ink);
-
   border:1px solid var(--border);
-
   border-bottom-left-radius:4px;
 }
 
 .chat-input{
   display:flex;
-
   align-items:flex-end;
-
   gap:6px;
-
   padding:8px;
-
   border-top:1px solid var(--border);
-
   background:#fff;
 }
 
 .message-input{
   flex:1;
-
   min-width:0;
-
   min-height:38px;
   max-height:100px;
-
   resize:none;
-
   padding:9px 10px;
-
   border:1px solid var(--border-dark);
-
   border-radius:10px;
-
   outline:none;
-
   background:#fff;
   color:var(--ink);
-
   font-size:11px;
 }
 
 .message-input:focus{
   border-color:var(--green);
-
-  box-shadow:
-    0 0 0 3px rgba(8,127,61,.09);
+  box-shadow:0 0 0 3px rgba(8,127,61,.09);
 }
 
 .send-message{
   flex-shrink:0;
-
   min-height:38px;
-
   padding:8px 11px;
-
   border:1px solid var(--green);
-
   border-radius:10px;
-
   background:var(--green);
   color:#fff;
-
   font-size:10px;
   font-weight:900;
 }
 
 
 /* =========================================================
-   35. ADMIN
-   ========================================================= */
+35. ADMIN
+========================================================= */
 
 .admin-badge{
   display:inline-flex;
-
   margin-bottom:12px;
-
   padding:5px 9px;
-
   border-radius:999px;
-
   background:var(--gold-soft);
   color:#735700;
-
   border:1px solid #efd994;
-
   font-size:10px;
   font-weight:900;
 }
 
 .admin-controls{
   display:flex;
-
   gap:7px;
 }
 
 .admin-controls button{
   min-height:38px;
-
   padding:8px 12px;
-
   border:1px solid var(--green);
-
   border-radius:9px;
-
   background:var(--green);
   color:#fff;
-
   font-size:10px;
   font-weight:850;
 }
@@ -2224,34 +1669,24 @@ main{
 
 .admin-table{
   width:100%;
-
   border-collapse:collapse;
-
   min-width:650px;
-
   font-size:10px;
 }
 
 .admin-table th{
   padding:9px;
-
   background:var(--green-dark);
   color:#fff;
-
   font-weight:850;
-
   text-align:left;
-
   white-space:nowrap;
 }
 
 .admin-table td{
   padding:9px;
-
   border-bottom:1px solid var(--border);
-
   color:var(--ink);
-
   white-space:nowrap;
 }
 
@@ -2261,75 +1696,46 @@ main{
 
 
 /* =========================================================
-   36. MOBILE NAVIGATION
-   ========================================================= */
+36. MOBILE NAVIGATION
+========================================================= */
 
 .mobile-nav{
   position:fixed;
-
   left:0;
   right:0;
   bottom:0;
-
   z-index:2000;
-
   display:grid;
-
-  grid-template-columns:
-    repeat(5,1fr);
-
+  grid-template-columns:repeat(5,1fr);
   min-height:60px;
-
-  padding:
-    5px
-    6px
-    calc(5px + env(safe-area-inset-bottom));
-
+  padding:5px 6px calc(5px + env(safe-area-inset-bottom));
   background:rgba(255,255,255,.97);
-
   border-top:1px solid var(--border);
-
-  box-shadow:
-    0 -4px 18px rgba(20,34,26,.08);
-
+  box-shadow:0 -4px 18px rgba(20,34,26,.08);
   backdrop-filter:blur(10px);
 }
 
 .mobile-nav button{
   display:flex;
-
   align-items:center;
   justify-content:center;
-
   flex-direction:column;
-
   gap:1px;
-
   min-width:0;
-
   padding:4px;
-
   border:0;
-
   border-radius:10px;
-
   background:transparent;
-
   color:#6b756f;
-
   font-size:9px;
   font-weight:700;
-
   line-height:1.1;
 }
 
 .mobile-nav button strong{
   display:block;
-
   color:var(--green);
-
   font-size:18px;
-
   line-height:20px;
 }
 
@@ -2343,29 +1749,20 @@ main{
 
 
 /* =========================================================
-   37. FOOTER
-   ========================================================= */
+37. FOOTER
+========================================================= */
 
 footer{
   margin-top:20px;
-
-  padding:
-    24px
-    14px
-    90px;
-
+  padding:24px 14px 90px;
   background:#fff;
-
   border-top:1px solid var(--border);
-
   color:var(--muted);
-
   text-align:center;
 }
 
 footer h3{
   color:var(--ink);
-
   font-size:17px;
   font-weight:900;
 }
@@ -2376,34 +1773,30 @@ footer h3 span{
 
 footer p{
   margin-top:4px;
-
   font-size:10px;
 }
 
 
 /* =========================================================
-   38. FOCUS / ACCESSIBILITY
-   ========================================================= */
+38. FOCUS / ACCESSIBILITY
+========================================================= */
 
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible{
   outline:3px solid rgba(8,127,61,.20);
-
   outline-offset:2px;
 }
 
 
 /* =========================================================
-   39. VERY SMALL PHONES
-   ========================================================= */
+39. VERY SMALL PHONES (<380px)
+========================================================= */
 
 @media(max-width:380px){
-
   .header-inner{
     width:calc(100% - 18px);
-
     padding-top:8px;
   }
 
@@ -2417,7 +1810,6 @@ textarea:focus-visible{
 
   .search-box button{
     min-width:63px;
-
     font-size:10px;
   }
 
@@ -2428,7 +1820,6 @@ textarea:focus-visible{
   .category-icon{
     width:34px;
     height:34px;
-
     font-size:23px;
   }
 
@@ -2454,18 +1845,16 @@ textarea:focus-visible{
 
   .account-button{
     padding:6px 8px;
-
     font-size:10px;
   }
 }
 
 
 /* =========================================================
-   40. TABLET
-   ========================================================= */
+40. TABLET (>=600px)
+========================================================= */
 
 @media(min-width:600px){
-
   .header-inner{
     padding-top:12px;
     padding-bottom:18px;
@@ -2486,32 +1875,23 @@ textarea:focus-visible{
   .site-logo{
     width:58px;
     height:58px;
-
     max-width:58px;
     max-height:58px;
-
     flex-basis:58px;
   }
 
   .categories{
-    grid-template-columns:
-      repeat(4,minmax(0,1fr));
-
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:10px;
   }
 
   .results-grid{
-    grid-template-columns:
-      repeat(3,minmax(0,1fr));
-
+    grid-template-columns:repeat(3,minmax(0,1fr));
     gap:12px;
   }
 
   .product-details{
-    grid-template-columns:
-      minmax(0,1fr)
-      minmax(0,1fr);
-
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
     padding:18px;
   }
 
@@ -2524,8 +1904,7 @@ textarea:focus-visible{
   }
 
   .stats-grid{
-    grid-template-columns:
-      repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(4,minmax(0,1fr));
   }
 
   .mobile-nav{
@@ -2539,11 +1918,10 @@ textarea:focus-visible{
 
 
 /* =========================================================
-   41. DESKTOP
-   ========================================================= */
+41. DESKTOP (>=850px)
+========================================================= */
 
 @media(min-width:850px){
-
   .header-inner{
     padding-top:13px;
     padding-bottom:20px;
@@ -2566,14 +1944,11 @@ textarea:focus-visible{
   }
 
   .categories{
-    grid-template-columns:
-      repeat(8,minmax(0,1fr));
+    grid-template-columns:repeat(8,minmax(0,1fr));
   }
 
   .results-grid{
-    grid-template-columns:
-      repeat(4,minmax(0,1fr));
-
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:14px;
   }
 
@@ -2592,11 +1967,10 @@ textarea:focus-visible{
 
 
 /* =========================================================
-   42. LARGE DESKTOP
-   ========================================================= */
+42. LARGE DESKTOP (>=1100px)
+========================================================= */
 
 @media(min-width:1100px){
-
   .header-inner{
     padding-left:0;
     padding-right:0;
@@ -2605,32 +1979,24 @@ textarea:focus-visible{
   main{
     padding-top:22px;
   }
-
-  .results-grid{
-    grid-template-columns:
-      repeat(4,minmax(0,1fr));
-  }
 }
 
 
 /* =========================================================
-   43. REDUCED MOTION
-   ========================================================= */
+43. REDUCED MOTION
+========================================================= */
 
 @media(prefers-reduced-motion:reduce){
-
   *,
   *::before,
   *::after{
     scroll-behavior:auto !important;
-
     transition:none !important;
-
     animation:none !important;
   }
 }
 
 
 /* =========================================================
-   END OF SIOMAMARKET STYLE.CSS
-   ========================================================= */
+END OF SIOMAMARKET STYLE.CSS
+========================================================= */
