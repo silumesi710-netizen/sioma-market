@@ -5746,7 +5746,7 @@ function closeSellerDashboard() {
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
    PART 9
-   ADMIN DASHBOARD + LISTING MANAGEMENT
+   ADMIN DASHBOARD
 ========================================================= */
 
 
@@ -5756,126 +5756,34 @@ function closeSellerDashboard() {
 
 async function loadAdminDashboard() {
 
-  if (!(await isAdmin())) {
-    alert("Admin access required.");
+  if (!currentUser) {
+    alert("Please login first.");
     return;
   }
 
-  const totalEl =
-    getElement("adminTotalListings");
+  const admin =
+    await isAdmin();
 
-  const activeEl =
-    getElement("adminActiveListings");
-
-  const sellerEl =
-    getElement("adminSellerCount");
-
-  const valueEl =
-    getElement("adminMarketValue");
-
-  try {
-
-    const { data, error } =
-      await supabaseClient
-        .from("listings")
-        .select("*")
-        .order("created_at", {
-          ascending: false
-        });
-
-    if (error) {
-      console.error(
-        "Admin dashboard error:",
-        error
-      );
-
-      alert(
-        "Unable to load admin dashboard."
-      );
-
-      return;
-    }
-
-    adminListingsCache = data || [];
-
-    const total =
-      adminListingsCache.length;
-
-    const activeListings =
-      adminListingsCache.filter(
-        item =>
-          String(item.status || "")
-            .toLowerCase() === "active"
-      );
-
-    const marketValue =
-      activeListings.reduce(
-        (sum, item) =>
-          sum + (Number(item.price) || 0),
-        0
-      );
-
-    const sellers = new Set();
-
-    adminListingsCache.forEach(item => {
-
-      if (item.seller_id) {
-
-        sellers.add(
-          String(item.seller_id)
-        );
-
-      } else if (item.seller_phone) {
-
-        sellers.add(
-          String(item.seller_phone)
-        );
-
-      } else if (item.seller_name) {
-
-        sellers.add(
-          String(item.seller_name)
-        );
-
-      }
-
-    });
-
-    if (totalEl) {
-      totalEl.textContent =
-        total.toLocaleString("en-ZM");
-    }
-
-    if (activeEl) {
-      activeEl.textContent =
-        activeListings.length
-          .toLocaleString("en-ZM");
-    }
-
-    if (sellerEl) {
-      sellerEl.textContent =
-        sellers.size
-          .toLocaleString("en-ZM");
-    }
-
-    if (valueEl) {
-      valueEl.textContent =
-        formatPrice(marketValue);
-    }
-
-    await loadAdminListings("all");
-
-  } catch (error) {
-
-    console.error(
-      "Admin dashboard error:",
-      error
-    );
-
+  if (!admin) {
     alert(
-      "Something went wrong loading admin data."
+      "You do not have administrator access."
     );
+    return;
   }
+
+
+  const dashboard =
+    document.getElementById(
+      "adminDashboard"
+    );
+
+  if (dashboard) {
+    dashboard.style.display =
+      "block";
+  }
+
+
+  await loadAdminListings("all");
 }
 
 
@@ -5887,84 +5795,71 @@ async function loadAdminListings(
   statusFilter = "all"
 ) {
 
-  if (!(await isAdmin())) {
-    alert("Admin access required.");
+  if (!currentUser) {
     return;
   }
 
-  const container =
-    getElement("adminListingsBody");
 
-  if (!container) return;
+  const admin =
+    await isAdmin();
 
-  container.innerHTML =
-    `<tr>
-       <td colspan="7">
-         Loading listings...
-       </td>
-     </tr>`;
+  if (!admin) {
+    return;
+  }
 
-  try {
 
-    let query =
-      supabaseClient
-        .from("listings")
-        .select("*")
-        .order("created_at", {
+  let query =
+    supabaseClient
+      .from("listings")
+      .select("*")
+      .order(
+        "created_at",
+        {
           ascending: false
-        });
-
-    if (
-      statusFilter &&
-      statusFilter !== "all"
-    ) {
-      query =
-        query.eq(
-          "status",
-          statusFilter
-        );
-    }
-
-    const { data, error } =
-      await query;
-
-    if (error) {
-      console.error(
-        "Admin listings error:",
-        error
+        }
       );
 
-      container.innerHTML =
-        `<tr>
-           <td colspan="7">
-             Unable to load listings.
-           </td>
-         </tr>`;
 
-      return;
-    }
+  if (
+    statusFilter !== "all"
+  ) {
 
-    adminListingsCache = data || [];
+    query =
+      query.eq(
+        "status",
+        statusFilter
+      );
+  }
 
-    renderAdminListings(
-      adminListingsCache,
-      container
-    );
 
-  } catch (error) {
+  const {
+    data,
+    error
+  } = await query;
+
+
+  if (error) {
 
     console.error(
       "Admin listings error:",
       error
     );
 
-    container.innerHTML =
-      `<tr>
-         <td colspan="7">
-           Error loading listings.
-         </td>
-       </tr>`;
+    alert(
+      "Unable to load admin listings."
+    );
+
+    return;
   }
+
+
+  adminListingsCache =
+    data || [];
+
+
+  renderAdminListings(
+    adminListingsCache
+  );
 }
 
 
@@ -5973,137 +5868,194 @@ async function loadAdminListings(
 ========================================================= */
 
 function renderAdminListings(
-  listings,
-  container
+  listings
 ) {
+
+  const container =
+    document.getElementById(
+      "adminListings"
+    );
+
+
+  if (!container) {
+    return;
+  }
+
 
   if (!listings.length) {
 
-    container.innerHTML =
-      `<tr>
-         <td colspan="7">
-           No listings found.
-         </td>
-       </tr>`;
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>No listings found</h3>
+        <p>
+          There are no listings for this filter.
+        </p>
+      </div>
+    `;
 
     return;
   }
 
+
   container.innerHTML =
-    listings.map(item => {
+    listings
+      .map(
+        createAdminListingHTML
+      )
+      .join("");
+}
 
-      const images =
-        getProductImages(item);
 
-      const image =
-        images[0] ||
-        DEFAULT_IMAGE;
+/* =========================================================
+   ADMIN LISTING CARD
+========================================================= */
 
-      const title =
-        escapeHTML(
-          item.title || "Untitled"
-        );
+function createAdminListingHTML(
+  item
+) {
 
-      const seller =
-        escapeHTML(
-          item.seller_name ||
-          "Unknown seller"
-        );
+  const image =
+    escapeAttribute(
+      getPrimaryImage(item)
+    );
 
-      const location =
-        escapeHTML(
-          item.location || "Sioma"
-        );
+  const title =
+    escapeHTML(
+      item.title ||
+      "Untitled"
+    );
 
-      const status =
-        String(
-          item.status || "active"
-        ).toLowerCase();
+  const seller =
+    escapeHTML(
+      item.seller_name ||
+      "Unknown seller"
+    );
 
-      const id =
-        escapeAttribute(item.id);
+  const phone =
+    escapeHTML(
+      item.seller_phone ||
+      "No phone"
+    );
 
-      return `
-        <tr>
+  const category =
+    escapeHTML(
+      item.category ||
+      "Other"
+    );
 
-          <td>
-            <img
-              src="${escapeAttribute(image)}"
-              alt="${title}"
-              class="admin-listing-image"
-              onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
-            >
-          </td>
+  const location =
+    escapeHTML(
+      item.location ||
+      "Sioma"
+    );
 
-          <td>
-            <strong>${title}</strong>
-          </td>
+  const status =
+    String(
+      item.status ||
+      "active"
+    ).toLowerCase();
 
-          <td>
-            ${formatPrice(item.price)}
-          </td>
 
-          <td>
-            ${seller}
-          </td>
+  return `
+    <div
+      class="admin-listing-card"
+      data-listing-id="${escapeAttribute(item.id)}"
+    >
 
-          <td>
-            ${location}
-          </td>
+      <div class="admin-listing-image">
 
-          <td>
+        <img
+          src="${image}"
+          alt="${title}"
+          loading="lazy"
+          onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
+        >
 
-            <select
-              onchange="updateListingStatus('${id}', this.value)"
-            >
+      </div>
 
-              <option
-                value="active"
-                ${status === "active" ? "selected" : ""}
-              >
-                Active
-              </option>
 
-              <option
-                value="sold"
-                ${status === "sold" ? "selected" : ""}
-              >
-                Sold
-              </option>
+      <div class="admin-listing-info">
 
-              <option
-                value="hidden"
-                ${status === "hidden" ? "selected" : ""}
-              >
-                Hidden
-              </option>
+        <span class="category-badge">
+          ${category}
+        </span>
 
-            </select>
+        <span class="status-badge status-${escapeAttribute(status)}">
+          ${escapeHTML(status)}
+        </span>
 
-          </td>
 
-          <td>
+        <h3>
+          ${title}
+        </h3>
 
-            <button
-              type="button"
-              onclick="openProductDetails('${id}')"
-            >
-              View
-            </button>
 
-            <button
-              type="button"
-              onclick="deleteAdminListing('${id}')"
-            >
-              Delete
-            </button>
+        <strong>
+          ${formatPrice(item.price)}
+        </strong>
 
-          </td>
 
-        </tr>
-      `;
+        <p>
+          📍 ${location}
+        </p>
 
-    }).join("");
+
+        <p>
+          Seller:
+          ${seller}
+        </p>
+
+
+        <p>
+          Phone:
+          ${phone}
+        </p>
+
+
+        <div class="admin-listing-actions">
+
+          <button
+            type="button"
+            onclick="openProductDetails('${escapeAttribute(item.id)}')"
+          >
+            View
+          </button>
+
+          <button
+            type="button"
+            onclick="updateListingStatus('${escapeAttribute(item.id)}','active')"
+          >
+            Active
+          </button>
+
+          <button
+            type="button"
+            onclick="updateListingStatus('${escapeAttribute(item.id)}','sold')"
+          >
+            Sold
+          </button>
+
+          <button
+            type="button"
+            onclick="updateListingStatus('${escapeAttribute(item.id)}','hidden')"
+          >
+            Hide
+          </button>
+
+          <button
+            type="button"
+            onclick="deleteAdminListing('${escapeAttribute(item.id)}')"
+            class="danger"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
 }
 
 
@@ -6116,10 +6068,22 @@ async function updateListingStatus(
   newStatus
 ) {
 
-  if (!(await isAdmin())) {
-    alert("Admin access required.");
+  if (!currentUser) {
+    alert("Please login first.");
     return;
   }
+
+
+  const admin =
+    await isAdmin();
+
+  if (!admin) {
+    alert(
+      "Administrator access required."
+    );
+    return;
+  }
+
 
   const allowedStatuses = [
     "active",
@@ -6127,43 +6091,34 @@ async function updateListingStatus(
     "hidden"
   ];
 
+
   if (
     !allowedStatuses.includes(
-      String(newStatus).toLowerCase()
+      newStatus
     )
   ) {
-    alert("Invalid listing status.");
+
+    alert(
+      "Invalid listing status."
+    );
+
     return;
   }
 
-  try {
 
-    const { error } =
-      await supabaseClient
-        .from("listings")
-        .update({
-          status:
-            String(newStatus).toLowerCase()
-        })
-        .eq("id", listingId);
-
-    if (error) {
-
-      console.error(
-        "Status update error:",
-        error
+  const { error } =
+    await supabaseClient
+      .from("listings")
+      .update({
+        status: newStatus
+      })
+      .eq(
+        "id",
+        listingId
       );
 
-      alert(
-        "Unable to update listing status."
-      );
 
-      return;
-    }
-
-    await loadAdminDashboard();
-
-  } catch (error) {
+  if (error) {
 
     console.error(
       "Status update error:",
@@ -6171,9 +6126,23 @@ async function updateListingStatus(
     );
 
     alert(
-      "Something went wrong updating the listing."
+      "Unable to update listing status."
     );
+
+    return;
   }
+
+
+  await loadAdminListings(
+    "all"
+  );
+
+  await loadLatestProducts();
+
+
+  alert(
+    "Listing status updated."
+  );
 }
 
 
@@ -6183,8 +6152,9 @@ async function updateListingStatus(
 
 async function showAllAdminListings() {
 
-  await loadAdminListings("all");
-
+  await loadAdminListings(
+    "all"
+  );
 }
 
 
@@ -6194,72 +6164,83 @@ async function showAllAdminListings() {
 
 async function showActiveAdminListings() {
 
-  await loadAdminListings("active");
-
+  await loadAdminListings(
+    "active"
+  );
 }
 
 
 /* =========================================================
-   DELETE LISTING FROM ADMIN
+   SHOW SOLD ADMIN LISTINGS
+========================================================= */
+
+async function showSoldAdminListings() {
+
+  await loadAdminListings(
+    "sold"
+  );
+}
+
+
+/* =========================================================
+   SHOW HIDDEN ADMIN LISTINGS
+========================================================= */
+
+async function showHiddenAdminListings() {
+
+  await loadAdminListings(
+    "hidden"
+  );
+}
+
+
+/* =========================================================
+   DELETE LISTING AS ADMIN
 ========================================================= */
 
 async function deleteAdminListing(
   listingId
 ) {
 
-  if (!(await isAdmin())) {
-    alert("Admin access required.");
+  if (!currentUser) {
+    alert("Please login first.");
     return;
   }
 
+
+  const admin =
+    await isAdmin();
+
+  if (!admin) {
+    alert(
+      "Administrator access required."
+    );
+    return;
+  }
+
+
   const confirmed =
     confirm(
-      "Delete this listing permanently?"
+      "Are you sure you want to permanently delete this listing?"
     );
 
-  if (!confirmed) return;
 
-  try {
+  if (!confirmed) {
+    return;
+  }
 
-    const { error } =
-      await supabaseClient
-        .from("listings")
-        .delete()
-        .eq("id", listingId);
 
-    if (error) {
-
-      console.error(
-        "Admin delete error:",
-        error
+  const { error } =
+    await supabaseClient
+      .from("listings")
+      .delete()
+      .eq(
+        "id",
+        listingId
       );
 
-      alert(
-        "Unable to delete listing."
-      );
 
-      return;
-    }
-
-    favoritesCache =
-      getFavorites()
-        .filter(
-          id =>
-            String(id) !==
-            String(listingId)
-        );
-
-    saveFavorites(
-      favoritesCache
-    );
-
-    await loadAdminDashboard();
-
-    await loadLatestProducts();
-
-    await renderFavoritesPage();
-
-  } catch (error) {
+  if (error) {
 
     console.error(
       "Admin delete error:",
@@ -6267,84 +6248,185 @@ async function deleteAdminListing(
     );
 
     alert(
-      "Something went wrong deleting the listing."
+      "Unable to delete listing."
     );
+
+    return;
+  }
+
+
+  adminListingsCache =
+    adminListingsCache.filter(
+      item =>
+        String(item.id) !==
+        String(listingId)
+    );
+
+
+  renderAdminListings(
+    adminListingsCache
+  );
+
+
+  await loadLatestProducts();
+
+
+  alert(
+    "Listing deleted successfully."
+  );
+}
+
+
+/* =========================================================
+   REFRESH ADMIN DASHBOARD
+========================================================= */
+
+async function refreshAdminDashboard() {
+
+  await loadAdminListings(
+    "all"
+  );
+}
+
+
+/* =========================================================
+   CLOSE ADMIN DASHBOARD
+========================================================= */
+
+function closeAdminDashboard() {
+
+  const dashboard =
+    document.getElementById(
+      "adminDashboard"
+    );
+
+  if (dashboard) {
+
+    dashboard.style.display =
+      "none";
   }
 }
 
 
 /* =========================================================
-   ADMIN BUTTON EVENTS
+   ADMIN BUTTONS
 ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   function () {
 
-    const loadButton =
-      getElement("loadAdminListings");
-
     const allButton =
-      getElement("showAllAdminListings");
-
-    const activeButton =
-      getElement("showActiveAdminListings");
-
-    if (loadButton) {
-
-      loadButton.addEventListener(
-        "click",
-        function () {
-
-          loadAdminListings("all");
-
-        }
+      document.getElementById(
+        "adminAllListings"
       );
 
-    }
+    const activeButton =
+      document.getElementById(
+        "adminActiveListings"
+      );
+
+    const soldButton =
+      document.getElementById(
+        "adminSoldListings"
+      );
+
+    const hiddenButton =
+      document.getElementById(
+        "adminHiddenListings"
+      );
+
 
     if (allButton) {
 
       allButton.addEventListener(
         "click",
-        function () {
-
-          showAllAdminListings();
-
-        }
+        showAllAdminListings
       );
-
     }
+
 
     if (activeButton) {
 
       activeButton.addEventListener(
         "click",
-        function () {
-
-          showActiveAdminListings();
-
-        }
+        showActiveAdminListings
       );
+    }
 
+
+    if (soldButton) {
+
+      soldButton.addEventListener(
+        "click",
+        showSoldAdminListings
+      );
+    }
+
+
+    if (hiddenButton) {
+
+      hiddenButton.addEventListener(
+        "click",
+        showHiddenAdminListings
+      );
     }
 
   }
 );
-
-
-/* =========================================================
-   END PART 9
-========================================================= */
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
    PART 10
-   FINAL INITIALIZATION + SAFETY CHECKS
+   FINAL INITIALIZATION
 ========================================================= */
 
 
 /* =========================================================
-   SAFE PAGE INITIALIZATION
+   CHECK SUPABASE CONNECTION
+========================================================= */
+
+async function checkSupabaseConnection() {
+
+  try {
+
+    const { error } =
+      await supabaseClient
+        .from("listings")
+        .select("id")
+        .limit(1);
+
+
+    if (error) {
+
+      console.error(
+        "Supabase connection error:",
+        error
+      );
+
+      return false;
+    }
+
+
+    console.log(
+      "SiomaMarket: Supabase connected successfully."
+    );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Supabase connection failed:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+/* =========================================================
+   FINAL APP INITIALIZATION
 ========================================================= */
 
 document.addEventListener(
@@ -6352,8 +6434,13 @@ document.addEventListener(
   async function () {
 
     console.log(
-      "SiomaMarket JavaScript loaded."
+      "SiomaMarket is starting..."
     );
+
+
+    /* -----------------------------------------
+       LOAD USER SESSION
+    ----------------------------------------- */
 
     try {
 
@@ -6365,8 +6452,33 @@ document.addEventListener(
         "Session initialization error:",
         error
       );
-
     }
+
+
+    /* -----------------------------------------
+       LOAD SELLER PROFILE
+    ----------------------------------------- */
+
+    try {
+
+      if (currentUser) {
+
+        await loadSellerProfile();
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Seller profile initialization error:",
+        error
+      );
+    }
+
+
+    /* -----------------------------------------
+       LOAD MARKET PRODUCTS
+    ----------------------------------------- */
 
     try {
 
@@ -6375,73 +6487,40 @@ document.addEventListener(
     } catch (error) {
 
       console.error(
-        "Product initialization error:",
+        "Product loading error:",
         error
       );
-
     }
+
+
+    /* -----------------------------------------
+       UPDATE FAVORITES
+    ----------------------------------------- */
 
     try {
 
       updateFavoriteButtons();
+
       updateFavoriteCount();
 
     } catch (error) {
 
       console.error(
-        "Favorite initialization error:",
+        "Favorites initialization error:",
         error
       );
-
     }
 
-    try {
 
-      loadSellerProfile();
+    /* -----------------------------------------
+       CHECK DATABASE CONNECTION
+    ----------------------------------------- */
 
-    } catch (error) {
-
-      console.error(
-        "Seller profile initialization error:",
-        error
-      );
-
-    }
-
-  }
-);
+    await checkSupabaseConnection();
 
 
-/* =========================================================
-   SEARCH INPUT SAFETY
-========================================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-
-    const searchInput =
-      getElement("marketSearch");
-
-    if (!searchInput) return;
-
-    searchInput.addEventListener(
-      "input",
-      function () {
-
-        clearTimeout(searchTimer);
-
-        searchTimer =
-          setTimeout(
-            function () {
-
-              searchMarket();
-
-            },
-            250
-          );
-
-      }
+    console.log(
+      "SiomaMarket initialization complete."
     );
 
   }
@@ -6449,7 +6528,44 @@ document.addEventListener(
 
 
 /* =========================================================
-   ONLINE / OFFLINE MESSAGE
+   GLOBAL IMAGE ERROR HANDLER
+========================================================= */
+
+document.addEventListener(
+  "error",
+  function (event) {
+
+    const element =
+      event.target;
+
+
+    if (
+      element &&
+      element.tagName === "IMG"
+    ) {
+
+      if (
+        element.dataset.fallbackApplied
+      ) {
+        return;
+      }
+
+
+      element.dataset.fallbackApplied =
+        "true";
+
+
+      element.src =
+        DEFAULT_IMAGE;
+    }
+
+  },
+  true
+);
+
+
+/* =========================================================
+   NETWORK STATUS
 ========================================================= */
 
 window.addEventListener(
@@ -6462,6 +6578,7 @@ window.addEventListener(
 
   }
 );
+
 
 window.addEventListener(
   "offline",
@@ -6476,106 +6593,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   PREVENT BROKEN IMAGE DISPLAY
-========================================================= */
-
-document.addEventListener(
-  "error",
-  function (event) {
-
-    const element =
-      event.target;
-
-    if (
-      element &&
-      element.tagName === "IMG"
-    ) {
-
-      if (
-        !element.dataset.fallbackApplied
-      ) {
-
-        element.dataset.fallbackApplied =
-          "true";
-
-        element.src =
-          DEFAULT_IMAGE;
-      }
-
-    }
-
-  },
-  true
-);
-
-
-/* =========================================================
-   CLEANUP MESSAGE REFRESH
-========================================================= */
-
-window.addEventListener(
-  "beforeunload",
-  function () {
-
-    if (
-      typeof stopMessageRefresh ===
-      "function"
-    ) {
-
-      stopMessageRefresh();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   SUPABASE CONNECTION CHECK
-========================================================= */
-
-async function checkSupabaseConnection() {
-
-  try {
-
-    const { error } =
-      await supabaseClient
-        .from("listings")
-        .select("id")
-        .eq("location", "Sioma")
-        .limit(1);
-
-    if (error) {
-
-      console.error(
-        "Supabase connection check failed:",
-        error
-      );
-
-      return false;
-    }
-
-    console.log(
-      "Supabase connection successful."
-    );
-
-    return true;
-
-  } catch (error) {
-
-    console.error(
-      "Supabase connection error:",
-      error
-    );
-
-    return false;
-  }
-
-}
-
-
-/* =========================================================
-   GLOBAL ERROR REPORTING
+   GLOBAL ERROR LOGGING
 ========================================================= */
 
 window.addEventListener(
@@ -6591,6 +6609,7 @@ window.addEventListener(
   }
 );
 
+
 window.addEventListener(
   "unhandledrejection",
   function (event) {
@@ -6605,14 +6624,29 @@ window.addEventListener(
 
 
 /* =========================================================
-   FINAL STARTUP
+   CLEANUP
 ========================================================= */
 
-console.log(
-  "SiomaMarket V2.3 JavaScript ready."
+window.addEventListener(
+  "beforeunload",
+  function () {
+
+    if (
+      typeof stopMessageRefresh ===
+      "function"
+    ) {
+
+      stopMessageRefresh();
+    }
+
+  }
 );
 
 
 /* =========================================================
-   END PART 10
+   FINAL STARTUP MESSAGE
 ========================================================= */
+
+console.log(
+  "SiomaMarket script loaded successfully."
+);
