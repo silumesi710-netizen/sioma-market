@@ -1012,3 +1012,223 @@ header {
   background-color: rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f6f8;
+  color: #333333;
+  padding-bottom: 70px; /* Offset for bottom nav */
+}
+
+/* Header Styles */
+.app-header {
+  background-color: #0b3d26; /* Dark Green */
+  color: #ffffff;
+  padding: 16px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-mark {
+  background-color: #c5a059;
+  color: #0b3d26;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.location-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+.header-quick-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-nav-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.quick-nav-btn.active, 
+.quick-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Main Content Area */
+.content-container {
+  padding: 16px;
+}
+
+/* Action Cards */
+.action-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.action-card {
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.buy-card {
+  background-color: #008744;
+  color: #ffffff;
+}
+
+.sell-card {
+  background-color: #ffffff;
+  border: 1.5px solid #008744;
+  color: #008744;
+}
+
+.action-card-text h2 {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.action-card-text p {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.action-card-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Categories Section */
+.categories-section {
+  margin-top: 8px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #008744;
+  letter-spacing: 0.5px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #1a1a1a;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.category-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #333333;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.1s ease;
+}
+
+.category-card:active {
+  transform: scale(0.98);
+}
+
+.cat-icon {
+  width: 20px;
+  height: 20px;
+  color: #008744;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 100;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #666666;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.nav-item.active {
+  color: #008744;
+  font-weight: 600;
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+}
