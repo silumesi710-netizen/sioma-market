@@ -913,3 +913,30 @@ main {
     padding-bottom: 0;
   }
 }
+/* =========================================
+   SITE LOGO STYLES
+   ========================================= */
+.brand-area {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.site-logo {
+  height: 40px;          /* Adjust height to fit header spacing */
+  width: auto;           /* Preserves original logo proportions */
+  object-fit: contain;
+  display: block;
+}
+
+/* Mobile responsive sizing */
+@media (max-width: 600px) {
+  .site-logo {
+    height: 32px;        /* Slightly smaller for smaller screens */
+  }
+}
