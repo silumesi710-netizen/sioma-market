@@ -10,7 +10,48 @@
   <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- MAIN CSS -->
+ 
   <link rel="stylesheet" href="style.css">
+  <!-- =========================================
+     1. MAIN APPLICATION HEADER
+========================================= -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-top">
+      
+      <!-- BRAND / LOGO AREA WITH FALLBACK -->
+      <div class="brand-area">
+        <a href="javascript:void(0)" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" class="logo-link">
+          <img 
+            src="./SiomaMarket-logo.png" 
+            alt="SiomaMarket Logo" 
+            class="site-logo" 
+            onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='inline-block';"
+          >
+          <span id="logoFallback" style="display:none; font-weight:800; font-size:18px; color:#ffffff;">
+            SiomaMarket
+          </span>
+        </a>
+      </div>
+
+      <!-- LOCATION BADGE -->
+      <div class="location-badge">
+        <svg viewBox="0 0 24 24" class="icon-sm"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        <span>Proudly Sioma</span>
+      </div>
+
+      <!-- ACCOUNT CONTROL BUTTONS -->
+      <div class="account-actions">
+        <button type="button" id="dashboardButton" class="header-action" onclick="openSellerDashboard()">📊 Dashboard</button>
+        <button type="button" id="adminButton" class="header-action" onclick="openAdminDashboard()">⚙️ Admin</button>
+        <button type="button" class="header-action" onclick="showFavorites()">♡ Favorites</button>
+        <button type="button" class="header-action" onclick="openAccount()">👤 Account</button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
 </head>
 <body>
 
