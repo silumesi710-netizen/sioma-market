@@ -5085,7 +5085,7 @@ window.addEventListener(
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
    PART 8
-   SELLER DASHBOARD + EDIT + DELETE LISTINGS
+   SELLER DASHBOARD + EDIT + DELETE
 ========================================================= */
 
 
@@ -5096,152 +5096,109 @@ window.addEventListener(
 async function loadSellerDashboard() {
 
   if (!currentUser) {
+    alert("Please login first.");
     return;
   }
 
-  const container =
-    getElement("sellerListings");
+  const dashboard = document.getElementById(
+    "sellerDashboard"
+  );
 
-  const totalElement =
-    getElement("sellerTotalListings");
-
-  const activeElement =
-    getElement("sellerActiveListings");
-
-  const valueElement =
-    getElement("sellerMarketValue");
-
-
-  if (container) {
-    container.innerHTML = `
-      <div class="loading-state">
-        Loading your listings...
-      </div>
-    `;
+  if (dashboard) {
+    dashboard.style.display = "block";
   }
 
-
-  const {
-    data,
-    error
-  } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("listings")
     .select("*")
-    .eq(
-      "seller_id",
-      currentUser.id
-    )
-    .order(
-      "created_at",
-      {
-        ascending: false
-      }
-    );
-
+    .eq("user_id", currentUser.id)
+    .order("created_at", {
+      ascending: false
+    });
 
   if (error) {
 
     console.error(
-      "Seller listings error:",
+      "Seller dashboard error:",
       error
     );
 
-    /*
-       Fallback for databases where
-       seller_id has not been added yet.
-    */
+    alert(
+      "Unable to load your listings."
+    );
 
-    const fallback =
-      await supabaseClient
-        .from("listings")
-        .select("*")
-        .eq(
-          "seller_phone",
-          currentUser.user_metadata?.phone ||
-          ""
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
-
-    if (fallback.error) {
-
-      if (container) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <h3>Unable to load listings</h3>
-            <p>
-              Please check your connection and try again.
-            </p>
-          </div>
-        `;
-      }
-
-      return;
-    }
-
-
-    sellerListingsCache =
-      fallback.data || [];
-
-  } else {
-
-    sellerListingsCache =
-      data || [];
+    return;
   }
 
+  sellerListingsCache = data || [];
 
-  const listings =
-    sellerListingsCache;
+  renderSellerListings(
+    sellerListingsCache
+  );
+
+  updateSellerDashboardStats(
+    sellerListingsCache
+  );
+}
 
 
-  const activeListings =
+/* =========================================================
+   SELLER DASHBOARD STATISTICS
+========================================================= */
+
+function updateSellerDashboardStats(
+  listings
+) {
+
+  const total =
+    listings.length;
+
+  const active =
     listings.filter(
       item =>
-        item.status === "active"
+        String(item.status || "")
+          .toLowerCase() === "active"
+    ).length;
+
+  const totalValue =
+    listings.reduce(
+      (sum, item) =>
+        sum + Number(item.price || 0),
+      0
     );
 
 
-  const totalValue =
-    activeListings.reduce(
-      function (sum, item) {
+  const totalElement =
+    document.getElementById(
+      "sellerTotalListings"
+    );
 
-        return (
-          sum +
-          (Number(item.price) || 0)
-        );
+  const activeElement =
+    document.getElementById(
+      "sellerActiveListings"
+    );
 
-      },
-      0
+  const valueElement =
+    document.getElementById(
+      "sellerValue"
     );
 
 
   if (totalElement) {
     totalElement.innerText =
-      listings.length;
+      total;
   }
-
 
   if (activeElement) {
     activeElement.innerText =
-      activeListings.length;
+      active;
   }
 
-
   if (valueElement) {
+
     valueElement.innerText =
       formatPrice(totalValue);
   }
-
-
-  renderSellerListings(
-    listings,
-    container
-  );
 }
 
 
@@ -5250,36 +5207,32 @@ async function loadSellerDashboard() {
 ========================================================= */
 
 function renderSellerListings(
-  listings,
-  container
+  listings
 ) {
+
+  const container =
+    document.getElementById(
+      "sellerListings"
+    );
 
   if (!container) {
     return;
   }
 
 
-  if (
-    !listings ||
-    listings.length === 0
-  ) {
+  if (!listings.length) {
 
     container.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">
-          📦
-        </div>
-
         <h3>No listings yet</h3>
-
         <p>
           Products you publish will appear here.
         </p>
 
         <button
           type="button"
-          class="primary-button"
-          onclick="sellNow()"
+          onclick="openSellPage()"
+          class="gold"
         >
           Sell Something
         </button>
@@ -5291,15 +5244,14 @@ function renderSellerListings(
 
 
   container.innerHTML =
-    listings.map(
-      item =>
-        createSellerListingHTML(item)
-    ).join("");
+    listings
+      .map(createSellerListingHTML)
+      .join("");
 }
 
 
 /* =========================================================
-   SELLER LISTING HTML
+   SELLER LISTING CARD
 ========================================================= */
 
 function createSellerListingHTML(
@@ -5307,15 +5259,32 @@ function createSellerListingHTML(
 ) {
 
   const image =
-    getPrimaryImage(item);
+    escapeAttribute(
+      getPrimaryImage(item)
+    );
 
+  const title =
+    escapeHTML(
+      item.title || "Untitled"
+    );
+
+  const category =
+    escapeHTML(
+      item.category || "Other"
+    );
+
+  const location =
+    escapeHTML(
+      item.location || "Sioma"
+    );
 
   const status =
-    item.status || "active";
+    String(
+      item.status || "active"
+    ).toLowerCase();
 
-
-  const statusClass =
-    status.toLowerCase();
+  const statusLabel =
+    escapeHTML(status);
 
 
   return `
@@ -5327,11 +5296,10 @@ function createSellerListingHTML(
       <div class="seller-listing-image">
 
         <img
-          src="${escapeAttribute(image)}"
-          alt="${escapeAttribute(
-            item.title || "Product"
-          )}"
+          src="${image}"
+          alt="${title}"
           loading="lazy"
+          onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
         >
 
       </div>
@@ -5341,61 +5309,52 @@ function createSellerListingHTML(
 
         <div class="seller-listing-top">
 
-          <span
-            class="listing-status ${escapeAttribute(
-              statusClass
-            )}"
-          >
-            ${escapeHTML(status)}
+          <span class="category-badge">
+            ${category}
+          </span>
+
+          <span class="status-badge status-${escapeAttribute(status)}">
+            ${statusLabel}
           </span>
 
         </div>
 
 
         <h3>
-          ${escapeHTML(
-            item.title ||
-            "Untitled product"
-          )}
+          ${title}
         </h3>
 
 
-        <div class="seller-listing-price">
+        <strong>
           ${formatPrice(item.price)}
-        </div>
+        </strong>
 
 
-        <div class="seller-listing-location">
-          📍 ${escapeHTML(
-            item.location || "Sioma"
-          )}
-        </div>
+        <p>
+          📍 ${location}
+        </p>
 
 
         <div class="seller-listing-actions">
 
           <button
             type="button"
-            class="secondary-button"
             onclick="openProductDetails('${escapeAttribute(item.id)}')"
           >
             View
           </button>
 
-
           <button
             type="button"
-            class="secondary-button"
             onclick="openEditListing('${escapeAttribute(item.id)}')"
           >
             Edit
           </button>
 
-
           <button
             type="button"
-            class="danger-button"
             onclick="deleteListing('${escapeAttribute(item.id)}')"
+            class="danger"
           >
             Delete
           </button>
@@ -5413,24 +5372,23 @@ function createSellerListingHTML(
    OPEN EDIT LISTING
 ========================================================= */
 
-async function openEditListing(id) {
+async function openEditListing(
+  listingId
+) {
 
-  if (!currentUser || !id) {
-
-    openAuthModal();
-
+  if (!currentUser) {
+    alert("Please login first.");
     return;
   }
 
 
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data, error } =
+    await supabaseClient
+      .from("listings")
+      .select("*")
+      .eq("id", listingId)
+      .eq("user_id", currentUser.id)
+      .single();
 
 
   if (error || !data) {
@@ -5441,70 +5399,33 @@ async function openEditListing(id) {
     );
 
     alert(
-      "Unable to load this listing."
+      "Listing not found or you do not have permission to edit it."
     );
 
     return;
   }
 
-
-  /*
-     Verify ownership when seller_id
-     exists.
-  */
-
-  if (
-    data.seller_id &&
-    String(data.seller_id) !==
-    String(currentUser.id)
-  ) {
-
-    alert(
-      "You can only edit your own listings."
-    );
-
-    return;
-  }
-
-
-  const modal =
-    getElement("editModal");
-
-
-  if (!modal) {
-    return;
-  }
-
-
-  const idInput =
-    getElement("editListingId");
 
   const titleInput =
-    getElement("editTitle");
+    document.getElementById(
+      "editTitle"
+    );
 
   const descriptionInput =
-    getElement("editDescription");
+    document.getElementById(
+      "editDescription"
+    );
 
   const priceInput =
-    getElement("editPrice");
+    document.getElementById(
+      "editPrice"
+    );
 
   const categoryInput =
-    getElement("editCategory");
+    document.getElementById(
+      "editCategory"
+    );
 
-  const locationInput =
-    getElement("editLocation");
-
-  const sellerNameInput =
-    getElement("editSellerName");
-
-  const sellerPhoneInput =
-    getElement("editSellerPhone");
-
-
-  if (idInput) {
-    idInput.value =
-      data.id;
-  }
 
   if (titleInput) {
     titleInput.value =
@@ -5518,34 +5439,33 @@ async function openEditListing(id) {
 
   if (priceInput) {
     priceInput.value =
-      data.price ?? "";
+      data.price || "";
   }
 
   if (categoryInput) {
     categoryInput.value =
-      data.category || "Other";
-  }
-
-  if (locationInput) {
-    locationInput.value =
-      "Sioma";
-  }
-
-  if (sellerNameInput) {
-    sellerNameInput.value =
-      data.seller_name || "";
-  }
-
-  if (sellerPhoneInput) {
-    sellerPhoneInput.value =
-      data.seller_phone || "";
+      data.category || "";
   }
 
 
-  clearMessage("editMessage");
+  currentListingId =
+    listingId;
 
 
-  modal.classList.add("active");
+  const modal =
+    document.getElementById(
+      "editListingModal"
+    );
+
+  if (modal) {
+
+    modal.style.display =
+      "flex";
+
+    modal.classList.add(
+      "active"
+    );
+  }
 }
 
 
@@ -5556,18 +5476,22 @@ async function openEditListing(id) {
 function closeEditModal() {
 
   const modal =
-    getElement("editModal");
-
+    document.getElementById(
+      "editListingModal"
+    );
 
   if (modal) {
+
+    modal.style.display =
+      "none";
 
     modal.classList.remove(
       "active"
     );
   }
 
-
-  clearMessage("editMessage");
+  currentListingId =
+    null;
 }
 
 
@@ -5578,227 +5502,137 @@ function closeEditModal() {
 async function saveEditedListing() {
 
   if (!currentUser) {
+    alert("Please login first.");
+    return;
+  }
 
-    openAuthModal();
-
+  if (!currentListingId) {
+    alert("No listing selected.");
     return;
   }
 
 
-  const id =
-    getElement("editListingId")?.value;
+  const titleInput =
+    document.getElementById(
+      "editTitle"
+    );
+
+  const descriptionInput =
+    document.getElementById(
+      "editDescription"
+    );
+
+  const priceInput =
+    document.getElementById(
+      "editPrice"
+    );
+
+  const categoryInput =
+    document.getElementById(
+      "editCategory"
+    );
 
 
   const title =
-    getElement("editTitle")?.value.trim();
-
+    titleInput
+      ? titleInput.value.trim()
+      : "";
 
   const description =
-    getElement("editDescription")?.value.trim();
-
+    descriptionInput
+      ? descriptionInput.value.trim()
+      : "";
 
   const price =
-    getElement("editPrice")?.value;
-
+    priceInput
+      ? Number(priceInput.value)
+      : NaN;
 
   const category =
-    getElement("editCategory")?.value;
-
-
-  const location =
-    getElement("editLocation")?.value;
-
-
-  const sellerName =
-    getElement("editSellerName")?.value.trim();
-
-
-  const sellerPhone =
-    getElement("editSellerPhone")?.value.trim();
-
-
-  if (!id) {
-
-    showMessage(
-      "editMessage",
-      "Listing ID is missing.",
-      "error"
-    );
-
-    return;
-  }
+    categoryInput
+      ? categoryInput.value.trim()
+      : "";
 
 
   if (!title) {
-
-    showMessage(
-      "editMessage",
-      "Please enter a product title.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  if (!price || Number(price) < 0) {
-
-    showMessage(
-      "editMessage",
-      "Please enter a valid price.",
-      "error"
-    );
-
+    alert("Please enter a product title.");
     return;
   }
 
 
   if (
-    location &&
-    !isSioma(location)
+    Number.isNaN(price) ||
+    price < 0
   ) {
 
-    showMessage(
-      "editMessage",
-      "SiomaMarket currently accepts listings from Sioma only.",
-      "error"
+    alert(
+      "Please enter a valid price."
     );
 
     return;
   }
 
 
-  const saveButton =
-    document.querySelector(
-      "#editModal button[onclick*='saveEditedListing']"
-    );
-
-
-  if (saveButton) {
-    saveButton.disabled = true;
-    saveButton.textContent =
-      "Saving...";
+  if (!category) {
+    alert("Please select a category.");
+    return;
   }
 
 
-  /*
-     Update by ID.
-
-     Ownership is also included
-     when seller_id exists.
-  */
-
-  let updateQuery =
-    supabaseClient
+  const { error } =
+    await supabaseClient
       .from("listings")
       .update({
-        title: title,
-        description: description,
-        price: Number(price),
+
+        title:
+          title,
+
+        description:
+          description,
+
+        price:
+          price,
+
         category:
-          category || "Other",
-        location: "Sioma",
-        seller_name:
-          sellerName ||
-          "Sioma Seller",
-        seller_phone:
-          sellerPhone || ""
+          category
+
       })
-      .eq("id", id);
-
-
-  if (currentUser.id) {
-
-    updateQuery =
-      updateQuery.eq(
-        "seller_id",
+      .eq(
+        "id",
+        currentListingId
+      )
+      .eq(
+        "user_id",
         currentUser.id
       );
-  }
-
-
-  const {
-    error
-  } = await updateQuery;
 
 
   if (error) {
 
     console.error(
-      "Update listing error:",
+      "Save listing error:",
       error
     );
 
+    alert(
+      "Unable to save changes."
+    );
 
-    /*
-       Retry without seller_id for
-       older database structures.
-    */
-
-    const fallback =
-      await supabaseClient
-        .from("listings")
-        .update({
-          title: title,
-          description: description,
-          price: Number(price),
-          category:
-            category || "Other",
-          location: "Sioma",
-          seller_name:
-            sellerName ||
-            "Sioma Seller",
-          seller_phone:
-            sellerPhone || ""
-        })
-        .eq("id", id);
-
-
-    if (fallback.error) {
-
-      showMessage(
-        "editMessage",
-        "Unable to save the changes.",
-        "error"
-      );
-
-
-      if (saveButton) {
-        saveButton.disabled = false;
-        saveButton.textContent =
-          "Save Changes";
-      }
-
-      return;
-    }
+    return;
   }
 
 
-  showMessage(
-    "editMessage",
-    "Listing updated successfully.",
-    "success"
+  alert(
+    "Listing updated successfully."
   );
+
+
+  closeEditModal();
 
 
   await loadSellerDashboard();
 
   await loadLatestProducts();
-
-
-  setTimeout(
-    function () {
-      closeEditModal();
-    },
-    900
-  );
-
-
-  if (saveButton) {
-    saveButton.disabled = false;
-    saveButton.textContent =
-      "Save Changes";
-  }
 }
 
 
@@ -5806,12 +5640,12 @@ async function saveEditedListing() {
    DELETE LISTING
 ========================================================= */
 
-async function deleteListing(id) {
+async function deleteListing(
+  listingId
+) {
 
-  if (!currentUser || !id) {
-
-    openAuthModal();
-
+  if (!currentUser) {
+    alert("Please login first.");
     return;
   }
 
@@ -5827,95 +5661,53 @@ async function deleteListing(id) {
   }
 
 
-  /*
-     First try ownership-protected
-     deletion.
-  */
-
-  let deleteQuery =
-    supabaseClient
+  const { error } =
+    await supabaseClient
       .from("listings")
       .delete()
-      .eq("id", id)
       .eq(
-        "seller_id",
+        "id",
+        listingId
+      )
+      .eq(
+        "user_id",
         currentUser.id
       );
-
-
-  const {
-    error
-  } = await deleteQuery;
 
 
   if (error) {
 
     console.error(
-      "Protected delete error:",
+      "Delete listing error:",
       error
     );
 
+    alert(
+      "Unable to delete listing."
+    );
 
-    /*
-       Fallback for older listings
-       without seller_id.
-    */
-
-    const fallback =
-      await supabaseClient
-        .from("listings")
-        .delete()
-        .eq("id", id);
-
-
-    if (fallback.error) {
-
-      console.error(
-        "Delete listing error:",
-        fallback.error
-      );
-
-      alert(
-        "Unable to delete this listing."
-      );
-
-      return;
-    }
+    return;
   }
 
 
-  /*
-     Remove the listing from
-     local favorites as well.
-  */
-
-  let favorites =
-    getFavorites();
-
-
-  favorites =
-    favorites.filter(
+  sellerListingsCache =
+    sellerListingsCache.filter(
       item =>
-        String(item) !==
-        String(id)
+        String(item.id) !==
+        String(listingId)
     );
 
 
-  saveFavorites(favorites);
+  renderSellerListings(
+    sellerListingsCache
+  );
 
-  favoritesCache =
-    favorites;
+  updateSellerDashboardStats(
+    sellerListingsCache
+  );
 
-
-  await loadSellerDashboard();
 
   await loadLatestProducts();
-
-  await renderFavoritesPage();
-
-  updateFavoriteButtons();
-
-  updateFavoriteCount();
 
 
   alert(
@@ -5925,15 +5717,10 @@ async function deleteListing(id) {
 
 
 /* =========================================================
-   SELLER DASHBOARD REFRESH
+   REFRESH SELLER DASHBOARD
 ========================================================= */
 
 async function refreshSellerDashboard() {
-
-  if (!currentUser) {
-    return;
-  }
-
 
   await loadSellerDashboard();
 }
@@ -5946,21 +5733,15 @@ async function refreshSellerDashboard() {
 function closeSellerDashboard() {
 
   const dashboard =
-    getElement("sellerDashboard");
-
+    document.getElementById(
+      "sellerDashboard"
+    );
 
   if (dashboard) {
 
-    dashboard.classList.remove(
-      "active"
-    );
+    dashboard.style.display =
+      "none";
   }
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
 }
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
