@@ -5,8 +5,10 @@
 /* --------------------------------------------------------------------------
    SECTION 1 & 2: SUPABASE CONFIGURATION & INITIALIZATION
    -------------------------------------------------------------------------- */
-const SUPABASE_URL = "https://your-supabase-project-url.supabase.co";
-const SUPABASE_KEY = "your-anon-public-key";
+// Replace these placeholders with your actual Supabase Project Settings!
+const SUPABASE_URL = "https://YOUR_ACTUAL_PROJECT_ID.supabase.co";
+const SUPABASE_KEY = "YOUR_ACTUAL_ANON_PUBLIC_KEY";
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /**
@@ -139,6 +141,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
    SECTION 6: CATALOG, LISTINGS & FAVORITES
    -------------------------------------------------------------------------- */
 async function loadListings() {
+  const gridContainer = $('listingsGrid');
   const queryText = $('searchInput').value;
   const category = $('categorySelect').value;
 
@@ -151,15 +154,31 @@ async function loadListings() {
   if (queryText) query = query.ilike('title', `%${queryText}%`);
 
   const { data, error } = await query;
-  if (error) return console.error(error);
+  
+  if (error) {
+    console.error("Supabase Query Error:", error);
+    if (gridContainer) {
+      gridContainer.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; color: var(--danger); padding: 2rem;">
+          <p><strong>Failed to load marketplace items.</strong></p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+            Please ensure you have configured valid SUPABASE_URL and SUPABASE_KEY credentials and enabled SELECT RLS policies on the 'listings' table.
+          </p>
+        </div>
+      `;
+    }
+    return;
+  }
 
-  renderListingsGrid(data, $('listingsGrid'));
+  renderListingsGrid(data, gridContainer);
 }
 
 function renderListingsGrid(listings, container) {
+  if (!container) return;
   container.innerHTML = '';
+  
   if (!listings || listings.length === 0) {
-    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No listings found.</p>';
+    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No listings found.</p>';
     return;
   }
 
@@ -169,7 +188,7 @@ function renderListingsGrid(listings, container) {
     card.className = 'card';
     card.onclick = () => openProductModal(item);
     card.innerHTML = `
-      <img class="card-img" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}">
+      <img class="card-img" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image';">
       <div class="card-body">
         <div class="card-price">$${Number(item.price).toFixed(2)}</div>
         <div class="card-title">${escapeHtml(item.title)}</div>
@@ -236,7 +255,9 @@ async function toggleFavorite(listingId) {
 
 async function loadFavorites() {
   if (!currentUser) return;
-  const { data } = await supabaseClient.from('favorites').select('listing_id, listings(*)').eq('user_id', currentUser.id);
+  const { data, error } = await supabaseClient.from('favorites').select('listing_id, listings(*)').eq('user_id', currentUser.id);
+  if (error) return console.error(error);
+  
   const listings = data ? data.map(d => d.listings).filter(Boolean) : [];
   renderListingsGrid(listings, $('favsGrid'));
 }
@@ -244,7 +265,7 @@ async function loadFavorites() {
 function openProductModal(item) {
   const modal = $('productModal');
   $('modalDetails').innerHTML = `
-    <img src="${escapeHtml(item.image_url)}" style="width:100%; max-height: 300px; object-fit: cover; border-radius:6px; margin-bottom:1rem;">
+    <img src="${escapeHtml(item.image_url)}" style="width:100%; max-height: 300px; object-fit: cover; border-radius:6px; margin-bottom:1rem;" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image';">
     <h2>${escapeHtml(item.title)}</h2>
     <h3 style="color:var(--primary); margin:0.5rem 0;">$${Number(item.price).toFixed(2)}</h3>
     <p><strong>Category:</strong> ${escapeHtml(item.category)}</p>
@@ -304,6 +325,11 @@ async function loadConversations() {
 
   const listContainer = $('conversationsList');
   listContainer.innerHTML = '';
+
+  if (conversationsMap.size === 0) {
+    listContainer.innerHTML = '<p style="padding:1rem; color:var(--text-muted); font-size:0.875rem;">No active chats.</p>';
+    return;
+  }
 
   conversationsMap.forEach((lastMsg, otherId) => {
     const item = document.createElement('div');
