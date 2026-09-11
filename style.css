@@ -955,7 +955,60 @@ main {
   max-height: 60px;
   overflow: hidden;
 }
-/* Update header background to match dark logo */
+/* FIXED HEADER LAYOUT & DISPLAY */
 header {
   background-color: #1a3c27 !important;
+  padding: 10px 12px !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.header-inner, 
+.topbar {
+  background-color: transparent !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+.brand-area {
+  background-color: transparent !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Fix logo image scaling */
+.site-logo {
+  max-height: 38px !important;
+  width: auto !important;
+  object-fit: contain;
+  display: block;
+}
+
+/* Fix button row layout */
+.account-actions {
+  display: flex !important;
+  gap: 6px !important;
+  width: 100% !important;
+  justify-content: space-between !important;
+}
+
+.header-action {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  font-size: 0.8rem !important;
+}
+
+.location-pill {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
 }
