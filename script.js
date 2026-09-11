@@ -3,10 +3,6 @@ SIOMA MARKET - SCRIPT.JS
 Cleaned & Corrected Version
 ========================================= */
 
-/* =========================================
-SUPABASE
-========================================= */
-
 const SUPABASE_URL = "https://luolbdjonzissgskjupd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
@@ -14,10 +10,6 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
-/* =========================================
-BASIC HTML ESCAPING
-========================================= */
 
 function escapeHTML(value) {
   return String(value ?? "")
@@ -29,25 +21,78 @@ function escapeHTML(value) {
 }
 
 /* =========================================
-SEARCH PRODUCTS
+INITIAL LOAD
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadLatestProducts();
+});
+
+async function loadLatestProducts() {
+  const container = document.getElementById("homeProducts");
+  if (!container) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("listings")
+      .select("*")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No products available right now.</p>";
+      return;
+    }
+
+    renderGrid(container, data);
+  } catch (err) {
+    console.error("LOAD ERROR:", err);
+    container.innerHTML = "<p>Unable to load products.</p>";
+  }
+}
+
+function renderGrid(container, products) {
+  let html = "";
+  products.forEach((product) => {
+    const image = product.image_url || "https://via.placeholder.com/600x400?text=SiomaMarket";
+    const title = product.title || "Product";
+    const location = product.location || "Sioma";
+    const price = Number(product.price || 0);
+
+    html += `
+      <div class="product-card" onclick="viewListing('${escapeHTML(product.id)}')">
+        <div class="product-image-wrap">
+          <img src="${escapeHTML(image)}" alt="${escapeHTML(title)}" loading="lazy">
+        </div>
+        <div style="padding: 10px;">
+          <h3>${escapeHTML(title)}</h3>
+          <p class="product-price">K${price.toLocaleString()}</p>
+          <p>📍 ${escapeHTML(location)}</p>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+/* =========================================
+SEARCH & CATEGORY
 ========================================= */
 
 async function searchMarket() {
   const input = document.getElementById("searchInput");
+  const section = document.getElementById("searchResultsSection");
   const results = document.getElementById("searchResults");
 
-  if (!input || !results) {
-    alert("Search section is missing.");
-    return;
-  }
+  if (!input || !results) return;
 
   const search = input.value.trim();
+  if (!search) return;
 
-  if (!search) {
-    results.innerHTML = "<p>Please enter a product.</p>";
-    return;
-  }
-
+  section.style.display = "block";
   results.innerHTML = "<p>🔎 Searching...</p>";
 
   try {
@@ -58,40 +103,59 @@ async function searchMarket() {
       .ilike("title", `%${search}%`)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (!data || data.length === 0) {
       results.innerHTML = "<p>🔍 No products found.</p>";
       return;
     }
 
-    displayProducts(data, "🔎 Search Results");
-
-    results.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    displayProducts(data, `Search: "${search}"`);
+    section.scrollIntoView({ behavior: "smooth" });
   } catch (error) {
     console.error("SEARCH ERROR:", error);
-    results.innerHTML = "<p>❌ Search failed. Please try again.</p>";
+    results.innerHTML = "<p>❌ Search failed.</p>";
   }
 }
 
-/* =========================================
-BUY NOW
-========================================= */
+async function searchCategory(category) {
+  const section = document.getElementById("searchResultsSection");
+  const results = document.getElementById("searchResults");
+  if (!results) return;
+
+  section.style.display = "block";
+  results.innerHTML = "<p>🔎 Loading category...</p>";
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("listings")
+      .select("*")
+      .eq("status", "active")
+      .eq("category", category)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      results.innerHTML = `<p>🔍 No products in ${escapeHTML(category)}.</p>`;
+      return;
+    }
+
+    displayProducts(data, `Category: ${category}`);
+    section.scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    console.error("CATEGORY ERROR:", err);
+    results.innerHTML = "<p>❌ Failed to load category.</p>";
+  }
+}
 
 async function buyNow() {
+  const section = document.getElementById("searchResultsSection");
   const results = document.getElementById("searchResults");
+  if (!results) return;
 
-  if (!results) {
-    alert("Search results section is missing.");
-    return;
-  }
-
-  results.innerHTML = '<div class="no-results"> 🔎 Loading products... </div>';
+  section.style.display = "block";
+  results.innerHTML = "<p>🔎 Loading products...</p>";
 
   try {
     const { data, error } = await supabaseClient
@@ -100,100 +164,51 @@ async function buyNow() {
       .eq("status", "active")
       .order("created_at", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    if (!data || data.length === 0) {
-      results.innerHTML = '<div class="no-results"> 🛒 No products are currently available. </div>';
-      return;
-    }
-
-    displayProducts(data, "🛒 Products for Sale");
-
-    results.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    displayProducts(data, "🛒 All Products");
+    section.scrollIntoView({ behavior: "smooth" });
   } catch (error) {
-    console.error("BUY NOW ERROR:", error);
-    results.innerHTML = '<div class="no-results"> ❌ Unable to load products. </div>';
+    results.innerHTML = "<p>❌ Unable to load products.</p>";
   }
 }
 
-/* =========================================
-DISPLAY PRODUCT CARDS
-========================================= */
-
 function displayProducts(products, heading) {
   const results = document.getElementById("searchResults");
+  if (!results) return;
 
-  if (!results) {
-    return;
-  }
-
-  if (!Array.isArray(products)) {
-    products = [];
-  }
-
-  let html = `<h2>${escapeHTML(heading)}</h2><div class="results-grid">`;
-
-  products.forEach(function (product) {
+  let html = `<h2>${escapeHTML(heading)}</h2><div class="products-grid">`;
+  products.forEach((product) => {
     const image = product.image_url || "https://via.placeholder.com/600x400?text=SiomaMarket";
-    const title = product.title || "Product";
-    const location = product.location || "Sioma";
     const price = Number(product.price || 0);
 
     html += `
-      <div class="result-card">
-        <img
-          src="${escapeHTML(image)}"
-          alt="${escapeHTML(title)}"
-          loading="lazy"
-          onerror="this.src='https://via.placeholder.com/600x400?text=SiomaMarket'"
-        >
-        <div class="result-info">
-          <h3>${escapeHTML(title)}</h3>
-          <p class="result-price">K${price.toLocaleString()}</p>
-          <p>📍 ${escapeHTML(location)}</p>
-          <button
-            type="button"
-            class="buy-result"
-            onclick="viewListing('${escapeHTML(product.id)}')"
-          >
-            🛒 VIEW PRODUCT
-          </button>
+      <div class="product-card" onclick="viewListing('${escapeHTML(product.id)}')">
+        <div class="product-image-wrap">
+          <img src="${escapeHTML(image)}" alt="${escapeHTML(product.title)}">
+        </div>
+        <div style="padding: 10px;">
+          <h3>${escapeHTML(product.title)}</h3>
+          <p class="product-price">K${price.toLocaleString()}</p>
+          <p>📍 ${escapeHTML(product.location || "Sioma")}</p>
         </div>
       </div>
     `;
   });
-
-  html += `</div>`;
+  html += "</div>";
   results.innerHTML = html;
 }
 
 /* =========================================
-OPEN PRODUCT DETAILS
+VIEW & MODALS NAVIGATION
 ========================================= */
 
 async function viewListing(id) {
-  console.log("VIEW PRODUCT:", id);
-
   const productPage = document.getElementById("productPage");
-
-  if (!productPage) {
-    alert("Product details page is missing.");
-    return;
-  }
+  if (!productPage) return;
 
   productPage.style.display = "block";
   document.body.style.overflow = "hidden";
-
-  const detailsTitle = document.getElementById("detailsTitle");
-
-  if (detailsTitle) {
-    detailsTitle.textContent = "Loading product...";
-  }
 
   try {
     const { data, error } = await supabaseClient
@@ -202,164 +217,100 @@ async function viewListing(id) {
       .eq("id", id)
       .single();
 
-    if (error) {
-      throw error;
+    if (error || !data) throw error;
+
+    document.getElementById("detailsImage").src = data.image_url || "https://via.placeholder.com/800x500?text=SiomaMarket";
+    document.getElementById("detailsTitle").textContent = data.title || "Product";
+    document.getElementById("detailsPrice").textContent = "K" + Number(data.price || 0).toLocaleString();
+    document.getElementById("detailsCategory").textContent = data.category || "General";
+    document.getElementById("detailsLocation").textContent = "📍 " + (data.location || "Sioma");
+    document.getElementById("detailsDescription").textContent = data.description || "No description.";
+    document.getElementById("detailsSeller").textContent = data.seller_name || "Sioma Seller";
+    document.getElementById("detailsPhone").textContent = data.seller_phone || "No phone";
+
+    const whatsappBtn = document.getElementById("whatsappButton");
+    if (whatsappBtn && data.seller_phone) {
+      whatsappBtn.onclick = () => contactSeller(data.seller_phone, data.title);
     }
-
-    if (!data) {
-      throw new Error("Product was not found.");
-    }
-
-    /* =====================================
-    IMAGE
-    ===================================== */
-    const detailsImage = document.getElementById("detailsImage");
-
-    if (detailsImage) {
-      detailsImage.src = data.image_url || "https://via.placeholder.com/800x500?text=SiomaMarket";
-      detailsImage.alt = data.title || "SiomaMarket product";
-      detailsImage.onerror = function () {
-        this.src = "https://via.placeholder.com/800x500?text=SiomaMarket";
-      };
-    }
-
-    /* =====================================
-    TITLE & DETAILS
-    ===================================== */
-    if (detailsTitle) detailsTitle.textContent = data.title || "Product";
-
-    const detailsPrice = document.getElementById("detailsPrice");
-    if (detailsPrice) detailsPrice.textContent = "K" + Number(data.price || 0).toLocaleString();
-
-    const detailsCategory = document.getElementById("detailsCategory");
-    if (detailsCategory) detailsCategory.textContent = data.category || "";
-
-    const detailsLocation = document.getElementById("detailsLocation");
-    if (detailsLocation) detailsLocation.textContent = "📍 " + (data.location || "Sioma");
-
-    const detailsDescription = document.getElementById("detailsDescription");
-    if (detailsDescription) detailsDescription.textContent = data.description || "No description provided.";
-
-    const detailsSeller = document.getElementById("detailsSeller");
-    if (detailsSeller) detailsSeller.textContent = data.seller_name || "Sioma Seller";
-
-    const detailsPhone = document.getElementById("detailsPhone");
-    if (detailsPhone) detailsPhone.textContent = data.seller_phone || "Phone number not provided";
-
-    /* =====================================
-    WHATSAPP & CALL
-    ===================================== */
-    const whatsappButton = document.getElementById("whatsappButton");
-    if (whatsappButton && data.seller_phone) {
-      whatsappButton.style.display = "block";
-      whatsappButton.onclick = function () {
-        contactSeller(data.seller_phone, data.title || "product");
-      };
-    } else if (whatsappButton) {
-      whatsappButton.style.display = "none";
-    }
-
-    const callButton = document.getElementById("callButton");
-    if (callButton && data.seller_phone) {
-      callButton.style.display = "block";
-      callButton.onclick = function () {
-        window.location.href = "tel:" + cleanPhoneNumber(data.seller_phone);
-      };
-    } else if (callButton) {
-      callButton.style.display = "none";
-    }
-
-  } catch (error) {
-    console.error("PRODUCT ERROR:", error);
-    if (detailsTitle) {
-      detailsTitle.textContent = "Unable to load product.";
-    }
-    alert("Unable to load this product. Please try again.");
+  } catch (err) {
+    alert("Unable to load product details.");
   }
 }
 
-/* =========================================
-CLOSE PRODUCT PAGE
-========================================= */
-
 function closeProductPage() {
-  const productPage = document.getElementById("productPage");
-  if (!productPage) return;
-
-  productPage.style.display = "none";
+  document.getElementById("productPage").style.display = "none";
   document.body.style.overflow = "auto";
 }
 
-/* =========================================
-WHATSAPP
-========================================= */
-
-function contactSeller(phone, product) {
-  let number = cleanPhoneNumber(phone);
-
-  if (!number) {
-    alert("Seller phone number is not available.");
-    return;
-  }
-
-  if (number.startsWith("0")) {
-    number = "260" + number.substring(1);
-  }
-
-  const message = encodeURIComponent(
-    "Hello, I found your " + (product || "product") + " on SiomaMarket. Is it still available?"
-  );
-
-  const whatsappURL = "https://wa.me/" + number + "?text=" + message;
-  window.open(whatsappURL, "_blank", "noopener,noreferrer");
-}
-
-/* =========================================
-CLEAN PHONE NUMBER
-========================================= */
-
-function cleanPhoneNumber(phone) {
-  return String(phone || "").replace(/\D/g, "");
-}
-
-/* =========================================
-SAVE FAVORITE
-========================================= */
-
-function saveFavorite() {
-  alert("❤️ Product saved! Favorites will be added to your account soon.");
-}
-
-/* =========================================
-SELL NOW PAGE
-========================================= */
-
 function sellNow() {
-  const sellPage = document.getElementById("sellPage");
-
-  if (!sellPage) {
-    alert("SELL page not found.");
-    return;
-  }
-
-  sellPage.style.display = "block";
+  document.getElementById("sellPage").style.display = "block";
   document.body.style.overflow = "hidden";
 }
 
-/* =========================================
-CLOSE SELL PAGE
-========================================= */
-
 function closeSellPage() {
-  const sellPage = document.getElementById("sellPage");
-  if (!sellPage) return;
-
-  sellPage.style.display = "none";
+  document.getElementById("sellPage").style.display = "none";
   document.body.style.overflow = "auto";
 }
 
+function openAccount() {
+  document.getElementById("authModal").style.display = "flex";
+}
+
+function closeAuthModal() {
+  document.getElementById("authModal").style.display = "none";
+}
+
+function showLogin() {
+  document.getElementById("loginForm").style.display = "flex";
+  document.getElementById("registerForm").style.display = "none";
+  document.getElementById("loginTab").classList.add("active");
+  document.getElementById("registerTab").classList.remove("active");
+}
+
+function showRegister() {
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("registerForm").style.display = "flex";
+  document.getElementById("registerTab").classList.add("active");
+  document.getElementById("loginTab").classList.remove("active");
+}
+
+function showFavorites() {
+  document.getElementById("favoritesPage").style.display = "block";
+}
+
+function closeFavorites() {
+  document.getElementById("favoritesPage").style.display = "none";
+}
+
+function openSellerDashboard() {
+  document.getElementById("sellerDashboard").style.display = "block";
+}
+
+function closeSellerDashboard() {
+  document.getElementById("sellerDashboard").style.display = "none";
+}
+
+function openAdminDashboard() {
+  document.getElementById("adminDashboard").style.display = "block";
+}
+
+function closeAdminDashboard() {
+  document.getElementById("adminDashboard").style.display = "none";
+}
+
+function saveFavorite() {
+  alert("❤️ Saved to favorites!");
+}
+
+function contactSeller(phone, product) {
+  let number = String(phone).replace(/\D/g, "");
+  if (number.startsWith("0")) number = "260" + number.substring(1);
+  const msg = encodeURIComponent(`Hello, I saw your listing for ${product} on SiomaMarket.`);
+  window.open(`https://wa.me/${number}?text=${msg}`, "_blank");
+}
+
 /* =========================================
-SELL FORM
+SELL FORM SUBMISSION
 ========================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -370,129 +321,37 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
 
     const message = document.getElementById("sellMessage");
-    const button = sellForm.querySelector(".publish-button");
+    const button = document.getElementById("publishButton");
 
-    const titleInput = document.getElementById("sellTitle");
-    const descriptionInput = document.getElementById("sellDescription");
-    const priceInput = document.getElementById("sellPrice");
-    const categoryInput = document.getElementById("sellCategory");
-    const locationInput = document.getElementById("sellLocation");
-    const imageInput = document.getElementById("sellImage");
-    const sellerNameInput = document.getElementById("sellerName");
-    const sellerPhoneInput = document.getElementById("sellerPhone");
-
-    if (
-      !titleInput ||
-      !descriptionInput ||
-      !priceInput ||
-      !categoryInput ||
-      !locationInput ||
-      !sellerNameInput ||
-      !sellerPhoneInput
-    ) {
-      console.error("SELL FORM ERROR: Required form fields are missing.");
-      if (message) {
-        message.innerHTML = "❌ Some sell form fields are missing.";
-        message.style.color = "#c62828";
-      }
-      return;
-    }
-
-    if (button) {
-      button.disabled = true;
-      button.textContent = "⏳ Publishing...";
-    }
+    button.disabled = true;
+    button.textContent = "⏳ Publishing...";
 
     const product = {
-      title: titleInput.value.trim(),
-      description: descriptionInput.value.trim(),
-      price: Number(priceInput.value),
-      category: categoryInput.value,
-      location: locationInput.value.trim() || "Sioma",
-      image_url: imageInput ? imageInput.value.trim() || null : null,
-      seller_name: sellerNameInput.value.trim(),
-      seller_phone: sellerPhoneInput.value.trim(),
+      title: document.getElementById("sellTitle").value.trim(),
+      description: document.getElementById("sellDescription").value.trim(),
+      price: Number(document.getElementById("sellPrice").value),
+      category: document.getElementById("sellCategory").value,
+      location: document.getElementById("sellLocation").value.trim() || "Sioma",
+      image_url: document.getElementById("sellImageUrl").value.trim() || null,
+      seller_name: document.getElementById("sellerName").value.trim(),
+      seller_phone: document.getElementById("sellerPhone").value.trim(),
       status: "active"
     };
 
-    if (!product.title) {
-      showSellMessage(message, "❌ Please enter a product name.", "#c62828");
-      resetPublishButton(button);
-      return;
-    }
-
-    if (!product.price || product.price <= 0) {
-      showSellMessage(message, "❌ Please enter a valid price.", "#c62828");
-      resetPublishButton(button);
-      return;
-    }
-
-    if (!product.category) {
-      showSellMessage(message, "❌ Please select a category.", "#c62828");
-      resetPublishButton(button);
-      return;
-    }
-
-    if (!product.seller_name) {
-      showSellMessage(message, "❌ Please enter your name.", "#c62828");
-      resetPublishButton(button);
-      return;
-    }
-
-    if (!product.seller_phone) {
-      showSellMessage(message, "❌ Please enter your phone number.", "#c62828");
-      resetPublishButton(button);
-      return;
-    }
-
     try {
-      const { data, error } = await supabaseClient
-        .from("listings")
-        .insert([product])
-        .select();
-
+      const { error } = await supabaseClient.from("listings").insert([product]);
       if (error) throw error;
 
-      console.log("PRODUCT PUBLISHED:", data);
-
-      if (message) {
-        message.innerHTML = "✅ <strong>Product published successfully!</strong><br><br>Your product is now available on SiomaMarket.";
-        message.style.color = "#087f3d";
-      }
-
+      message.innerHTML = "✅ Published successfully!";
+      message.style.color = "green";
       sellForm.reset();
-
-      if (locationInput) {
-        locationInput.value = "Sioma";
-      }
-    } catch (error) {
-      console.error("SELL ERROR:", error);
-      if (message) {
-        message.innerHTML = `❌ Could not publish product.<br><br>${escapeHTML(error.message || "Unknown error")}`;
-        message.style.color = "#c62828";
-      }
+      loadLatestProducts();
+    } catch (err) {
+      message.innerHTML = `❌ Error: ${escapeHTML(err.message)}`;
+      message.style.color = "red";
     }
 
-    resetPublishButton(button);
+    button.disabled = false;
+    button.textContent = "🚀 PUBLISH IN SIOMA";
   });
 });
-
-/* =========================================
-SELL MESSAGE HELPER
-========================================= */
-
-function showSellMessage(element, text, color) {
-  if (!element) return;
-  element.innerHTML = text;
-  element.style.color = color;
-}
-
-/* =========================================
-RESET PUBLISH BUTTON
-========================================= */
-
-function resetPublishButton(button) {
-  if (!button) return;
-  button.disabled = false;
-  button.textContent = "🚀 PUBLISH PRODUCT";
-}
