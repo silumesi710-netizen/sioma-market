@@ -940,3 +940,18 @@ main {
     height: 32px;        /* Slightly smaller for smaller screens */
   }
 }
+/* =========================================
+   HEADER LOGO RESTRICTIONS
+   ========================================= */
+.site-logo {
+  max-height: 45px !important;
+  width: auto !important;
+  object-fit: contain;
+  display: block;
+}
+
+/* Ensure header container scales down */
+.brand-area, .header-inner {
+  max-height: 60px;
+  overflow: hidden;
+}
