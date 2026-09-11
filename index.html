@@ -7,6 +7,349 @@
   <meta name="description" content="SiomaMarket - Sioma's local marketplace">
   <title>SiomaMarket 🇿🇲 | Sioma's Local Marketplace</title>
 
+  <!-- Lucide Icons Script -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* --- CSS RESET & BASE STYLES --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #1a1a1a;
+      padding-bottom: 70px; /* Space for fixed bottom nav */
+    }
+
+    .container {
+      max-width: 480px; /* Standard mobile web container */
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* --- TOP ACTIONS (BUY / SELL) --- */
+    .top-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .action-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .action-card:active {
+      transform: scale(0.98);
+    }
+
+    .action-card.buy {
+      background-color: #058240;
+      color: #ffffff;
+    }
+
+    .action-card.sell {
+      background-color: #ffffff;
+      color: #058240;
+      border: 1.5px solid #058240;
+    }
+
+    .action-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .action-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .action-title {
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .action-subtitle {
+      font-size: 0.75rem;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* --- SECTION HEADINGS --- */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #058240;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 14px;
+    }
+
+    .title-icon {
+      width: 20px;
+      height: 20px;
+      color: #e63946; /* Accent color for location pin / flame */
+    }
+
+    /* --- CATEGORIES GRID --- */
+    .categories-section {
+      margin-bottom: 28px;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .category-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #222222;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid #eaeaea;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: background-color 0.15s ease;
+    }
+
+    .category-btn:hover {
+      background-color: #f1f3f5;
+    }
+
+    .category-icon {
+      width: 20px;
+      height: 20px;
+      color: #058240; /* Consistent green for brand category icons */
+      flex-shrink: 0;
+    }
+
+    /* --- FEED / CONTENT SECTION --- */
+    .products-section {
+      margin-top: 10px;
+    }
+
+    /* Graceful empty/error state styling */
+    .state-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 32px 16px;
+      text-align: center;
+      border: 1px dashed #cccccc;
+      margin-top: 8px;
+    }
+
+    .state-icon {
+      width: 36px;
+      height: 36px;
+      color: #888888;
+      margin-bottom: 8px;
+    }
+
+    .state-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #444444;
+    }
+
+    .state-desc {
+      font-size: 0.8rem;
+      color: #777777;
+      margin-top: 4px;
+    }
+
+    /* --- BOTTOM NAVIGATION BAR --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #ffffff;
+      border-top: 1px solid #e5e5e5;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      max-width: 480px;
+      margin: 0 auto;
+      z-index: 1000;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #666666;
+      font-size: 0.7rem;
+      font-weight: 500;
+      gap: 3px;
+      width: 20%;
+    }
+
+    .nav-item.active {
+      color: #058240;
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+
+    <!-- Top Action Buttons -->
+    <section class="top-actions">
+      <a href="#" class="action-card buy">
+        <i data-lucide="shopping-cart" class="action-icon"></i>
+        <div class="action-text">
+          <span class="action-title">Buy</span>
+          <span class="action-subtitle">Find products</span>
+        </div>
+      </a>
+
+      <a href="#" class="action-card sell">
+        <i data-lucide="tag" class="action-icon"></i>
+        <div class="action-text">
+          <span class="action-title">Sell</span>
+          <span class="action-subtitle">List your product</span>
+        </div>
+      </a>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+      <div class="section-label">Explore</div>
+      <h2 class="section-title">
+        <i data-lucide="map-pin" class="title-icon"></i>
+        Sioma Categories
+      </h2>
+
+      <div class="categories-grid">
+        <a href="#" class="category-btn">
+          <i data-lucide="sprout" class="category-icon"></i>
+          <span>Agriculture</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="bird" class="category-icon"></i>
+          <span>Livestock</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="fish" class="category-icon"></i>
+          <span>Fish</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="smartphone" class="category-icon"></i>
+          <span>Phones</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="car" class="category-icon"></i>
+          <span>Vehicles</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="home" class="category-icon"></i>
+          <span>Houses</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="shirt" class="category-icon"></i>
+          <span>Clothes</span>
+        </a>
+
+        <a href="#" class="category-btn">
+          <i data-lucide="wrench" class="category-icon"></i>
+          <span>Services</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Latest Feed Section -->
+    <section class="products-section">
+      <div class="section-label">Sioma Market</div>
+      <h2 class="section-title">
+        <i data-lucide="flame" class="title-icon"></i>
+        Latest in Sioma
+      </h2>
+
+      <!-- Empty / Error State Placeholder -->
+      <div class="state-card">
+        <i data-lucide="package-open" class="state-icon"></i>
+        <div class="state-title">Unable to load products</div>
+        <div class="state-desc">Check your internet connection and try refreshing.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Fixed Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active">
+      <i data-lucide="home" class="nav-icon"></i>
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i data-lucide="search" class="nav-icon"></i>
+      <span>Search</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i data-lucide="plus-circle" class="nav-icon"></i>
+      <span>Sell</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i data-lucide="heart" class="nav-icon"></i>
+      <span>Favorites</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i data-lucide="user" class="nav-icon"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>
+
   <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- MAIN CSS -->
