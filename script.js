@@ -1870,7 +1870,8 @@ async function uploadProductImages(
   }
 
          }
-/* =========================================================
+ /* =========================================================
+   SIOMAMARKET - SCRIPT.JS
    PART 4
    PUBLISH LISTING + DATABASE + SEARCH + CATEGORIES
 ========================================================= */
@@ -1883,107 +1884,78 @@ async function uploadProductImages(
 const sellForm =
   getElement("sellForm");
 
-
 if (sellForm) {
 
   sellForm.addEventListener(
     "submit",
-    async function(event) {
+    async function (event) {
 
       event.preventDefault();
 
+      await loadAuthSession();
 
       if (!currentUser) {
 
         openAuthModal();
+        showLogin();
+
+        showMessage(
+          "authMessage",
+          "🔐 Please login before publishing.",
+          "error"
+        );
 
         return;
-
       }
-
 
       const title =
-        getElement("sellTitle")
-          ?.value
-          .trim();
+        getElement("sellTitle")?.value.trim();
 
       const description =
-        getElement("sellDescription")
-          ?.value
-          .trim();
+        getElement("sellDescription")?.value.trim();
 
       const price =
-        getElement("sellPrice")
-          ?.value
-          .trim();
+        Number(
+          getElement("sellPrice")?.value
+        );
 
       const category =
-        getElement("sellCategory")
-          ?.value
-          .trim();
+        getElement("sellCategory")?.value;
 
       const location =
-        getElement("sellLocation")
-          ?.value
-          .trim();
+        getElement("sellLocation")?.value ||
+        "Sioma";
 
       const sellerName =
-        getElement("sellerName")
-          ?.value
-          .trim();
+        getElement("sellerName")?.value.trim();
 
       const sellerPhone =
-        getElement("sellerPhone")
-          ?.value
-          .trim();
+        getElement("sellerPhone")?.value.trim();
+
+      const publishButton =
+        getElement("publishButton");
+
+      clearMessage("sellMessage");
 
 
-      /* Required fields */
+      /* ===============================
+         VALIDATION
+      =============================== */
 
-      if (
-        !title ||
-        !price ||
-        !category ||
-        !location ||
-        !sellerName ||
-        !sellerPhone
-      ) {
+      if (!title) {
 
         showMessage(
           "sellMessage",
-          "Please complete all required fields.",
+          "Please enter a product name.",
           "error"
         );
 
         return;
-
       }
-
-
-      /* Sioma only */
-
-      if (!isSioma(location)) {
-
-        showMessage(
-          "sellMessage",
-          "SiomaMarket is currently available in Sioma only.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      /* Price validation */
-
-      const numericPrice =
-        Number(price);
-
 
       if (
-        !Number.isFinite(numericPrice) ||
-        numericPrice < 0
+        !Number.isFinite(price) ||
+        price < 0
       ) {
 
         showMessage(
@@ -1993,14 +1965,54 @@ if (sellForm) {
         );
 
         return;
-
       }
 
+      if (!category) {
 
-      /* At least one photo */
+        showMessage(
+          "sellMessage",
+          "Please select a category.",
+          "error"
+        );
+
+        return;
+      }
+
+      if (!isSioma(location)) {
+
+        showMessage(
+          "sellMessage",
+          "SiomaMarket is currently for Sioma listings only.",
+          "error"
+        );
+
+        return;
+      }
+
+      if (!sellerName) {
+
+        showMessage(
+          "sellMessage",
+          "Please enter the seller name.",
+          "error"
+        );
+
+        return;
+      }
+
+      if (!sellerPhone) {
+
+        showMessage(
+          "sellMessage",
+          "Please enter a phone or WhatsApp number.",
+          "error"
+        );
+
+        return;
+      }
 
       if (
-        selectedProductImages.length === 0
+        !selectedProductImages.length
       ) {
 
         showMessage(
@@ -2010,96 +2022,89 @@ if (sellForm) {
         );
 
         return;
-
       }
 
 
-      const publishButton =
-        getElement("publishButton");
-
+      /* ===============================
+         DISABLE BUTTON
+      =============================== */
 
       if (publishButton) {
 
         publishButton.disabled = true;
 
-        publishButton.innerText =
-          "Preparing listing...";
+        publishButton.textContent =
+          "Uploading photos...";
 
       }
 
 
-      clearMessage("sellMessage");
-
-
       try {
 
-        /* Upload photos */
+        /* ===============================
+           UPLOAD PHOTOS
+        =============================== */
 
         const imageURLs =
           await uploadProductImages(
             selectedProductImages
           );
 
-
-        if (!imageURLs.length) {
+        if (
+          !imageURLs ||
+          !imageURLs.length
+        ) {
 
           throw new Error(
-            "No product images were uploaded."
+            "Photo upload failed."
           );
 
         }
 
 
         if (publishButton) {
-
-          publishButton.innerText =
+          publishButton.textContent =
             "Publishing...";
-
         }
 
 
-        /* Save listing */
+        /* ===============================
+           SAVE LISTING
+           USE user_id
+        =============================== */
 
-        const {
-          data,
-          error
-        } =
+        const listingData = {
+
+          title: title,
+
+          description: description || "",
+
+          price: price,
+
+          category: category,
+
+          location: "Sioma",
+
+          image_url:
+            getImageStorageValue(
+              imageURLs
+            ),
+
+          seller_name: sellerName,
+
+          seller_phone: sellerPhone,
+
+          status: "active",
+
+          user_id: currentUser.id
+
+        };
+
+
+        const { data, error } =
           await supabaseClient
             .from("listings")
-            .insert([
-              {
-                title: title,
-
-                description:
-                  description || "",
-
-                price:
-                  numericPrice,
-
-                category:
-                  category,
-
-                location:
-                  "Sioma",
-
-                image_url:
-                  getImageStorageValue(
-                    imageURLs
-                  ),
-
-                seller_name:
-                  sellerName,
-
-                seller_phone:
-                  sellerPhone,
-
-                status:
-                  "active",
-
-                seller_id:
-                  currentUser.id
-              }
-            ])
+            .insert(listingData)
             .select()
             .single();
 
@@ -2107,61 +2112,70 @@ if (sellForm) {
         if (error) {
 
           console.error(
-            "Listing insert error:",
+            "Listing publish error:",
             error
           );
 
           throw error;
+        }
+
+
+        /* ===============================
+           UPDATE SELLER PROFILE
+        =============================== */
+
+        try {
+
+          await createSellerProfile(
+            currentUser.id,
+            sellerName,
+            sellerPhone,
+            "Sioma"
+          );
+
+        } catch (profileError) {
+
+          console.warn(
+            "Seller profile update warning:",
+            profileError
+          );
 
         }
 
 
-        /* Update seller profile */
-
-        await createSellerProfile(
-          currentUser.id,
-          sellerName,
-          sellerPhone,
-          "Sioma"
-        );
-
+        /* ===============================
+           SUCCESS
+        =============================== */
 
         showMessage(
           "sellMessage",
-          "Your listing has been published successfully!",
+          "✅ Product published successfully!",
           "success"
         );
 
 
-        /* Reset form */
-
         sellForm.reset();
-
 
         selectedProductImages = [];
 
         renderImagePreviews();
 
 
-        const locationInput =
-          getElement("sellLocation");
+        if (publishButton) {
 
-        if (locationInput) {
-          locationInput.value =
-            "Sioma";
-        }
+          publishButton.disabled = false;
 
-
-        /* Refresh marketplace */
-
-        if (
-          typeof loadLatestProducts ===
-          "function"
-        ) {
-
-          await loadLatestProducts();
+          publishButton.textContent =
+            "Publish Product";
 
         }
+
+
+        /* ===============================
+           REFRESH MARKET
+        =============================== */
+
+        await loadLatestProducts();
 
 
         if (
@@ -2174,18 +2188,21 @@ if (sellForm) {
         }
 
 
-        console.log(
-          "Listing published:",
-          data
-        );
-
-
-        /* Close sell page after short delay */
+        /* ===============================
+           CLOSE SELL PAGE
+        =============================== */
 
         setTimeout(
-          function() {
+          function () {
 
-            closeSellPage();
+            if (
+              typeof closeSellPage ===
+              "function"
+            ) {
+
+              closeSellPage();
+
+            }
 
           },
           1200
@@ -2199,24 +2216,19 @@ if (sellForm) {
           error
         );
 
-
         showMessage(
           "sellMessage",
-          error.message ||
-          "Could not publish your listing. Please try again.",
+          "❌ Unable to publish product. Please try again.",
           "error"
         );
 
 
-      } finally {
-
         if (publishButton) {
 
-          publishButton.disabled =
-            false;
+          publishButton.disabled = false;
 
-          publishButton.innerText =
-            "Publish Listing";
+          publishButton.textContent =
+            "Publish Product";
 
         }
 
@@ -2235,66 +2247,37 @@ if (sellForm) {
 async function loadLatestProducts() {
 
   const container =
-    getElement("homeProducts");
+    getElement("productsGrid");
 
-
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    '<div class="loading">Loading products...</div>';
-
+  if (!container) return;
 
   try {
 
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
         .from("listings")
         .select("*")
         .eq("status", "active")
-        .ilike(
-          "location",
-          "%Sioma%"
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        )
+        .eq("location", "Sioma")
+        .order("created_at", {
+          ascending: false
+        })
         .limit(30);
-
 
     if (error) {
 
-      throw error;
-
-    }
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty-state">No products listed yet.</div>';
+      console.error(
+        "Latest products error:",
+        error
+      );
 
       return;
-
     }
 
-
     renderProductCards(
-      data,
+      data || [],
       container
     );
-
 
   } catch (error) {
 
@@ -2302,10 +2285,6 @@ async function loadLatestProducts() {
       "Latest products error:",
       error
     );
-
-
-    container.innerHTML =
-      '<div class="empty-state">Could not load products.</div>';
 
   }
 
@@ -2321,40 +2300,31 @@ function renderProductCards(
   container
 ) {
 
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
-
-  if (
-    !Array.isArray(listings) ||
-    listings.length === 0
-  ) {
+  if (!listings.length) {
 
     container.innerHTML =
-      '<div class="empty-state">No products found.</div>';
+      `<div class="no-results">
+         No products found in Sioma yet.
+       </div>`;
 
     return;
-
   }
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    listings.map(function (item) {
 
+      const id =
+        escapeAttribute(item.id);
 
-  listings.forEach(
-    function(item) {
-
-      const card =
-        document.createElement("article");
-
-      card.className =
-        "product-card";
-
+      const images =
+        getProductImages(item);
 
       const image =
-        getPrimaryImage(item);
-
+        images[0] ||
+        DEFAULT_IMAGE;
 
       const title =
         escapeHTML(
@@ -2362,26 +2332,11 @@ function renderProductCards(
           "Untitled product"
         );
 
-
       const category =
         escapeHTML(
           item.category ||
           "Other"
         );
-
-
-      const location =
-        escapeHTML(
-          item.location ||
-          "Sioma"
-        );
-
-
-      const price =
-        formatPrice(
-          item.price
-        );
-
 
       const seller =
         escapeHTML(
@@ -2389,69 +2344,86 @@ function renderProductCards(
           "Sioma Seller"
         );
 
+      const location =
+        escapeHTML(
+          item.location ||
+          "Sioma"
+        );
 
-      card.innerHTML = `
-        <div class="product-image-wrap">
+      const saved =
+        isFavorite(item.id);
 
-          <img
-            src="${escapeAttribute(image)}"
-            alt="${escapeAttribute(title)}"
-            class="product-image"
-            loading="lazy"
-            onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
-          >
+      return `
+        <article class="result-card">
 
-          <button
-            type="button"
-            class="favorite-heart"
-            onclick="toggleFavorite('${escapeAttribute(item.id)}')"
-            aria-label="Save favorite"
-          >
-            ♡
-          </button>
+          <div class="product-image-wrap">
 
-          <span class="category-badge">
-            ${category}
-          </span>
+            <img
+              src="${escapeAttribute(image)}"
+              alt="${title}"
+              loading="lazy"
+              onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
+            >
 
-        </div>
+            <button
+              class="favorite-card favorite-heart ${saved ? "saved" : ""}"
+              type="button"
+              aria-label="Save ${title}"
+              onclick="toggleFavorite('${id}')"
+            >
+              ${saved ? "❤️" : "♡"}
+            </button>
 
-        <div class="product-card-content">
+            ${
+              images.length > 1
+                ? `<span class="photo-count-badge">
+                     📸 ${images.length} photos
+                   </span>`
+                : ""
+            }
 
-          <h3 class="product-title">
-            ${title}
-          </h3>
-
-          <div class="product-price">
-            ${price}
           </div>
 
-          <div class="product-location">
-            📍 ${location}
+          <div class="result-info">
+
+            <span class="category-badge">
+              ${category}
+            </span>
+
+            <span class="sioma-badge">
+              📍 SIOMA
+            </span>
+
+            <h3>
+              ${title}
+            </h3>
+
+            <div class="result-price">
+              ${formatPrice(item.price)}
+            </div>
+
+            <div class="result-location">
+              📍 ${location}
+            </div>
+
+            <div class="result-seller">
+              ${seller}
+            </div>
+
+            <button
+              class="buy-result"
+              type="button"
+              onclick="openProductDetails('${id}')"
+            >
+              👀 VIEW PRODUCT
+            </button>
+
           </div>
 
-          <div class="product-seller">
-            ${seller}
-          </div>
-
-          <button
-            type="button"
-            class="view-product-button"
-            onclick="openProductDetails('${escapeAttribute(item.id)}')"
-          >
-            View Product
-          </button>
-
-        </div>
+        </article>
       `;
 
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
+    }).join("");
 
 }
 
@@ -2463,124 +2435,85 @@ function renderProductCards(
 async function searchMarket() {
 
   const input =
-    getElement("searchInput");
+    getElement("searchInput") ||
+    getElement("marketSearch");
 
+  const container =
+    getElement("searchResultsGrid");
 
-  if (!input) {
-    return;
-  }
+  const resultsSection =
+    getElement("searchResults");
 
+  if (!input || !container) return;
 
   const searchTerm =
     input.value.trim();
 
+  if (!searchTerm) {
 
-  clearTimeout(
-    searchTimer
-  );
+    if (resultsSection) {
+      resultsSection.hidden = true;
+    }
 
+    await loadLatestProducts();
 
-  searchTimer =
-    setTimeout(
-      async function() {
-
-        const container =
-          getElement("homeProducts");
+    return;
+  }
 
 
-        if (!container) {
-          return;
-        }
+  clearTimeout(searchTimer);
+
+  try {
+
+    const { data, error } =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .eq("status", "active")
+        .eq("location", "Sioma")
+        .ilike(
+          "title",
+          `%${searchTerm}%`
+        )
+        .order("created_at", {
+          ascending: false
+        });
 
 
-        if (!searchTerm) {
+    if (error) {
 
-          await loadLatestProducts();
+      console.error(
+        "Search error:",
+        error
+      );
 
-          return;
+      container.innerHTML =
+        `<div class="no-results">
+           Unable to search right now.
+         </div>`;
 
-        }
-
-
-        container.innerHTML =
-          '<div class="loading">Searching...</div>';
-
-
-        try {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient
-              .from("listings")
-              .select("*")
-              .eq(
-                "status",
-                "active"
-              )
-              .ilike(
-                "location",
-                "%Sioma%"
-              )
-              .ilike(
-                "title",
-                "%" +
-                searchTerm +
-                "%"
-              )
-              .order(
-                "created_at",
-                {
-                  ascending: false
-                }
-              );
+      return;
+    }
 
 
-          if (error) {
+    if (resultsSection) {
+      resultsSection.hidden = false;
+    }
 
-            throw error;
-
-          }
-
-
-          if (
-            !data ||
-            data.length === 0
-          ) {
-
-            container.innerHTML =
-              '<div class="empty-state">No products found for "' +
-              escapeHTML(searchTerm) +
-              '".</div>';
-
-            return;
-
-          }
-
-
-          renderProductCards(
-            data,
-            container
-          );
-
-
-        } catch (error) {
-
-          console.error(
-            "Search error:",
-            error
-          );
-
-
-          container.innerHTML =
-            '<div class="empty-state">Search failed. Please try again.</div>';
-
-        }
-
-      },
-      250
+    renderProductCards(
+      data || [],
+      container
     );
+
+
+  } catch (error) {
+
+    console.error(
+      "Search error:",
+      error
+    );
+
+  }
 
 }
 
@@ -2593,89 +2526,62 @@ async function searchCategory(
   category
 ) {
 
-  if (!category) {
-    return;
-  }
-
-
   const container =
-    getElement("homeProducts");
+    getElement("searchResultsGrid");
 
+  const resultsSection =
+    getElement("searchResults");
 
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    '<div class="loading">Loading ' +
-    escapeHTML(category) +
-    '...</div>';
-
+  if (!container) return;
 
   try {
 
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
         .from("listings")
         .select("*")
-        .eq(
-          "status",
-          "active"
-        )
-        .ilike(
-          "location",
-          "%Sioma%"
-        )
-        .ilike(
-          "category",
-          category
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+        .eq("status", "active")
+        .eq("location", "Sioma")
+        .eq("category", category)
+        .order("created_at", {
+          ascending: false
+        });
 
 
     if (error) {
 
-      throw error;
-
-    }
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
+      console.error(
+        "Category search error:",
+        error
+      );
 
       container.innerHTML =
-        '<div class="empty-state">No ' +
-        escapeHTML(category) +
-        ' listings found.</div>';
+        `<div class="no-results">
+           Unable to load this category.
+         </div>`;
 
       return;
-
     }
 
 
+    if (resultsSection) {
+      resultsSection.hidden = false;
+    }
+
     renderProductCards(
-      data,
+      data || [],
       container
     );
 
 
-    /* Scroll to products */
+    if (resultsSection) {
 
-    container.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+      resultsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
 
 
   } catch (error) {
@@ -2685,27 +2591,52 @@ async function searchCategory(
       error
     );
 
-
-    container.innerHTML =
-      '<div class="empty-state">Could not load this category.</div>';
-
   }
 
 }
 
 
 /* =========================================================
-   INITIAL PRODUCT LOAD
+   CATEGORY BUTTONS
 ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
-  async function() {
+  function () {
 
-    await loadLatestProducts();
+    document
+      .querySelectorAll(
+        "[data-category]"
+      )
+      .forEach(function (button) {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            const category =
+              this.dataset.category;
+
+            if (category) {
+
+              searchCategory(
+                category
+              );
+
+            }
+
+          }
+        );
+
+      });
 
   }
 );
+
+
+/* =========================================================
+   END PART 4
+========================================================= */        
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
    PART 5
