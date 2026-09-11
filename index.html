@@ -2,452 +2,616 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#087f3d">
-  <meta name="description" content="SiomaMarket - Sioma's local marketplace">
-  <title>SiomaMarket 🇿🇲 | Sioma's Local Marketplace</title>
-
-  <!-- Lucide Icons Script -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiomaMarket - Local Marketplace</title>
+  
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    /* --- CSS STYLES --- */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
 
-  <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 60px; }
+
+    /* Header & Navigation */
+    header { background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 0.75rem 1rem; }
+    .header-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; cursor: pointer; }
+    
+    .nav-btns { display: flex; gap: 0.75rem; align-items: center; }
+    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-weight: 500; font-size: 0.875rem; transition: background 0.2s; }
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: var(--primary); color: white; border: none; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-danger { background: var(--danger); color: white; border: none; }
+    .badge { background: var(--danger); color: white; border-radius: 9999px; padding: 0.1rem 0.4rem; font-size: 0.75rem; font-weight: 700; margin-left: 0.25rem; }
+
+    /* Layout & Containers */
+    main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* Controls & Filters */
+    .controls-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-input, .select-input, .form-input { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.875rem; flex: 1; min-width: 200px; }
+
+    /* Product Grid & Cards */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; }
+    .card:hover { transform: translateY(-2px); }
+    .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #e2e8f0; }
+    .card-body { padding: 0.75rem; display: flex; flex-direction: column; flex: 1; }
+    .card-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text); }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Forms & Modal UI */
+    .form-container { max-width: 500px; margin: 2rem auto; background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; }
+    
+    /* Messaging UI */
+    .chat-container { display: flex; height: 500px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); overflow: hidden; }
+    .chat-sidebar { width: 30%; border-right: 1px solid var(--border); overflow-y: auto; }
+    .chat-main { width: 70%; display: flex; flex-direction: column; }
+    .chat-item { padding: 0.75rem; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .chat-item:hover, .chat-item.active { background: #f1f5f9; }
+    .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+    .message { max-width: 70%; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.875rem; }
+    .message.sent { align-self: flex-end; background: var(--primary); color: white; }
+    .message.received { align-self: flex-start; background: #e2e8f0; color: var(--text); }
+    .chat-input-area { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--border); }
+
+    /* Modal Overlay */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 200; }
+    .modal.active { display: flex; }
+    .modal-content { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
+  </style>
 </head>
 <body>
 
-  <!-- =========================================
-       1. SINGLE MAIN APPLICATION HEADER
-  ========================================= -->
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="header-top">
-
-        <!-- BRAND / LOGO AREA WITH FALLBACK -->
-        <div class="brand-area">
-          <a href="javascript:void(0)" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" class="logo-link">
-            <img
-              src="./SiomaMarket-logo.png"
-              alt="SiomaMarket Logo"
-              class="site-logo"
-              onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='inline-block';"
-            >
-            <span id="logoFallback" style="display:none; font-weight:800; font-size:18px; color:#ffffff;">
-              SiomaMarket
-            </span>
-          </a>
-        </div>
-
-        <!-- LOCATION BADGE -->
-        <div class="location-badge">
-          <svg viewBox="0 0 24 24" class="icon-sm"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
-          <span>Proudly Sioma</span>
-        </div>
-
-        <!-- ACCOUNT CONTROL BUTTONS -->
-        <div class="account-actions">
-          <button type="button" id="dashboardButton" class="header-action" onclick="openSellerDashboard()">📊 Dashboard</button>
-          <button type="button" id="adminButton" class="header-action" onclick="openAdminDashboard()">⚙️ Admin</button>
-          <button type="button" class="header-action" onclick="showFavorites()">♡ Favorites</button>
-          <button type="button" class="header-action" onclick="openAccount()">👤 Account</button>
-        </div>
-
+  <!-- Navigation Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo" onclick="navigateTo('homePage')">SiomaMarket</div>
+      <div class="nav-btns">
+        <button class="btn" onclick="navigateTo('homePage')">Browse</button>
+        <button class="btn" id="favsBtn" onclick="navigateTo('favsPage')" style="display:none;">Favorites</button>
+        <button class="btn" id="messagesBtn" onclick="navigateTo('messagesPage')" style="display:none;">
+          Messages <span id="msgCounter" class="badge" style="display:none;">0</span>
+        </button>
+        <button class="btn btn-primary" id="sellBtn" onclick="navigateTo('createListingPage')" style="display:none;">+ Sell</button>
+        <button class="btn" id="authBtn" onclick="navigateTo('authPage')">Login</button>
+        <button class="btn btn-danger" id="logoutBtn" onclick="handleLogout()" style="display:none;">Logout</button>
       </div>
     </div>
   </header>
 
-  <!-- =========================================
-       2. MAIN HOME PAGE CONTENT
-  ========================================= -->
-  <main id="homePage" class="content-container">
+  <!-- Main Content Area -->
+  <main>
+    <!-- Home / Product Catalog -->
+    <section id="homePage" class="page-section active">
+      <div class="controls-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search items..." oninput="handleSearch()">
+        <select id="categorySelect" class="select-input" onchange="handleSearch()">
+          <option value="">All Categories</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Vehicles">Vehicles</option>
+          <option value="Property">Property</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Home & Garden">Home & Garden</option>
+        </select>
+      </div>
+      <div id="listingsGrid" class="grid"></div>
+    </section>
 
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <span class="hero-label">🇿🇲 LOCAL MARKETPLACE</span>
-        <h1>Sioma Buys.<br>Sioma <span>Sells.</span></h1>
-        <p>Buy and sell products, services and more from people around Sioma.</p>
+    <!-- Create Listing Form -->
+    <section id="createListingPage" class="page-section">
+      <div class="form-container">
+        <h2>Post New Listing</h2>
+        <form id="createListingForm" onsubmit="handleCreateListing(event)" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="listTitle" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label>Price ($)</label>
+            <input type="number" step="0.01" id="listPrice" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="listCategory" class="select-input" required>
+              <option value="Electronics">Electronics</option>
+              <option value="Vehicles">Vehicles</option>
+              <option value="Property">Property</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Home & Garden">Home & Garden</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="listDesc" class="form-input" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="url" id="listImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Listing</button>
+        </form>
       </div>
     </section>
 
-    <!-- SEARCH SECTION -->
-    <section class="search-section">
-      <div class="search-box">
-        <span class="search-icon">🔎</span>
-        <input type="search" id="searchInput" placeholder="Search products in Sioma..." autocomplete="off" onkeydown="if(event.key==='Enter'){searchMarket();}">
-        <button type="button" onclick="searchMarket()">Search</button>
+    <!-- Auth Page -->
+    <section id="authPage" class="page-section">
+      <div class="form-container">
+        <h2 id="authTitle">Sign In</h2>
+        <form id="authForm" onsubmit="handleAuthSubmit(event)" style="margin-top: 1rem;">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="authEmail" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="authPassword" class="form-input" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="authSubmitBtn">Login</button>
+        </form>
+        <p style="margin-top: 1rem; text-align: center; font-size: 0.875rem;">
+          <span id="authToggleText">Need an account?</span> 
+          <a href="#" onclick="toggleAuthMode(event)" id="authToggleLink">Register</a>
+        </p>
       </div>
     </section>
 
-    <!-- DYNAMIC SEARCH RESULTS -->
-    <section id="searchResultsSection" style="display:none; margin-bottom: 24px;">
-      <div id="searchResults"></div>
+    <!-- Favorites Page -->
+    <section id="favsPage" class="page-section">
+      <h2 style="margin-bottom: 1rem;">Your Favorites</h2>
+      <div id="favsGrid" class="grid"></div>
     </section>
 
-    <!-- BUY / SELL ACTION BUTTONS -->
-    <section class="main-actions">
-      <button type="button" class="buy-button" onclick="buyNow()">
-        <span>🛒</span>
-        <div>
-          <strong>Buy</strong>
-          <small>Find products</small>
-        </div>
-      </button>
-
-      <button type="button" class="sell-button" onclick="sellNow()">
-        <span>🏷️</span>
-        <div>
-          <strong>Sell</strong>
-          <small>List your product</small>
-        </div>
-      </button>
-    </section>
-
-    <!-- CATEGORIES -->
-    <section class="section categories-section">
-      <div class="section-heading">
-        <div>
-          <span class="section-label">EXPLORE</span>
-          <h2>📍 Sioma Categories</h2>
-        </div>
-      </div>
-
-      <div class="categories-grid">
-        <button type="button" class="category-card" onclick="searchCategory('Agriculture')">🌾 Agriculture</button>
-        <button type="button" class="category-card" onclick="searchCategory('Livestock')">🐔 Livestock</button>
-        <button type="button" class="category-card" onclick="searchCategory('Fish')">🐟 Fish</button>
-        <button type="button" class="category-card" onclick="searchCategory('Phones')">📱 Phones</button>
-        <button type="button" class="category-card" onclick="searchCategory('Vehicles')">🚗 Vehicles</button>
-        <button type="button" class="category-card" onclick="searchCategory('Houses')">🏠 Houses</button>
-        <button type="button" class="category-card" onclick="searchCategory('Clothes')">👕 Clothes</button>
-        <button type="button" class="category-card" onclick="searchCategory('Services')">🛠️ Services</button>
-      </div>
-    </section>
-
-    <!-- LATEST PRODUCTS -->
-    <section class="section latest-section">
-      <div class="section-heading">
-        <div>
-          <span class="section-label">SIOMA MARKET</span>
-          <h2>🔥 Latest in Sioma</h2>
-        </div>
-      </div>
-
-      <div id="homeProducts" class="products-grid">
-        <div class="loading-state">
-          <p>Loading Sioma products...</p>
+    <!-- Messages Page -->
+    <section id="messagesPage" class="page-section">
+      <div class="chat-container">
+        <div class="chat-sidebar" id="conversationsList"></div>
+        <div class="chat-main">
+          <div class="chat-messages" id="chatMessages">
+            <p style="color: var(--text-muted); text-align: center; margin-auto;">Select a conversation to start chatting.</p>
+          </div>
+          <div class="chat-input-area" id="chatInputArea" style="display: none;">
+            <input type="text" id="chatInput" class="form-input" placeholder="Type a message...">
+            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- =========================================
-       3. OVERLAYS, MODALS & VIEWS
-  ========================================= -->
-
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="auth-modal" style="display:none;">
-    <div class="auth-box">
-      <h2>🔐 SiomaMarket Account</h2>
-      <p class="auth-subtitle">Your local Sioma marketplace.</p>
-
-      <div class="auth-tabs">
-        <button id="loginTab" class="auth-tab active" type="button" onclick="showLogin()">Login</button>
-        <button id="registerTab" class="auth-tab" type="button" onclick="showRegister()">Register</button>
-      </div>
-
-      <!-- LOGIN FORM -->
-      <form id="loginForm" class="auth-form">
-        <label for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" autocomplete="email" required>
-
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" autocomplete="current-password" required>
-
-        <button id="loginButton" class="auth-submit" type="submit">🔐 LOGIN</button>
-      </form>
-
-      <!-- REGISTER FORM -->
-      <form id="registerForm" class="auth-form" style="display:none;">
-        <label for="registerName">Full Name</label>
-        <input id="registerName" autocomplete="name" required>
-
-        <label for="registerPhone">Phone / WhatsApp</label>
-        <input type="tel" id="registerPhone" autocomplete="tel" required>
-
-        <label for="registerLocation">Location</label>
-        <input id="registerLocation" value="Sioma" required>
-
-        <label for="registerEmail">Email</label>
-        <input type="email" id="registerEmail" autocomplete="email" required>
-
-        <label for="registerPassword">Password</label>
-        <input type="password" id="registerPassword" minlength="6" autocomplete="new-password" required>
-
-        <button id="registerButton" class="auth-submit" type="submit">📝 CREATE ACCOUNT</button>
-      </form>
-
-      <div id="authMessage" class="auth-message"></div>
-      <button class="auth-close" type="button" onclick="closeAuthModal()">Close</button>
+  <!-- Product Detail Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <button class="btn" style="float: right;" onclick="closeModal()">✕</button>
+      <div id="modalDetails"></div>
     </div>
   </div>
 
-  <!-- SELL PAGE VIEW -->
-  <div id="sellPage" class="full-page" style="display:none;">
-    <div class="page-header">
-      <button class="back-button" type="button" onclick="closeSellPage()">← Back</button>
-      <h2>Sell in Sioma</h2>
-    </div>
-
-    <div class="sell-container page-container">
-      <div class="sell-intro">
-        <div class="sell-intro-icon">🏷️</div>
-        <h1>Sell in Sioma</h1>
-        <p>Reach buyers in Sioma.</p>
-      </div>
-
-      <form id="sellForm" class="sell-form">
-        <label for="sellTitle">Product Name</label>
-        <input id="sellTitle" placeholder="e.g. Fresh Fish" required>
-
-        <label for="sellDescription">Description</label>
-        <textarea id="sellDescription" placeholder="Describe your product..." required></textarea>
-
-        <label for="sellPrice">Price (ZMW)</label>
-        <input type="number" id="sellPrice" min="0" inputmode="decimal" required>
-
-        <label for="sellCategory">Category</label>
-        <select id="sellCategory" required>
-          <option value="">Select category</option>
-          <option value="Agriculture">Agriculture</option>
-          <option value="Livestock">Livestock</option>
-          <option value="Fish">Fish</option>
-          <option value="Phones">Phones</option>
-          <option value="Vehicles">Vehicles</option>
-          <option value="Houses">Houses</option>
-          <option value="Clothes">Clothes</option>
-          <option value="Services">Services</option>
-          <option value="timber">Timber</option>
-          <option value="Other">Other</option>
-        </select>
-
-        <label for="sellLocation">Location</label>
-        <input id="sellLocation" value="Sioma" required>
-
-        <label for="sellImageUrl">Product Photo URL</label>
-        <input id="sellImageUrl" type="url" placeholder="https://example.com/image.jpg">
-
-        <label for="sellerName">Your Name</label>
-        <input id="sellerName" required>
-
-        <label for="sellerPhone">WhatsApp / Phone</label>
-        <input id="sellerPhone" type="tel" inputmode="tel" required>
-
-        <button id="publishButton" class="publish-button" type="submit">🚀 PUBLISH IN SIOMA</button>
-        <div id="sellMessage" class="sell-message"></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- SELLER DASHBOARD VIEW -->
-  <div id="sellerDashboard" class="full-page" style="display:none;">
-    <div class="page-header">
-      <button class="back-button" type="button" onclick="closeSellerDashboard()">← Back</button>
-      <h2>Seller Dashboard</h2>
-    </div>
-
-    <div class="page-container">
-      <h1 class="dashboard-title">🏪 My Sioma Shop</h1>
-      <p class="dashboard-subtitle">Manage your SiomaMarket products.</p>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">📦</div>
-          <div id="sellerTotalListings" class="stat-number">0</div>
-          <div class="stat-label">Products</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">✅</div>
-          <div id="sellerActiveListings" class="stat-number">0</div>
-          <div class="stat-label">Active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">❤️</div>
-          <div id="sellerFavoriteCount" class="stat-number">0</div>
-          <div class="stat-label">Favorites</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div id="sellerValue" class="stat-number">K0</div>
-          <div class="stat-label">Listed Value</div>
-        </div>
-      </div>
-
-      <div class="dashboard-section">
-        <h3>📦 My Products</h3>
-        <div id="sellerListings"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN DASHBOARD VIEW -->
-  <section id="adminDashboard" class="dashboard-page full-page" style="display:none;">
-    <div class="page-header">
-      <div>
-        <span class="page-label">SiomaMarket</span>
-        <h2>Admin Dashboard</h2>
-        <p>Manage marketplace listings and activity.</p>
-      </div>
-      <button type="button" class="close-page" onclick="closeAdminDashboard()">✕</button>
-    </div>
-
-    <div class="page-container">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-icon">📦</span>
-          <div>
-            <small>Total Listings</small>
-            <strong id="adminTotalListings">0</strong>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">✅</span>
-          <div>
-            <small>Active Listings</small>
-            <strong id="adminActiveListings">0</strong>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">👤</span>
-          <div>
-            <small>Sellers</small>
-            <strong id="adminSellerCount">0</strong>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">💰</span>
-          <div>
-            <small>Market Value</small>
-            <strong id="adminMarketValue">K0</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-controls">
-        <button type="button" class="primary-btn" onclick="loadAdminListings()">🔄 Refresh Listings</button>
-      </div>
-
-      <div class="admin-table-card">
-        <div class="table-wrapper">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Seller</th>
-                <th>Location</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="adminListingsBody">
-              <tr>
-                <td colspan="5" class="empty-table">No listings loaded yet.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUCT DETAILS VIEW -->
-  <div id="productPage" class="full-page" style="display:none;">
-    <div class="product-page-header">
-      <button type="button" class="back-button" onclick="closeProductPage()">←</button>
-      <strong>Product Details</strong>
-      <button type="button" class="header-icon-button" onclick="saveFavorite()" aria-label="Favorite">♡</button>
-    </div>
-
-    <div class="product-gallery">
-      <div class="main-product-image">
-        <img id="detailsImage" src="" alt="Product image">
-      </div>
-    </div>
-
-    <div class="product-information">
-      <div class="product-category-row">
-        <span id="detailsCategory" class="category-badge">Category</span>
-        <span class="sioma-badge">🇿🇲 Sioma</span>
-      </div>
-
-      <h1 id="detailsTitle">Product title</h1>
-      <div id="detailsPrice" class="product-price">K0</div>
-
-      <div class="product-location">
-        <span id="detailsLocation"></span>
-      </div>
-
-      <div class="product-description">
-        <h3>Description</h3>
-        <p id="detailsDescription">No description provided.</p>
-      </div>
-
-      <div class="seller-card">
-        <div class="seller-avatar">👤</div>
-        <div class="seller-information">
-          <small>Seller</small>
-          <strong id="detailsSeller">Sioma Seller</strong>
-          <span id="detailsPhone">Phone not provided</span>
-        </div>
-      </div>
-
-      <div class="product-actions">
-        <button type="button" id="whatsappButton" class="whatsapp-btn">💬 WhatsApp</button>
-        <button type="button" id="callButton" class="call-btn">📞 Call</button>
-        <button type="button" id="favoriteButton" class="favorite-btn" onclick="saveFavorite()">♡ Favorite</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FAVORITES PAGE VIEW -->
-  <div id="favoritesPage" class="full-page" style="display:none;">
-    <div class="product-page-header">
-      <button type="button" class="back-button" onclick="closeFavorites()">←</button>
-      <strong>My Favorites</strong>
-      <span></span>
-    </div>
-
-    <div class="page-container">
-      <div id="favoritesResults" class="products-grid">
-        <div class="empty-state">
-          <div class="empty-icon">♡</div>
-          <h3>No favorites yet</h3>
-          <p>Save products you like and they will appear here.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================
-       4. MOBILE BOTTOM NAVIGATION
-  ========================================= -->
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item active" onclick="window.scrollTo({top:0,behavior:'smooth'});">🏠 Home</button>
-    <button type="button" class="nav-item" onclick="buyNow()">🔎 Search</button>
-    <button type="button" class="nav-item nav-sell" onclick="sellNow()">＋ Sell</button>
-    <button type="button" class="nav-item" onclick="showFavorites()">♡ Favorites</button>
-    <button type="button" class="nav-item" onclick="openAccount()">👤 Account</button>
-  </nav>
-
-  <!-- APP LOGIC SCRIPTS -->
-  <script src="script.js"></script>
+  <!-- --- JAVASCRIPT APPLICATION --- -->
   <script>
-    // Initialize Lucide icons if loaded
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
+    /* ==========================================================================
+       SECTION 1 & 2: CONFIGURATION & INITIALIZATION
+       ========================================================================== */
+    const SUPABASE_URL = "https://your-supabase-project-url.supabase.co";
+    const SUPABASE_KEY = "your-anon-public-key";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* Helper Shortcut */
+    const $ = (id) => document.getElementById(id);
+
+    /* Dynamic HTML Sanitization Helper */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
+
+    /* ==========================================================================
+       SECTION 3: GLOBAL STATE
+       ========================================================================== */
+    let currentUser = null;
+    let sessionLoaded = false;
+    let isAuthRegisterMode = false;
+    let favoriteListingIds = new Set();
+    
+    // Explicit messaging state variables
+    let currentConversationId = null;
+    let currentConversationListingId = null;
+    let currentConversationRecipientId = null;
+
+    let counterInterval = null;
+
+    /* ==========================================================================
+       SECTION 4: ROUTING & NAVIGATION
+       ========================================================================== */
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = $(pageId);
+      if (target) {
+        target.classList.add('active');
+      }
+
+      if (pageId === 'homePage') loadListings();
+      if (pageId === 'favsPage') loadFavorites();
+      if (pageId === 'messagesPage') loadConversations();
+    }
+
+    /* ==========================================================================
+       SECTION 5: AUTHENTICATION HANDLING
+       ========================================================================== */
+    function toggleAuthMode(e) {
+      if (e) e.preventDefault();
+      isAuthRegisterMode = !isAuthRegisterMode;
+      $('authTitle').innerText = isAuthRegisterMode ? 'Create Account' : 'Sign In';
+      $('authSubmitBtn').innerText = isAuthRegisterMode ? 'Register' : 'Login';
+      $('authToggleText').innerText = isAuthRegisterMode ? 'Already have an account?' : 'Need an account?';
+      $('authToggleLink').innerText = isAuthRegisterMode ? 'Login' : 'Register';
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = $('authEmail').value;
+      const password = $('authPassword').value;
+
+      try {
+        if (isAuthRegisterMode) {
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          if (error) throw error;
+          alert('Registration successful! Please log in.');
+          toggleAuthMode();
+        } else {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          navigateTo('homePage');
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      navigateTo('homePage');
+    }
+
+    async function handleUserSessionChanged() {
+      if (currentUser) {
+        $('authBtn').style.display = 'none';
+        $('logoutBtn').style.display = 'inline-block';
+        $('sellBtn').style.display = 'inline-block';
+        $('favsBtn').style.display = 'inline-block';
+        $('messagesBtn').style.display = 'inline-block';
+        await loadFavoriteIds();
+      } else {
+        $('authBtn').style.display = 'inline-block';
+        $('logoutBtn').style.display = 'none';
+        $('sellBtn').style.display = 'none';
+        $('favsBtn').style.display = 'none';
+        $('messagesBtn').style.display = 'none';
+        favoriteListingIds.clear();
+      }
+    }
+
+    /* Single Clean Auth Listener Initialization */
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      sessionLoaded = true;
+      setTimeout(async () => {
+        try {
+          await handleUserSessionChanged();
+          if (currentUser) {
+            startCounterRefresh();
+          } else {
+            stopCounterRefresh();
+          }
+        } catch (error) {
+          console.error("Auth UI refresh error:", error);
+        }
+      }, 0);
+    });
+
+    /* ==========================================================================
+       SECTION 6: LISTINGS & FAVORITES
+       ========================================================================== */
+    async function loadListings() {
+      const queryText = $('searchInput').value;
+      const category = $('categorySelect').value;
+
+      let query = supabaseClient.from('listings').select('*').order('created_at', { ascending: false });
+
+      if (category) query = query.eq('category', category);
+      if (queryText) query = query.ilike('title', `%${queryText}%`);
+
+      const { data, error } = await query;
+      if (error) return console.error(error);
+
+      renderListingsGrid(data, $('listingsGrid'));
+    }
+
+    function renderListingsGrid(listings, container) {
+      container.innerHTML = '';
+      if (!listings || listings.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No listings found.</p>';
+        return;
+      }
+
+      listings.forEach(item => {
+        const isFav = favoriteListingIds.has(item.id);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => openProductModal(item);
+        card.innerHTML = `
+          <img class="card-img" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}">
+          <div class="card-body">
+            <div class="card-price">$${Number(item.price).toFixed(2)}</div>
+            <div class="card-title">${escapeHtml(item.title)}</div>
+            <div class="card-footer">
+              <span>${escapeHtml(item.category)}</span>
+              ${currentUser ? `<button class="btn" onclick="event.stopPropagation(); toggleFavorite('${item.id}')">${isFav ? '❤️' : '🤍'}</button>` : ''}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function handleSearch() {
+      loadListings();
+    }
+
+    async function handleCreateListing(e) {
+      e.preventDefault();
+      if (!currentUser) return alert('You must be logged in to post listings.');
+
+      const payload = {
+        seller_id: currentUser.id,
+        title: $('listTitle').value,
+        price: parseFloat($('listPrice').value),
+        category: $('listCategory').value,
+        description: $('listDesc').value,
+        image_url: $('listImageUrl').value,
+        status: 'active'
+      };
+
+      const { error } = await supabaseClient.from('listings').insert([payload]);
+      if (error) {
+        alert(error.message);
+      } else {
+        alert('Listing published successfully!');
+        $('createListingForm').reset();
+        navigateTo('homePage');
+      }
+    }
+
+    async function loadFavoriteIds() {
+      if (!currentUser) return;
+      const { data } = await supabaseClient.from('favorites').select('listing_id').eq('user_id', currentUser.id);
+      if (data) {
+        favoriteListingIds = new Set(data.map(f => f.listing_id));
+      }
+    }
+
+    async function toggleFavorite(listingId) {
+      if (!currentUser) return;
+
+      if (favoriteListingIds.has(listingId)) {
+        await supabaseClient.from('favorites').delete().eq('user_id', currentUser.id).eq('listing_id', listingId);
+        favoriteListingIds.delete(listingId);
+      } else {
+        await supabaseClient.from('favorites').insert([{ user_id: currentUser.id, listing_id: listingId }]);
+        favoriteListingIds.add(listingId);
+      }
+      loadListings();
+      if ($('favsPage').classList.contains('active')) loadFavorites();
+    }
+
+    async function loadFavorites() {
+      if (!currentUser) return;
+      const { data } = await supabaseClient.from('favorites').select('listing_id, listings(*)').eq('user_id', currentUser.id);
+      const listings = data ? data.map(d => d.listings).filter(Boolean) : [];
+      renderListingsGrid(listings, $('favsGrid'));
+    }
+
+    function openProductModal(item) {
+      const modal = $('productModal');
+      $('modalDetails').innerHTML = `
+        <img src="${escapeHtml(item.image_url)}" style="width:100%; max-height: 300px; object-fit: cover; border-radius:6px; margin-bottom:1rem;">
+        <h2>${escapeHtml(item.title)}</h2>
+        <h3 style="color:var(--primary); margin:0.5rem 0;">$${Number(item.price).toFixed(2)}</h3>
+        <p><strong>Category:</strong> ${escapeHtml(item.category)}</p>
+        <p style="margin-top:0.5rem;">${escapeHtml(item.description)}</p>
+        ${currentUser && currentUser.id !== item.seller_id ? 
+          `<button class="btn btn-primary" style="margin-top:1rem; width:100%;" onclick="messageSeller('${item.id}', '${item.seller_id}')">Contact Seller</button>` : ''}
+      `;
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      $('productModal').classList.remove('active');
+    }
+
+    /* ==========================================================================
+       SECTION 7: MESSAGING SYSTEM
+       ========================================================================== */
+    function getConversationRecipient() {
+      return currentConversationRecipientId || null;
+    }
+
+    async function messageSeller(listingId, sellerId) {
+      closeModal();
+      if (!currentUser) return navigateTo('authPage');
+      if (sellerId === currentUser.id) return alert("You cannot message yourself.");
+
+      openConversation(sellerId, sellerId, listingId);
+      navigateTo('messagesPage');
+    }
+
+    async function openConversation(conversationId, otherUserId, listingId = null) {
+      currentConversationId = conversationId;
+      currentConversationListingId = listingId;
+      currentConversationRecipientId = otherUserId;
+
+      $('chatInputArea').style.display = 'flex';
+      await loadConversationMessages(otherUserId, listingId);
+    }
+
+    async function loadConversations() {
+      if (!currentUser) return;
+      const { data, error } = await supabaseClient
+        .from('messages')
+        .select('*')
+        .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) return console.error(error);
+
+      const conversationsMap = new Map();
+      data.forEach(msg => {
+        const otherId = msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id;
+        if (!conversationsMap.has(otherId)) {
+          conversationsMap.set(otherId, msg);
+        }
+      });
+
+      const listContainer = $('conversationsList');
+      listContainer.innerHTML = '';
+
+      conversationsMap.forEach((lastMsg, otherId) => {
+        const item = document.createElement('div');
+        item.className = `chat-item ${currentConversationRecipientId === otherId ? 'active' : ''}`;
+        item.onclick = () => openConversation(otherId, otherId, lastMsg.listing_id);
+        item.innerHTML = `
+          <strong>User ID: ...${otherId.slice(-6)}</strong>
+          <p style="font-size:0.75rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+            ${escapeHtml(lastMsg.content)}
+          </p>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    async function loadConversationMessages(recipientId, listingId) {
+      if (!currentUser || !recipientId) return;
+
+      const { data, error } = await supabaseClient
+        .from('messages')
+        .select('*')
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${currentUser.id})`)
+        .order('created_at', { ascending: true });
+
+      if (error) return console.error(error);
+
+      const msgContainer = $('chatMessages');
+      msgContainer.innerHTML = '';
+
+      data.forEach(msg => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`;
+        msgDiv.innerText = msg.content;
+        msgContainer.appendChild(msgDiv);
+      });
+
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const recipientId = getConversationRecipient();
+      const content = $('chatInput').value.trim();
+
+      if (!recipientId) return alert('Unable to identify the recipient.');
+      if (!content) return;
+
+      const payload = {
+        sender_id: currentUser.id,
+        receiver_id: recipientId,
+        listing_id: currentConversationListingId,
+        content: content
+      };
+
+      const { error } = await supabaseClient.from('messages').insert([payload]);
+      if (error) {
+        alert(error.message);
+      } else {
+        $('chatInput').value = '';
+        loadConversationMessages(recipientId, currentConversationListingId);
+        loadConversations();
+      }
+    }
+
+    /* ==========================================================================
+       SECTION 8 & 9: COUNTERS & VISIBILITY SYNC
+       ========================================================================== */
+    async function updateAllCounters() {
+      if (!currentUser) return;
+      const { count, error } = await supabaseClient
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', currentUser.id)
+        .eq('is_read', false);
+
+      if (!error && count !== null) {
+        const badge = $('msgCounter');
+        if (count > 0) {
+          badge.innerText = count;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    }
+
+    function startCounterRefresh() {
+      updateAllCounters();
+      if (!counterInterval) {
+        counterInterval = setInterval(updateAllCounters, 15000);
+      }
+    }
+
+    function stopCounterRefresh() {
+      if (counterInterval) {
+        clearInterval(counterInterval);
+        counterInterval = null;
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (!document.hidden && currentUser) {
+        updateAllCounters();
+        const messagesPage = $('messagesPage');
+        if (currentConversationRecipientId && messagesPage && messagesPage.classList.contains('active')) {
+          loadConversationMessages(currentConversationRecipientId, currentConversationListingId);
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    /* Initial Application Entry Point */
+    loadListings();
   </script>
 </body>
 </html>
