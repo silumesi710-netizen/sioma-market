@@ -1,7 +1,10 @@
 /* =========================================================
    SIOMAMARKET - SCRIPT.JS
    CLEAN CONSOLIDATED VERSION
+   PART 1
+   SUPABASE + GLOBAL STATE + IMAGE SYSTEM + HELPERS
 ========================================================= */
+
 
 /* =========================================================
    SUPABASE
@@ -19,6 +22,11 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+
+/* =========================================================
+   APP CONFIGURATION
+========================================================= */
+
 const ADMIN_EMAIL =
   "silumesi710@gmail.com";
 
@@ -28,98 +36,196 @@ const EMAIL_REDIRECT_URL =
 const DEFAULT_IMAGE =
   "https://via.placeholder.com/600x400?text=SiomaMarket";
 
+
 /* =========================================================
    GLOBAL STATE
 ========================================================= */
 
 let currentUser = null;
+
 let currentListingId = null;
 
 let sellerListingsCache = [];
+
 let adminListingsCache = [];
 
-let favoritesCache = new Set();
+let favoritesCache = [];
 
 let sessionLoaded = false;
+
 let searchTimer = null;
 
+
+/* =========================================================
+   MESSAGING STATE
+========================================================= */
+
 let currentConversationId = null;
+
 let currentConversationListingId = null;
 
 let messageRefreshTimer = null;
+
+
+/* =========================================================
+   MESSAGE READ STATE
+========================================================= */
 
 const MESSAGE_READ_KEY =
   "siomaMarket_message_reads";
 
 let messageReadState = {};
 
+
 /* =========================================================
-   THREE PHOTO SYSTEM
+   THREE-PHOTO PRODUCT SYSTEM
 ========================================================= */
 
 let selectedProductImages = [];
 
 const MAX_PRODUCT_IMAGES = 3;
-const MAX_IMAGE_SIZE = 6 * 1024 * 1024;
 
-/*
-Existing listings can have image_url as:
-1. A normal URL
-2. A JSON array containing multiple URLs
-*/
+const MAX_IMAGE_SIZE =
+  6 * 1024 * 1024;
+
+
+/* =========================================================
+   GET PRODUCT IMAGES
+========================================================= */
 
 function getProductImages(item) {
-  if (!item) return [];
 
-  const raw = item.image_url;
-
-  if (!raw) return [];
-
-  if (Array.isArray(raw)) {
-    return raw.filter(Boolean);
+  if (!item) {
+    return [];
   }
 
-  if (typeof raw === "string") {
+  const value = item.image_url;
+
+  if (!value) {
+    return [];
+  }
+
+  /* Already an array */
+
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+
+
+  /* JSON array stored as text */
+
+  if (
+    typeof value === "string" &&
+    value.trim().startsWith("[")
+  ) {
+
     try {
-      const parsed = JSON.parse(raw);
+
+      const parsed =
+        JSON.parse(value);
 
       if (Array.isArray(parsed)) {
         return parsed.filter(Boolean);
       }
-    } catch (error) {
-      // Normal single image URL
-    }
 
-    return [raw];
+    } catch (error) {
+
+      console.warn(
+        "Could not parse image_url:",
+        error
+      );
+
+    }
   }
+
+
+  /* Single image URL */
+
+  if (
+    typeof value === "string" &&
+    value.trim()
+  ) {
+
+    return [value.trim()];
+
+  }
+
 
   return [];
 }
 
-function getPrimaryImage(item) {
-  const images = getProductImages(item);
 
-  return images[0] || DEFAULT_IMAGE;
+/* =========================================================
+   GET PRIMARY IMAGE
+========================================================= */
+
+function getPrimaryImage(item) {
+
+  const images =
+    getProductImages(item);
+
+  return (
+    images[0] ||
+    DEFAULT_IMAGE
+  );
 }
 
+
+/* =========================================================
+   PREPARE IMAGE VALUE FOR DATABASE
+========================================================= */
+
 function getImageStorageValue(images) {
-  if (!images || !images.length) {
+
+  if (
+    !Array.isArray(images) ||
+    images.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const cleanImages =
+    images.filter(Boolean);
+
+
+  if (cleanImages.length === 0) {
     return null;
   }
 
-  if (images.length === 1) {
-    return images[0];
+
+  /* Keep one image as a normal URL */
+
+  if (cleanImages.length === 1) {
+    return cleanImages[0];
   }
 
-  return JSON.stringify(images);
+
+  /* Store multiple images as JSON */
+
+  return JSON.stringify(cleanImages);
 }
 
+
 /* =========================================================
-   HELPERS
+   ESCAPE HTML
 ========================================================= */
 
 function escapeHTML(value) {
-  return String(value ?? "")
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -127,145 +233,312 @@ function escapeHTML(value) {
     .replace(/'/g, "&#039;");
 }
 
+
+/* =========================================================
+   ESCAPE HTML ATTRIBUTE
+========================================================= */
+
 function escapeAttribute(value) {
-  return escapeHTML(value);
+
+  return escapeHTML(value)
+    .replace(/`/g, "&#096;");
 }
 
-function formatPrice(value) {
-  return (
-    "K" +
-    Number(value || 0).toLocaleString("en-ZM")
-  );
+
+/* =========================================================
+   FORMAT PRICE
+========================================================= */
+
+function formatPrice(price) {
+
+  const number =
+    Number(price);
+
+  if (
+    !Number.isFinite(number)
+  ) {
+
+    return "K0";
+
+  }
+
+
+  return "K" +
+    number.toLocaleString(
+      "en-ZM",
+      {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }
+    );
 }
+
+
+/* =========================================================
+   SIOMA LOCATION CHECK
+========================================================= */
 
 function isSioma(location) {
-  return String(location || "")
+
+  if (!location) {
+    return false;
+  }
+
+  return String(location)
+    .trim()
     .toLowerCase()
     .includes("sioma");
 }
+
+
+/* =========================================================
+   SAFE ELEMENT HELPER
+========================================================= */
+
+function getElement(id) {
+
+  return document.getElementById(id);
+
+}
+
+
+/* =========================================================
+   SHOW MESSAGE HELPER
+========================================================= */
+
+function showMessage(
+  elementId,
+  message,
+  type = "info"
+) {
+
+  const element =
+    getElement(elementId);
+
+  if (!element) {
+    return;
+  }
+
+  element.innerText =
+    message || "";
+
+  element.className =
+    "message " + type;
+
+}
+
+
+/* =========================================================
+   CLEAR MESSAGE HELPER
+========================================================= */
+
+function clearMessage(elementId) {
+
+  const element =
+    getElement(elementId);
+
+  if (!element) {
+    return;
+  }
+
+  element.innerText = "";
+
+  element.className =
+    "message";
+
+}
+/* =========================================================
+   PART 2
+   AUTHENTICATION + SESSION + ACCOUNT UI
+========================================================= */
+
 
 /* =========================================================
    AUTH MODAL
 ========================================================= */
 
 function openAuthModal() {
+
   const modal =
-    document.getElementById("authModal");
+    getElement("authModal");
 
   if (!modal) return;
 
-  modal.style.display = "block";
-  document.body.style.overflow = "hidden";
+  modal.classList.add("show");
+
+  showLogin();
+
 }
+
 
 function closeAuthModal() {
+
   const modal =
-    document.getElementById("authModal");
+    getElement("authModal");
 
   if (!modal) return;
 
-  modal.style.display = "none";
-  document.body.style.overflow = "auto";
+  modal.classList.remove("show");
+
 }
+
 
 function showLogin() {
+
   const loginForm =
-    document.getElementById("loginForm");
+    getElement("loginForm");
 
   const registerForm =
-    document.getElementById("registerForm");
+    getElement("registerForm");
 
   const loginTab =
-    document.getElementById("loginTab");
+    getElement("loginTab");
 
   const registerTab =
-    document.getElementById("registerTab");
+    getElement("registerTab");
 
-  const message =
-    document.getElementById("authMessage");
+  if (loginForm) {
+    loginForm.style.display = "block";
+  }
 
-  loginForm.style.display = "block";
-  registerForm.style.display = "none";
+  if (registerForm) {
+    registerForm.style.display = "none";
+  }
 
-  loginTab.classList.add("active");
-  registerTab.classList.remove("active");
+  if (loginTab) {
+    loginTab.classList.add("active");
+  }
 
-  message.innerText = "";
+  if (registerTab) {
+    registerTab.classList.remove("active");
+  }
+
+  clearMessage("authMessage");
+
 }
+
 
 function showRegister() {
+
   const loginForm =
-    document.getElementById("loginForm");
+    getElement("loginForm");
 
   const registerForm =
-    document.getElementById("registerForm");
+    getElement("registerForm");
 
   const loginTab =
-    document.getElementById("loginTab");
+    getElement("loginTab");
 
   const registerTab =
-    document.getElementById("registerTab");
+    getElement("registerTab");
 
-  const message =
-    document.getElementById("authMessage");
-
-  loginForm.style.display = "none";
-  registerForm.style.display = "block";
-
-  loginTab.classList.remove("active");
-  registerTab.classList.add("active");
-
-  message.innerText = "";
-}
-
-function openAccount() {
-  if (currentUser) {
-    logoutSeller();
-  } else {
-    openAuthModal();
-    showLogin();
+  if (loginForm) {
+    loginForm.style.display = "none";
   }
+
+  if (registerForm) {
+    registerForm.style.display = "block";
+  }
+
+  if (loginTab) {
+    loginTab.classList.remove("active");
+  }
+
+  if (registerTab) {
+    registerTab.classList.add("active");
+  }
+
+  clearMessage("authMessage");
+
 }
+
 
 /* =========================================================
-   SESSION
+   ACCOUNT BUTTON
+========================================================= */
+
+function openAccount() {
+
+  if (currentUser) {
+
+    logoutSeller();
+
+  } else {
+
+    openAuthModal();
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD CURRENT SESSION
 ========================================================= */
 
 async function loadAuthSession() {
-  if (sessionLoaded) {
-    return currentUser;
-  }
 
   try {
-    const result =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient.auth.getSession();
 
-    currentUser =
-      result.data?.session?.user || null;
+
+    if (error) {
+
+      console.error(
+        "Session error:",
+        error
+      );
+
+      currentUser = null;
+
+    } else {
+
+      currentUser =
+        data?.session?.user || null;
+
+    }
+
 
     sessionLoaded = true;
 
-    await updateAccountUI();
+    updateAccountUI();
 
-    return currentUser;
+    if (currentUser) {
+
+      await loadSellerProfile();
+
+    }
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      "Could not load session:",
+      error
+    );
 
     currentUser = null;
+
     sessionLoaded = true;
 
-    await updateAccountUI();
+    updateAccountUI();
 
-    return null;
   }
+
 }
 
+
 /* =========================================================
-   AUTH STATE
+   AUTH STATE CHANGES
 ========================================================= */
 
 supabaseClient.auth.onAuthStateChange(
-  (event, session) => {
+  async (event, session) => {
+
     currentUser =
       session?.user || null;
 
@@ -273,97 +546,145 @@ supabaseClient.auth.onAuthStateChange(
 
     updateAccountUI();
 
+
     if (currentUser) {
-      setTimeout(
-        updateMessageBadge,
-        500
-      );
+
+      await loadSellerProfile();
+
     }
+
   }
 );
 
+
 /* =========================================================
-   ADMIN
+   ADMIN CHECK
 ========================================================= */
 
 async function isAdmin() {
-  if (!currentUser) return false;
 
-  const result =
-    await supabaseClient
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", currentUser.id)
-      .maybeSingle();
+  if (!currentUser) {
+    return false;
+  }
 
-  return !!result.data;
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "Admin check error:",
+        error
+      );
+
+      return false;
+
+    }
+
+
+    return !!data;
+
+  } catch (error) {
+
+    console.error(
+      "Admin check failed:",
+      error
+    );
+
+    return false;
+
+  }
+
 }
 
+
 /* =========================================================
-   ACCOUNT UI
+   UPDATE ACCOUNT UI
 ========================================================= */
 
 async function updateAccountUI() {
-  const button =
-    document.getElementById("accountButton");
 
-  const dashboard =
-    document.getElementById("dashboardButton");
+  const accountButton =
+    getElement("accountButton");
 
-  const admin =
-    document.getElementById("adminButton");
+  const dashboardButton =
+    getElement("dashboardButton");
 
-  const messages =
-    document.getElementById("messagesButton");
+  const adminButton =
+    getElement("adminButton");
 
-  if (!button) return;
+  const messagesButton =
+    getElement("messagesButton");
 
-  if (currentUser) {
-    button.innerText = "🚪 Logout";
 
-    if (dashboard) {
-      dashboard.style.display = "block";
-    }
+  /* Account button */
 
-    if (messages) {
-      messages.style.display = "block";
-    }
+  if (accountButton) {
 
-    const adminStatus =
-      await isAdmin();
+    accountButton.innerText =
+      currentUser
+        ? "Logout"
+        : "Account";
 
-    if (admin) {
-      admin.style.display =
-        adminStatus ? "block" : "none";
-    }
-
-    setTimeout(
-      updateMessageBadge,
-      100
-    );
-  } else {
-    button.innerText = "🔐 Login";
-
-    if (dashboard) {
-      dashboard.style.display = "none";
-    }
-
-    if (admin) {
-      admin.style.display = "none";
-    }
-
-    if (messages) {
-      messages.style.display = "none";
-    }
-
-    const badge =
-      document.getElementById("messageBadge");
-
-    if (badge) {
-      badge.style.display = "none";
-    }
   }
+
+
+  /* Logged-in controls */
+
+  if (dashboardButton) {
+
+    dashboardButton.style.display =
+      currentUser
+        ? ""
+        : "none";
+
+  }
+
+
+  if (messagesButton) {
+
+    messagesButton.style.display =
+      currentUser
+        ? ""
+        : "none";
+
+  }
+
+
+  /* Admin control */
+
+  if (adminButton) {
+
+    adminButton.style.display =
+      "none";
+
+
+    if (currentUser) {
+
+      const admin =
+        await isAdmin();
+
+      if (admin) {
+        adminButton.style.display = "";
+      }
+
+    }
+
+  }
+
 }
+
 
 /* =========================================================
    SELLER PROFILE
@@ -375,626 +696,6211 @@ async function createSellerProfile(
   phone,
   location
 ) {
-  return await supabaseClient
-    .from("seller_profiles")
-    .upsert(
-      {
-        id: userId,
-        full_name: name || "",
-        phone: phone || "",
-        location: location || "Sioma"
-      },
-      {
-        onConflict: "id"
-      }
+
+  if (!userId) {
+    return false;
+  }
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("seller_profiles")
+        .upsert(
+          {
+            id: userId,
+            full_name:
+              name || "",
+            phone:
+              phone || "",
+            location:
+              location || "Sioma"
+          },
+          {
+            onConflict: "id"
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Seller profile error:",
+        error
+      );
+
+      return false;
+
+    }
+
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Seller profile failed:",
+      error
     );
+
+    return false;
+
+  }
+
 }
+
+
+/* =========================================================
+   LOAD SELLER PROFILE
+========================================================= */
 
 async function loadSellerProfile() {
-  if (!currentUser) return;
 
-  const result =
-    await supabaseClient
-      .from("seller_profiles")
-      .select("*")
-      .eq("id", currentUser.id)
-      .maybeSingle();
-
-  if (!result.data) return;
-
-  const sellerName =
-    document.getElementById("sellerName");
-
-  const sellerPhone =
-    document.getElementById("sellerPhone");
-
-  const sellLocation =
-    document.getElementById("sellLocation");
-
-  if (sellerName) {
-    sellerName.value =
-      result.data.full_name || "";
+  if (!currentUser) {
+    return null;
   }
 
-  if (sellerPhone) {
-    sellerPhone.value =
-      result.data.phone || "";
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("seller_profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "Profile load error:",
+        error
+      );
+
+      return null;
+
+    }
+
+
+    if (!data) {
+      return null;
+    }
+
+
+    const nameInput =
+      getElement("sellerName");
+
+    const phoneInput =
+      getElement("sellerPhone");
+
+    const locationInput =
+      getElement("sellLocation");
+
+
+    if (nameInput) {
+
+      nameInput.value =
+        data.full_name || "";
+
+    }
+
+
+    if (phoneInput) {
+
+      phoneInput.value =
+        data.phone || "";
+
+    }
+
+
+    if (locationInput) {
+
+      locationInput.value =
+        data.location || "Sioma";
+
+    }
+
+
+    return data;
+
+  } catch (error) {
+
+    console.error(
+      "Could not load seller profile:",
+      error
+    );
+
+    return null;
+
   }
 
-  if (sellLocation) {
-    sellLocation.value =
-      result.data.location || "Sioma";
-  }
 }
+
 
 /* =========================================================
    REGISTER
 ========================================================= */
 
-document
-  .getElementById("registerForm")
-  .addEventListener(
+const registerForm =
+  getElement("registerForm");
+
+
+if (registerForm) {
+
+  registerForm.addEventListener(
     "submit",
-    async function (e) {
-      e.preventDefault();
+    async function(event) {
 
-      const button =
-        document.getElementById(
-          "registerButton"
-        );
+      event.preventDefault();
 
-      const message =
-        document.getElementById(
-          "authMessage"
-        );
 
       const name =
-        document
-          .getElementById("registerName")
-          .value.trim();
+        getElement("registerName")
+          ?.value
+          .trim();
 
       const phone =
-        document
-          .getElementById("registerPhone")
-          .value.trim();
+        getElement("registerPhone")
+          ?.value
+          .trim();
 
       const location =
-        document
-          .getElementById("registerLocation")
-          .value.trim();
+        getElement("registerLocation")
+          ?.value
+          .trim() ||
+        "Sioma";
 
       const email =
-        document
-          .getElementById("registerEmail")
-          .value.trim();
+        getElement("registerEmail")
+          ?.value
+          .trim();
 
       const password =
-        document.getElementById(
-          "registerPassword"
-        ).value;
+        getElement("registerPassword")
+          ?.value;
 
-      button.disabled = true;
-      button.innerText =
-        "⏳ CREATING...";
 
-      try {
-        const result =
-          await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo:
-                EMAIL_REDIRECT_URL,
-              data: {
-                full_name: name,
-                phone,
-                location
-              }
-            }
-          });
+      if (!name ||
+          !phone ||
+          !email ||
+          !password) {
 
-        if (result.error) {
-          throw result.error;
-        }
+        showMessage(
+          "authMessage",
+          "Please complete all required fields.",
+          "error"
+        );
 
-        if (result.data.session) {
-          currentUser =
-            result.data.user;
+        return;
 
-          sessionLoaded = true;
+      }
 
-          const profile =
-            await createSellerProfile(
-              currentUser.id,
-              name,
-              phone,
-              location
-            );
 
-          if (profile.error) {
-            throw profile.error;
-          }
+      if (!isSioma(location)) {
 
-          message.style.color =
-            "#087f3d";
+        showMessage(
+          "authMessage",
+          "SiomaMarket is currently available in Sioma only.",
+          "error"
+        );
 
-          message.innerText =
-            "✅ Account created!";
+        return;
 
-          await updateAccountUI();
+      }
 
-          setTimeout(() => {
-            closeAuthModal();
-            sellNow();
-          }, 700);
-        } else {
-          message.style.color =
-            "#087f3d";
 
-          message.innerHTML =
-            "✅ Account created!<br><br>" +
-            "📧 Check your email and " +
-            "confirm your account.";
-        }
-      } catch (error) {
-        message.style.color =
-          "#c62828";
+      const button =
+        getElement("registerButton");
 
-        message.innerText =
-          "❌ " + error.message;
-      } finally {
-        button.disabled = false;
+      if (button) {
+
+        button.disabled = true;
 
         button.innerText =
-          "📝 CREATE ACCOUNT";
+          "Creating account...";
+
       }
+
+
+      clearMessage("authMessage");
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options: {
+
+              emailRedirectTo:
+                EMAIL_REDIRECT_URL,
+
+              data: {
+
+                full_name: name,
+
+                phone: phone,
+
+                location: location
+
+              }
+
+            }
+
+          });
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        currentUser =
+          data?.user || null;
+
+
+        /* If email confirmation is disabled */
+
+        if (data?.session &&
+            data?.user) {
+
+          await createSellerProfile(
+            data.user.id,
+            name,
+            phone,
+            location
+          );
+
+          currentUser =
+            data.user;
+
+          updateAccountUI();
+
+          closeAuthModal();
+
+          if (typeof sellNow === "function") {
+            sellNow();
+          }
+
+        } else {
+
+          showMessage(
+            "authMessage",
+            "Account created. Please check your email to confirm your account.",
+            "success"
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Registration error:",
+          error
+        );
+
+        showMessage(
+          "authMessage",
+          error.message ||
+          "Registration failed. Please try again.",
+          "error"
+        );
+
+      } finally {
+
+        if (button) {
+
+          button.disabled = false;
+
+          button.innerText =
+            "Create Account";
+
+        }
+
+      }
+
     }
   );
+
+}
+
 
 /* =========================================================
    LOGIN
 ========================================================= */
 
-document
-  .getElementById("loginForm")
-  .addEventListener(
+const loginForm =
+  getElement("loginForm");
+
+
+if (loginForm) {
+
+  loginForm.addEventListener(
     "submit",
-    async function (e) {
-      e.preventDefault();
+    async function(event) {
+
+      event.preventDefault();
+
+
+      const email =
+        getElement("loginEmail")
+          ?.value
+          .trim();
+
+      const password =
+        getElement("loginPassword")
+          ?.value;
+
+
+      if (!email || !password) {
+
+        showMessage(
+          "authMessage",
+          "Please enter your email and password.",
+          "error"
+        );
+
+        return;
+
+      }
+
 
       const button =
-        document.getElementById(
-          "loginButton"
-        );
+        getElement("loginButton");
 
-      const message =
-        document.getElementById(
-          "authMessage"
-        );
+      if (button) {
 
-      button.disabled = true;
-      button.innerText =
-        "⏳ LOGGING IN...";
-
-      try {
-        const result =
-          await supabaseClient.auth
-            .signInWithPassword({
-              email:
-                document
-                  .getElementById(
-                    "loginEmail"
-                  )
-                  .value.trim(),
-
-              password:
-                document.getElementById(
-                  "loginPassword"
-                ).value
-            });
-
-        if (result.error) {
-          throw result.error;
-        }
-
-        currentUser =
-          result.data.user;
-
-        sessionLoaded = true;
-
-        await updateAccountUI();
-        await loadSellerProfile();
-
-        message.style.color =
-          "#087f3d";
-
-        message.innerText =
-          "✅ Login successful!";
-
-        setTimeout(
-          closeAuthModal,
-          500
-        );
-      } catch (error) {
-        message.style.color =
-          "#c62828";
-
-        message.innerText =
-          "❌ " + error.message;
-      } finally {
-        button.disabled = false;
+        button.disabled = true;
 
         button.innerText =
-          "🔐 LOGIN";
+          "Signing in...";
+
       }
+
+
+      clearMessage("authMessage");
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+              email: email,
+              password: password
+            });
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        currentUser =
+          data?.user || null;
+
+        updateAccountUI();
+
+        await loadSellerProfile();
+
+        closeAuthModal();
+
+
+      } catch (error) {
+
+        console.error(
+          "Login error:",
+          error
+        );
+
+        showMessage(
+          "authMessage",
+          error.message ||
+          "Login failed. Please check your details.",
+          "error"
+        );
+
+      } finally {
+
+        if (button) {
+
+          button.disabled = false;
+
+          button.innerText =
+            "Login";
+
+        }
+
+      }
+
     }
   );
+
+}
+
 
 /* =========================================================
    LOGOUT
 ========================================================= */
 
 async function logoutSeller() {
-  if (
-    !confirm(
+
+  const confirmed =
+    window.confirm(
       "Are you sure you want to logout?"
-    )
-  ) {
-    return;
-  }
-
-  const result =
-    await supabaseClient.auth.signOut();
-
-  if (result.error) {
-    alert(
-      "❌ " +
-      result.error.message
     );
 
+
+  if (!confirmed) {
     return;
   }
 
-  currentUser = null;
-  sessionLoaded = true;
 
-  favoritesCache.clear();
+  try {
 
-  closeSellerDashboard();
-  closeAdminDashboard();
-  closeFavorites();
-  closeProductPage();
-  closeSellPage();
-  closeMessages();
+    const {
+      error
+    } =
+      await supabaseClient.auth.signOut();
 
-  await updateAccountUI();
 
-  alert(
-    "✅ You have been logged out."
-  );
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    currentUser = null;
+
+    currentListingId = null;
+
+    sellerListingsCache = [];
+
+    favoritesCache = [];
+
+    updateAccountUI();
+
+    closeAuthModal();
+
+
+    /* Close application pages */
+
+    const pages = [
+      "sellPage",
+      "sellerDashboard",
+      "adminDashboard",
+      "productPage",
+      "favoritesPage",
+      "messagesPage"
+    ];
+
+
+    pages.forEach(function(id) {
+
+      const element =
+        getElement(id);
+
+      if (element) {
+
+        element.classList.remove("show");
+
+        element.style.display =
+          "none";
+
+      }
+
+    });
+
+
+    window.scrollTo(0, 0);
+
+
+  } catch (error) {
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Could not logout."
+    );
+
+  }
+
 }
+/* =========================================================
+   PART 3
+   SELL PAGE + THREE-PHOTO UPLOAD SYSTEM
+========================================================= */
+
 
 /* =========================================================
-   SELL PAGE
+   OPEN SELL PAGE
 ========================================================= */
 
 async function sellNow() {
-  await loadAuthSession();
+
+  /* Make sure we know the current session */
+
+  if (!sessionLoaded) {
+    await loadAuthSession();
+  }
+
+
+  /* User must be logged in */
 
   if (!currentUser) {
+
     openAuthModal();
-    showLogin();
-
-    const message =
-      document.getElementById(
-        "authMessage"
-      );
-
-    message.style.color =
-      "#c62828";
-
-    message.innerText =
-      "🔐 Login or register before selling.";
 
     return;
+
   }
+
+
+  /* Load seller information */
 
   await loadSellerProfile();
 
-  const page =
-    document.getElementById(
-      "sellPage"
-    );
 
-  page.style.display = "block";
+  const sellPage =
+    getElement("sellPage");
 
-  document.body.style.overflow =
-    "hidden";
+
+  if (!sellPage) {
+    return;
+  }
+
+
+  sellPage.classList.add("show");
+
+  sellPage.style.display =
+    "block";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
 }
 
+
+/* =========================================================
+   CLOSE SELL PAGE
+========================================================= */
+
 function closeSellPage() {
-  const page =
-    document.getElementById(
-      "sellPage"
-    );
 
-  page.style.display = "none";
+  const sellPage =
+    getElement("sellPage");
 
-  document.body.style.overflow =
-    "auto";
+
+  if (sellPage) {
+
+    sellPage.classList.remove("show");
+
+    sellPage.style.display =
+      "none";
+
+  }
+
+
+  /* Clear selected photos */
 
   selectedProductImages = [];
 
-  const input =
-    document.getElementById(
-      "sellImage"
-    );
 
-  if (input) {
-    input.value = "";
+  const imageInput =
+    getElement("sellImage");
+
+
+  if (imageInput) {
+    imageInput.value = "";
   }
 
+
   renderImagePreviews();
+
 }
 
+
 /* =========================================================
-   THREE IMAGE SELECTOR
+   PRODUCT IMAGE INPUT
 ========================================================= */
 
 const sellImageInput =
-  document.getElementById(
-    "sellImage"
-  );
+  getElement("sellImage");
+
 
 if (sellImageInput) {
+
   sellImageInput.addEventListener(
     "change",
-    function () {
+    function(event) {
+
       const files =
-        Array.from(this.files || []);
-
-      if (!files.length) return;
-
-      if (
-        selectedProductImages.length +
-          files.length >
-        MAX_PRODUCT_IMAGES
-      ) {
-        alert(
-          "You can upload a maximum " +
-          "of 3 photos per product."
+        Array.from(
+          event.target.files || []
         );
 
-        this.value = "";
 
+      if (!files.length) {
         return;
       }
 
-      for (const file of files) {
+
+      /* Maximum of 3 photos */
+
+      if (
+        selectedProductImages.length +
+        files.length >
+        MAX_PRODUCT_IMAGES
+      ) {
+
+        alert(
+          "You can upload a maximum of 3 photos."
+        );
+
+        event.target.value = "";
+
+        return;
+
+      }
+
+
+      for (
+        const file of files
+      ) {
+
+        /* Check image type */
+
         if (
           !file.type.startsWith(
             "image/"
           )
         ) {
+
           alert(
-            "Only image files are allowed."
+            file.name +
+            " is not a valid image."
           );
 
           continue;
+
         }
+
+
+        /* Check file size */
 
         if (
           file.size >
           MAX_IMAGE_SIZE
         ) {
+
           alert(
             file.name +
-            " is larger than 6MB."
+            " is too large. Maximum size is 6 MB."
           );
 
           continue;
+
         }
+
 
         selectedProductImages.push(
           file
         );
+
       }
+
 
       renderImagePreviews();
 
-      this.value = "";
+
+      /* Reset input so the same photo can be selected again */
+
+      event.target.value = "";
+
     }
   );
+
 }
 
+
+/* =========================================================
+   RENDER IMAGE PREVIEWS
+========================================================= */
+
 function renderImagePreviews() {
+
   const preview =
-    document.getElementById(
-      "imagePreview"
-    );
+    getElement("imagePreview");
 
   const counter =
-    document.getElementById(
-      "photoCounter"
-    );
+    getElement("photoCounter");
 
-  if (!preview || !counter) {
+
+  if (!preview) {
     return;
   }
 
+
   preview.innerHTML = "";
 
+
+  /* Photo counter */
+
+  if (counter) {
+
+    counter.innerText =
+      selectedProductImages.length +
+      "/" +
+      MAX_PRODUCT_IMAGES +
+      " photos";
+
+  }
+
+
+  if (
+    selectedProductImages.length === 0
+  ) {
+
+    return;
+
+  }
+
+
   selectedProductImages.forEach(
-    (file, index) => {
-      const url =
+    function(file, index) {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "image-preview-card";
+
+
+      const image =
+        document.createElement("img");
+
+
+      const objectURL =
         URL.createObjectURL(file);
 
-      const item =
-        document.createElement(
-          "div"
+
+      image.src =
+        objectURL;
+
+      image.alt =
+        "Product photo " +
+        (index + 1);
+
+
+      image.onload =
+        function() {
+
+          URL.revokeObjectURL(
+            objectURL
+          );
+
+        };
+
+
+      const number =
+        document.createElement("span");
+
+      number.className =
+        "photo-number";
+
+      number.innerText =
+        index + 1;
+
+
+      const removeButton =
+        document.createElement("button");
+
+      removeButton.type =
+        "button";
+
+      removeButton.className =
+        "remove-photo";
+
+      removeButton.innerText =
+        "×";
+
+      removeButton.title =
+        "Remove photo";
+
+
+      removeButton.onclick =
+        function() {
+
+          removeProductImage(
+            index
+          );
+
+        };
+
+
+      card.appendChild(image);
+
+      card.appendChild(number);
+
+      card.appendChild(
+        removeButton
+      );
+
+
+      /* First image is the main photo */
+
+      if (index === 0) {
+
+        const mainLabel =
+          document.createElement(
+            "span"
+          );
+
+        mainLabel.className =
+          "main-photo-label";
+
+        mainLabel.innerText =
+          "MAIN PHOTO";
+
+        card.appendChild(
+          mainLabel
         );
 
-      item.className =
-        "preview-item";
+      }
 
-      item.innerHTML = `
-        <img
-          src="${escapeAttribute(url)}"
-          alt="Product photo ${index + 1}"
-        >
 
-        <span class="preview-number">
-          ${index + 1}
-        </span>
+      preview.appendChild(card);
 
-        <button
-          type="button"
-          class="preview-remove"
-          onclick="removeProductImage(${index})"
-        >
-          ×
-        </button>
-
-        ${
-          index === 0
-            ? `
-              <span class="preview-main">
-                ⭐ MAIN PHOTO
-              </span>
-            `
-            : ""
-        }
-      `;
-
-      preview.appendChild(item);
     }
   );
 
-  counter.innerText =
-    selectedProductImages.length +
-    " / 3 photos selected";
 }
 
+
+/* =========================================================
+   REMOVE PRODUCT IMAGE
+========================================================= */
+
 function removeProductImage(index) {
+
+  if (
+    index < 0 ||
+    index >= selectedProductImages.length
+  ) {
+
+    return;
+
+  }
+
+
   selectedProductImages.splice(
     index,
     1
   );
 
+
   renderImagePreviews();
+
 }
 
+
 /* =========================================================
-   UPLOAD PRODUCT IMAGE
+   UPLOAD ONE PRODUCT IMAGE
 ========================================================= */
 
-async function uploadProductImage(
-  file
-) {
+async function uploadProductImage(file) {
+
   if (!file) {
     throw new Error(
-      "Please select a product photo."
+      "No image selected."
     );
   }
+
+
+  /* Validate file type */
+
+  if (
+    !file.type.startsWith(
+      "image/"
+    )
+  ) {
+
+    throw new Error(
+      "Only image files are allowed."
+    );
+
+  }
+
+
+  /* Validate file size */
 
   if (
     file.size >
     MAX_IMAGE_SIZE
   ) {
+
     throw new Error(
-      "Maximum image size is 6MB."
+      "Each image must be 6 MB or smaller."
     );
+
   }
 
-  const extension =
-    (
-      file.name.split(".").pop() ||
-      "jpg"
-    )
-      .toLowerCase()
-      .replace(
-        /[^a-z0-9]/g,
-        ""
-      ) || "jpg";
 
-  const filePath =
+  /* Create a safe file extension */
+
+  let extension =
+    "jpg";
+
+
+  if (
+    file.type ===
+    "image/png"
+  ) {
+
+    extension = "png";
+
+  } else if (
+    file.type ===
+    "image/webp"
+  ) {
+
+    extension = "webp";
+
+  } else if (
+    file.type ===
+    "image/gif"
+  ) {
+
+    extension = "gif";
+
+  }
+
+
+  /* Unique storage filename */
+
+  const fileName =
     "products/" +
     Date.now() +
     "-" +
     Math.random()
       .toString(36)
-      .substring(2) +
+      .substring(2, 10) +
     "." +
     extension;
 
-  const upload =
-    await supabaseClient.storage
+
+  /* Upload to Supabase Storage */
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
       .from("Product-images")
       .upload(
-        filePath,
+        fileName,
         file,
         {
-          cacheControl: "3600",
+          cacheControl:
+            "3600",
+
           upsert: false,
+
           contentType:
             file.type
+
         }
       );
 
-  if (upload.error) {
-    throw upload.error;
+
+  if (error) {
+
+    console.error(
+      "Image upload error:",
+      error
+    );
+
+    throw error;
+
   }
 
-  return supabaseClient.storage
-    .from("Product-images")
-    .getPublicUrl(filePath)
-    .data.publicUrl;
+
+  /* Get public URL */
+
+  const {
+    data
+  } =
+    supabaseClient
+      .storage
+      .from("Product-images")
+      .getPublicUrl(
+        fileName
+      );
+
+
+  if (
+    !data ||
+    !data.publicUrl
+  ) {
+
+    throw new Error(
+      "Could not create image URL."
+    );
+
+  }
+
+
+  return data.publicUrl;
+
 }
+
+
+/* =========================================================
+   UPLOAD ALL PRODUCT IMAGES
+========================================================= */
 
 async function uploadProductImages(
   files
 ) {
-  if (!files || !files.length) {
-    throw new Error(
-      "Please select at least one product photo."
-    );
+
+  if (
+    !Array.isArray(files) ||
+    files.length === 0
+  ) {
+
+    return [];
+
   }
+
 
   if (
     files.length >
     MAX_PRODUCT_IMAGES
   ) {
+
     throw new Error(
-      "Maximum 3 photos are allowed."
+      "You can upload a maximum of 3 photos."
+    );
+
+  }
+
+
+  const publishButton =
+    getElement(
+      "publishButton"
+    );
+
+
+  const uploadedURLs = [];
+
+
+  try {
+
+    for (
+      let i = 0;
+      i < files.length;
+      i++
+    ) {
+
+      if (publishButton) {
+
+        publishButton.innerText =
+          "Uploading photo " +
+          (i + 1) +
+          " of " +
+          files.length +
+          "...";
+
+      }
+
+
+      const url =
+        await uploadProductImage(
+          files[i]
+        );
+
+
+      uploadedURLs.push(
+        url
+      );
+
+    }
+
+
+    return uploadedURLs;
+
+  } finally {
+
+    if (publishButton) {
+
+      publishButton.innerText =
+        "Publish Listing";
+
+    }
+
+  }
+
+         }
+/* =========================================================
+   PART 4
+   PUBLISH LISTING + DATABASE + SEARCH + CATEGORIES
+========================================================= */
+
+
+/* =========================================================
+   PUBLISH LISTING
+========================================================= */
+
+const sellForm =
+  getElement("sellForm");
+
+
+if (sellForm) {
+
+  sellForm.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      if (!currentUser) {
+
+        openAuthModal();
+
+        return;
+
+      }
+
+
+      const title =
+        getElement("sellTitle")
+          ?.value
+          .trim();
+
+      const description =
+        getElement("sellDescription")
+          ?.value
+          .trim();
+
+      const price =
+        getElement("sellPrice")
+          ?.value
+          .trim();
+
+      const category =
+        getElement("sellCategory")
+          ?.value
+          .trim();
+
+      const location =
+        getElement("sellLocation")
+          ?.value
+          .trim();
+
+      const sellerName =
+        getElement("sellerName")
+          ?.value
+          .trim();
+
+      const sellerPhone =
+        getElement("sellerPhone")
+          ?.value
+          .trim();
+
+
+      /* Required fields */
+
+      if (
+        !title ||
+        !price ||
+        !category ||
+        !location ||
+        !sellerName ||
+        !sellerPhone
+      ) {
+
+        showMessage(
+          "sellMessage",
+          "Please complete all required fields.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      /* Sioma only */
+
+      if (!isSioma(location)) {
+
+        showMessage(
+          "sellMessage",
+          "SiomaMarket is currently available in Sioma only.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      /* Price validation */
+
+      const numericPrice =
+        Number(price);
+
+
+      if (
+        !Number.isFinite(numericPrice) ||
+        numericPrice < 0
+      ) {
+
+        showMessage(
+          "sellMessage",
+          "Please enter a valid price.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      /* At least one photo */
+
+      if (
+        selectedProductImages.length === 0
+      ) {
+
+        showMessage(
+          "sellMessage",
+          "Please add at least one product photo.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const publishButton =
+        getElement("publishButton");
+
+
+      if (publishButton) {
+
+        publishButton.disabled = true;
+
+        publishButton.innerText =
+          "Preparing listing...";
+
+      }
+
+
+      clearMessage("sellMessage");
+
+
+      try {
+
+        /* Upload photos */
+
+        const imageURLs =
+          await uploadProductImages(
+            selectedProductImages
+          );
+
+
+        if (!imageURLs.length) {
+
+          throw new Error(
+            "No product images were uploaded."
+          );
+
+        }
+
+
+        if (publishButton) {
+
+          publishButton.innerText =
+            "Publishing...";
+
+        }
+
+
+        /* Save listing */
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("listings")
+            .insert([
+              {
+                title: title,
+
+                description:
+                  description || "",
+
+                price:
+                  numericPrice,
+
+                category:
+                  category,
+
+                location:
+                  "Sioma",
+
+                image_url:
+                  getImageStorageValue(
+                    imageURLs
+                  ),
+
+                seller_name:
+                  sellerName,
+
+                seller_phone:
+                  sellerPhone,
+
+                status:
+                  "active",
+
+                seller_id:
+                  currentUser.id
+              }
+            ])
+            .select()
+            .single();
+
+
+        if (error) {
+
+          console.error(
+            "Listing insert error:",
+            error
+          );
+
+          throw error;
+
+        }
+
+
+        /* Update seller profile */
+
+        await createSellerProfile(
+          currentUser.id,
+          sellerName,
+          sellerPhone,
+          "Sioma"
+        );
+
+
+        showMessage(
+          "sellMessage",
+          "Your listing has been published successfully!",
+          "success"
+        );
+
+
+        /* Reset form */
+
+        sellForm.reset();
+
+
+        selectedProductImages = [];
+
+        renderImagePreviews();
+
+
+        const locationInput =
+          getElement("sellLocation");
+
+        if (locationInput) {
+          locationInput.value =
+            "Sioma";
+        }
+
+
+        /* Refresh marketplace */
+
+        if (
+          typeof loadLatestProducts ===
+          "function"
+        ) {
+
+          await loadLatestProducts();
+
+        }
+
+
+        if (
+          typeof loadSellerDashboard ===
+          "function"
+        ) {
+
+          await loadSellerDashboard();
+
+        }
+
+
+        console.log(
+          "Listing published:",
+          data
+        );
+
+
+        /* Close sell page after short delay */
+
+        setTimeout(
+          function() {
+
+            closeSellPage();
+
+          },
+          1200
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Publish listing error:",
+          error
+        );
+
+
+        showMessage(
+          "sellMessage",
+          error.message ||
+          "Could not publish your listing. Please try again.",
+          "error"
+        );
+
+
+      } finally {
+
+        if (publishButton) {
+
+          publishButton.disabled =
+            false;
+
+          publishButton.innerText =
+            "Publish Listing";
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LOAD LATEST PRODUCTS
+========================================================= */
+
+async function loadLatestProducts() {
+
+  const container =
+    getElement("homeProducts");
+
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    '<div class="loading">Loading products...</div>';
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .eq("status", "active")
+        .ilike(
+          "location",
+          "%Sioma%"
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(30);
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      container.innerHTML =
+        '<div class="empty-state">No products listed yet.</div>';
+
+      return;
+
+    }
+
+
+    renderProductCards(
+      data,
+      container
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Latest products error:",
+      error
+    );
+
+
+    container.innerHTML =
+      '<div class="empty-state">Could not load products.</div>';
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER PRODUCT CARDS
+========================================================= */
+
+function renderProductCards(
+  listings,
+  container
+) {
+
+  if (!container) {
+    return;
+  }
+
+
+  if (
+    !Array.isArray(listings) ||
+    listings.length === 0
+  ) {
+
+    container.innerHTML =
+      '<div class="empty-state">No products found.</div>';
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  listings.forEach(
+    function(item) {
+
+      const card =
+        document.createElement("article");
+
+      card.className =
+        "product-card";
+
+
+      const image =
+        getPrimaryImage(item);
+
+
+      const title =
+        escapeHTML(
+          item.title ||
+          "Untitled product"
+        );
+
+
+      const category =
+        escapeHTML(
+          item.category ||
+          "Other"
+        );
+
+
+      const location =
+        escapeHTML(
+          item.location ||
+          "Sioma"
+        );
+
+
+      const price =
+        formatPrice(
+          item.price
+        );
+
+
+      const seller =
+        escapeHTML(
+          item.seller_name ||
+          "Sioma Seller"
+        );
+
+
+      card.innerHTML = `
+        <div class="product-image-wrap">
+
+          <img
+            src="${escapeAttribute(image)}"
+            alt="${escapeAttribute(title)}"
+            class="product-image"
+            loading="lazy"
+            onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
+          >
+
+          <button
+            type="button"
+            class="favorite-heart"
+            onclick="toggleFavorite('${escapeAttribute(item.id)}')"
+            aria-label="Save favorite"
+          >
+            ♡
+          </button>
+
+          <span class="category-badge">
+            ${category}
+          </span>
+
+        </div>
+
+        <div class="product-card-content">
+
+          <h3 class="product-title">
+            ${title}
+          </h3>
+
+          <div class="product-price">
+            ${price}
+          </div>
+
+          <div class="product-location">
+            📍 ${location}
+          </div>
+
+          <div class="product-seller">
+            ${seller}
+          </div>
+
+          <button
+            type="button"
+            class="view-product-button"
+            onclick="openProductDetails('${escapeAttribute(item.id)}')"
+          >
+            View Product
+          </button>
+
+        </div>
+      `;
+
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SEARCH MARKET
+========================================================= */
+
+async function searchMarket() {
+
+  const input =
+    getElement("searchInput");
+
+
+  if (!input) {
+    return;
+  }
+
+
+  const searchTerm =
+    input.value.trim();
+
+
+  clearTimeout(
+    searchTimer
+  );
+
+
+  searchTimer =
+    setTimeout(
+      async function() {
+
+        const container =
+          getElement("homeProducts");
+
+
+        if (!container) {
+          return;
+        }
+
+
+        if (!searchTerm) {
+
+          await loadLatestProducts();
+
+          return;
+
+        }
+
+
+        container.innerHTML =
+          '<div class="loading">Searching...</div>';
+
+
+        try {
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient
+              .from("listings")
+              .select("*")
+              .eq(
+                "status",
+                "active"
+              )
+              .ilike(
+                "location",
+                "%Sioma%"
+              )
+              .ilike(
+                "title",
+                "%" +
+                searchTerm +
+                "%"
+              )
+              .order(
+                "created_at",
+                {
+                  ascending: false
+                }
+              );
+
+
+          if (error) {
+
+            throw error;
+
+          }
+
+
+          if (
+            !data ||
+            data.length === 0
+          ) {
+
+            container.innerHTML =
+              '<div class="empty-state">No products found for "' +
+              escapeHTML(searchTerm) +
+              '".</div>';
+
+            return;
+
+          }
+
+
+          renderProductCards(
+            data,
+            container
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Search error:",
+            error
+          );
+
+
+          container.innerHTML =
+            '<div class="empty-state">Search failed. Please try again.</div>';
+
+        }
+
+      },
+      250
+    );
+
+}
+
+
+/* =========================================================
+   SEARCH BY CATEGORY
+========================================================= */
+
+async function searchCategory(
+  category
+) {
+
+  if (!category) {
+    return;
+  }
+
+
+  const container =
+    getElement("homeProducts");
+
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    '<div class="loading">Loading ' +
+    escapeHTML(category) +
+    '...</div>';
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .eq(
+          "status",
+          "active"
+        )
+        .ilike(
+          "location",
+          "%Sioma%"
+        )
+        .ilike(
+          "category",
+          category
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      container.innerHTML =
+        '<div class="empty-state">No ' +
+        escapeHTML(category) +
+        ' listings found.</div>';
+
+      return;
+
+    }
+
+
+    renderProductCards(
+      data,
+      container
+    );
+
+
+    /* Scroll to products */
+
+    container.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Category search error:",
+      error
+    );
+
+
+    container.innerHTML =
+      '<div class="empty-state">Could not load this category.</div>';
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIAL PRODUCT LOAD
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function() {
+
+    await loadLatestProducts();
+
+  }
+);
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 5
+   PRODUCT DETAILS + GALLERY + CONTACT + FAVORITES
+========================================================= */
+
+
+/* =========================================================
+   FAVORITES STORAGE
+========================================================= */
+
+const FAVORITES_KEY = "siomaMarket_favorites";
+
+
+function getFavorites() {
+  try {
+    const saved =
+      localStorage.getItem(FAVORITES_KEY);
+
+    if (!saved) {
+      return [];
+    }
+
+    const parsed = JSON.parse(saved);
+
+    return Array.isArray(parsed)
+      ? parsed
+      : [];
+
+  } catch (error) {
+    console.error(
+      "Unable to load favorites:",
+      error
+    );
+
+    return [];
+  }
+}
+
+
+function saveFavorites(list) {
+  try {
+    localStorage.setItem(
+      FAVORITES_KEY,
+      JSON.stringify(list)
+    );
+  } catch (error) {
+    console.error(
+      "Unable to save favorites:",
+      error
+    );
+  }
+}
+
+
+function isFavorite(id) {
+  const favorites = getFavorites();
+
+  return favorites.some(
+    item => String(item) === String(id)
+  );
+}
+
+
+/* =========================================================
+   TOGGLE FAVORITE
+========================================================= */
+
+function toggleFavorite(id) {
+
+  if (!id) {
+    return;
+  }
+
+  let favorites = getFavorites();
+
+  const exists = favorites.some(
+    item => String(item) === String(id)
+  );
+
+  if (exists) {
+
+    favorites =
+      favorites.filter(
+        item =>
+          String(item) !== String(id)
+      );
+
+  } else {
+
+    favorites.push(String(id));
+  }
+
+  saveFavorites(favorites);
+
+  favoritesCache = favorites;
+
+  updateFavoriteButtons();
+
+  renderFavoritesPage();
+}
+
+
+/* =========================================================
+   SAVE FAVORITE FROM PRODUCT PAGE
+========================================================= */
+
+function saveFavorite() {
+
+  if (!currentListingId) {
+    return;
+  }
+
+  toggleFavorite(currentListingId);
+}
+
+
+/* =========================================================
+   UPDATE HEART BUTTONS
+========================================================= */
+
+function updateFavoriteButtons() {
+
+  document
+    .querySelectorAll(".favorite-heart")
+    .forEach(button => {
+
+      const id =
+        button.dataset.id;
+
+      if (!id) {
+        return;
+      }
+
+      const active =
+        isFavorite(id);
+
+      button.textContent =
+        active ? "♥" : "♡";
+
+      button.classList.toggle(
+        "active",
+        active
+      );
+
+      button.setAttribute(
+        "aria-label",
+        active
+          ? "Remove from favorites"
+          : "Add to favorites"
+      );
+    });
+
+
+  const favoriteButton =
+    getElement("favoriteButton");
+
+  if (favoriteButton &&
+      currentListingId) {
+
+    const active =
+      isFavorite(currentListingId);
+
+    favoriteButton.textContent =
+      active
+        ? "♥ Saved"
+        : "♡ Favorite";
+
+    favoriteButton.classList.toggle(
+      "active",
+      active
+    );
+  }
+}
+
+
+/* =========================================================
+   LOAD PRODUCT DETAILS
+========================================================= */
+
+async function openProductDetails(id) {
+
+  if (!id) {
+    return;
+  }
+
+  currentListingId = id;
+
+  const page =
+    getElement("productPage");
+
+  if (!page) {
+    console.error(
+      "productPage element not found."
+    );
+
+    return;
+  }
+
+  page.classList.add("active");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+
+  const image =
+    getElement("detailsImage");
+
+  const thumbnails =
+    getElement("detailsThumbnails");
+
+  const category =
+    getElement("detailsCategory");
+
+  const title =
+    getElement("detailsTitle");
+
+  const price =
+    getElement("detailsPrice");
+
+  const location =
+    getElement("detailsLocation");
+
+  const description =
+    getElement("detailsDescription");
+
+  const seller =
+    getElement("detailsSeller");
+
+  const phone =
+    getElement("detailsPhone");
+
+
+  if (title) {
+    title.innerText = "Loading...";
+  }
+
+  if (description) {
+    description.innerText =
+      "Loading product details...";
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("listings")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+
+  if (error || !data) {
+
+    console.error(
+      "Product loading error:",
+      error
+    );
+
+    if (title) {
+      title.innerText =
+        "Product not found";
+    }
+
+    if (description) {
+      description.innerText =
+        "This product is no longer available.";
+    }
+
+    return;
+  }
+
+
+  const images =
+    getProductImages(data);
+
+
+  /* =======================================================
+     MAIN IMAGE
+  ======================================================= */
+
+  if (image) {
+
+    image.src =
+      images[0] || DEFAULT_IMAGE;
+
+    image.alt =
+      data.title || "Product image";
+
+    image.dataset.index = "0";
+  }
+
+
+  /* =======================================================
+     THUMBNAILS
+  ======================================================= */
+
+  if (thumbnails) {
+
+    if (images.length === 0) {
+
+      thumbnails.innerHTML = "";
+
+    } else {
+
+      thumbnails.innerHTML =
+        images.map(
+          (url, index) => `
+            <button
+              type="button"
+              class="details-thumbnail ${
+                index === 0 ? "active" : ""
+              }"
+              onclick="changeProductImage(
+                ${index}
+              )"
+              aria-label="View product photo ${
+                index + 1
+              }"
+            >
+              <img
+                src="${escapeAttribute(url)}"
+                alt="Product photo ${
+                  index + 1
+                }"
+              >
+            </button>
+          `
+        ).join("");
+    }
+  }
+
+
+  /* =======================================================
+     PRODUCT INFORMATION
+  ======================================================= */
+
+  if (category) {
+    category.innerText =
+      data.category || "Other";
+  }
+
+  if (title) {
+    title.innerText =
+      data.title || "Untitled product";
+  }
+
+  if (price) {
+    price.innerText =
+      formatPrice(data.price);
+  }
+
+  if (location) {
+    location.innerText =
+      data.location || "Sioma";
+  }
+
+  if (description) {
+    description.innerText =
+      data.description ||
+      "No description provided.";
+  }
+
+  if (seller) {
+    seller.innerText =
+      data.seller_name ||
+      "Sioma Seller";
+  }
+
+  if (phone) {
+    phone.innerText =
+      data.seller_phone ||
+      "Phone number unavailable";
+  }
+
+
+  /* =======================================================
+     CONTACT BUTTONS
+  ======================================================= */
+
+  const whatsappButton =
+    getElement("whatsappButton");
+
+  const callButton =
+    getElement("callButton");
+
+  const messageButton =
+    getElement("messageButton");
+
+
+  const sellerPhone =
+    data.seller_phone || "";
+
+
+  if (whatsappButton) {
+
+    if (sellerPhone) {
+
+      whatsappButton.style.display =
+        "inline-flex";
+
+      whatsappButton.onclick =
+        function () {
+          openWhatsApp(
+            sellerPhone,
+            data.title
+          );
+        };
+
+    } else {
+
+      whatsappButton.style.display =
+        "none";
+    }
+  }
+
+
+  if (callButton) {
+
+    if (sellerPhone) {
+
+      callButton.style.display =
+        "inline-flex";
+
+      callButton.onclick =
+        function () {
+          callSeller(sellerPhone);
+        };
+
+    } else {
+
+      callButton.style.display =
+        "none";
+    }
+  }
+
+
+  if (messageButton) {
+
+    messageButton.onclick =
+      function () {
+        openMessageFromProduct(data);
+      };
+  }
+
+
+  updateFavoriteButtons();
+}
+
+
+/* =========================================================
+   CHANGE MAIN PRODUCT IMAGE
+========================================================= */
+
+function changeProductImage(index) {
+
+  const image =
+    getElement("detailsImage");
+
+  const thumbnails =
+    getElement("detailsThumbnails");
+
+  if (!image || !thumbnails) {
+    return;
+  }
+
+
+  const buttons =
+    thumbnails.querySelectorAll(
+      ".details-thumbnail"
+    );
+
+
+  if (
+    index < 0 ||
+    index >= buttons.length
+  ) {
+    return;
+  }
+
+
+  const selected =
+    buttons[index].querySelector("img");
+
+  if (!selected) {
+    return;
+  }
+
+
+  image.src =
+    selected.src;
+
+  image.dataset.index =
+    String(index);
+
+
+  buttons.forEach(
+    (button, buttonIndex) => {
+
+      button.classList.toggle(
+        "active",
+        buttonIndex === index
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   CLOSE PRODUCT PAGE
+========================================================= */
+
+function closeProductPage() {
+
+  const page =
+    getElement("productPage");
+
+  if (page) {
+    page.classList.remove("active");
+  }
+
+  currentListingId = null;
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+function openWhatsApp(
+  phoneNumber,
+  productTitle = ""
+) {
+
+  if (!phoneNumber) {
+    return;
+  }
+
+
+  const digits =
+    String(phoneNumber)
+      .replace(/\D/g, "");
+
+
+  if (!digits) {
+    alert(
+      "The seller's phone number is unavailable."
+    );
+
+    return;
+  }
+
+
+  const message =
+    productTitle
+      ? `Hello, I am interested in "${productTitle}" on SiomaMarket. Is it still available?`
+      : "Hello, I am interested in your product on SiomaMarket. Is it still available?";
+
+
+  const url =
+    "https://wa.me/" +
+    digits +
+    "?text=" +
+    encodeURIComponent(message);
+
+
+  window.open(
+    url,
+    "_blank"
+  );
+}
+
+
+/* =========================================================
+   PHONE CALL
+========================================================= */
+
+function callSeller(phoneNumber) {
+
+  if (!phoneNumber) {
+    return;
+  }
+
+
+  window.location.href =
+    "tel:" +
+    String(phoneNumber).trim();
+}
+
+
+/* =========================================================
+   OPEN MESSAGE FROM PRODUCT
+========================================================= */
+
+function openMessageFromProduct(data) {
+
+  if (!data) {
+    return;
+  }
+
+
+  if (!currentUser) {
+
+    alert(
+      "Please log in to message the seller."
+    );
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  /*
+     Part 7 will connect this button
+     to the full messaging system.
+  */
+
+  if (
+    typeof startConversation ===
+    "function"
+  ) {
+
+    startConversation(data);
+
+  } else {
+
+    alert(
+      "Messaging is loading. Please try again."
+    );
+  }
+}
+
+
+/* =========================================================
+   FAVORITES PAGE
+========================================================= */
+
+async function renderFavoritesPage() {
+
+  const container =
+    getElement("favoritesResults");
+
+  if (!container) {
+    return;
+  }
+
+
+  const favorites =
+    getFavorites();
+
+
+  favoritesCache =
+    favorites;
+
+
+  if (favorites.length === 0) {
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">♡</div>
+        <h3>No saved products yet</h3>
+        <p>
+          Products you save will appear here.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("listings")
+    .select("*")
+    .in("id", favorites)
+    .eq("status", "active");
+
+
+  if (error) {
+
+    console.error(
+      "Favorites loading error:",
+      error
+    );
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>Unable to load favorites</h3>
+        <p>Please try again.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">♡</div>
+        <h3>No saved products available</h3>
+        <p>
+          Some saved products may have
+          already been removed.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /*
+     Keep the same order as the
+     user's saved favorites.
+  */
+
+  const ordered =
+    favorites
+      .map(id =>
+        data.find(
+          item =>
+            String(item.id) ===
+            String(id)
+        )
+      )
+      .filter(Boolean);
+
+
+  renderProductCards(
+    ordered,
+    container
+  );
+
+
+  updateFavoriteButtons();
+}
+
+
+/* =========================================================
+   OPEN FAVORITES PAGE
+========================================================= */
+
+function openFavorites() {
+
+  const page =
+    getElement("favoritesPage");
+
+  if (!page) {
+    return;
+  }
+
+
+  page.classList.add("active");
+
+  renderFavoritesPage();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   CLOSE FAVORITES PAGE
+========================================================= */
+
+function closeFavorites() {
+
+  const page =
+    getElement("favoritesPage");
+
+  if (page) {
+    page.classList.remove("active");
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   INITIALIZE FAVORITES
+========================================================= */
+
+favoritesCache =
+  getFavorites();
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    updateFavoriteButtons();
+
+  }
+);
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 6
+   PAGE NAVIGATION + UI CONTROLS
+========================================================= */
+
+
+/* =========================================================
+   HIDE ALL FULL-SCREEN PAGES
+========================================================= */
+
+function hideAllPages() {
+
+  const pages = [
+    "sellPage",
+    "productPage",
+    "favoritesPage",
+    "messagesPage",
+    "adminDashboard"
+  ];
+
+  pages.forEach(function (id) {
+
+    const page = getElement(id);
+
+    if (page) {
+      page.classList.remove("active");
+    }
+
+  });
+}
+
+
+/* =========================================================
+   SHOW HOME PAGE
+========================================================= */
+
+function showHome() {
+
+  hideAllPages();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  loadLatestProducts();
+}
+
+
+/* =========================================================
+   OPEN SELL PAGE
+========================================================= */
+
+function openSellPage() {
+
+  sellNow();
+}
+
+
+/* =========================================================
+   ACCOUNT BUTTON
+========================================================= */
+
+function accountButtonAction() {
+
+  if (currentUser) {
+
+    logoutSeller();
+
+  } else {
+
+    openAccount();
+  }
+}
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
+
+function openFavoritesFromNav() {
+
+  hideAllPages();
+
+  openFavorites();
+}
+
+
+function openAccountFromNav() {
+
+  if (currentUser) {
+
+    openAccount();
+
+  } else {
+
+    openAuthModal();
+  }
+}
+
+
+function openMessagesFromNav() {
+
+  if (!currentUser) {
+
+    alert(
+      "Please log in to view your messages."
+    );
+
+    openAuthModal();
+
+    return;
+  }
+
+  hideAllPages();
+
+  const page =
+    getElement("messagesPage");
+
+  if (page) {
+
+    page.classList.add("active");
+
+    loadConversations();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+}
+
+
+/* =========================================================
+   ADMIN PAGE
+========================================================= */
+
+async function openAdminDashboard() {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  const admin =
+    await isAdmin();
+
+
+  if (!admin) {
+
+    alert(
+      "You do not have administrator access."
+    );
+
+    return;
+  }
+
+
+  hideAllPages();
+
+
+  const page =
+    getElement("adminDashboard");
+
+  if (page) {
+
+    page.classList.add("active");
+
+    loadAdminDashboard();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+}
+
+
+/* =========================================================
+   DASHBOARD PAGE
+========================================================= */
+
+async function openSellerDashboard() {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  hideAllPages();
+
+
+  const dashboard =
+    getElement("sellerDashboard");
+
+
+  if (dashboard) {
+
+    dashboard.classList.add("active");
+
+    await loadSellerDashboard();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+}
+
+
+/* =========================================================
+   CLOSE GENERIC PAGE
+========================================================= */
+
+function closePage(id) {
+
+  const page =
+    getElement(id);
+
+  if (page) {
+
+    page.classList.remove("active");
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   SEARCH BOX CLEAR
+========================================================= */
+
+function clearSearch() {
+
+  const input =
+    getElement("marketSearch");
+
+  if (input) {
+
+    input.value = "";
+
+    loadLatestProducts();
+  }
+}
+
+
+/* =========================================================
+   SEARCH WHEN ENTER IS PRESSED
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function (event) {
+
+    if (
+      event.key !== "Enter"
+    ) {
+      return;
+    }
+
+
+    const target =
+      event.target;
+
+
+    if (
+      target &&
+      target.id === "marketSearch"
+    ) {
+
+      searchMarket();
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CATEGORY BUTTON HELPERS
+========================================================= */
+
+function openCategory(category) {
+
+  if (!category) {
+    return;
+  }
+
+  hideAllPages();
+
+  searchCategory(category);
+}
+
+
+/* =========================================================
+   REFRESH MARKET
+========================================================= */
+
+async function refreshMarket() {
+
+  const container =
+    getElement("homeProducts");
+
+  if (container) {
+
+    container.innerHTML = `
+      <div class="loading-state">
+        Loading latest products...
+      </div>
+    `;
+  }
+
+
+  await loadLatestProducts();
+}
+
+
+/* =========================================================
+   SCROLL TO PRODUCTS
+========================================================= */
+
+function scrollToProducts() {
+
+  const section =
+    getElement("homeProducts");
+
+
+  if (section) {
+
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
+
+
+/* =========================================================
+   SCROLL TO CATEGORIES
+========================================================= */
+
+function scrollToCategories() {
+
+  const section =
+    getElement("categories");
+
+
+  if (section) {
+
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
+
+
+/* =========================================================
+   UPDATE FAVORITE COUNT
+========================================================= */
+
+function updateFavoriteCount() {
+
+  const favorites =
+    getFavorites();
+
+
+  const count =
+    favorites.length;
+
+
+  document
+    .querySelectorAll(
+      ".favorite-count"
+    )
+    .forEach(function (element) {
+
+      element.innerText =
+        String(count);
+
+      element.style.display =
+        count > 0
+          ? "inline-flex"
+          : "none";
+
+    });
+}
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+function toggleMobileMenu() {
+
+  const menu =
+    getElement("mobileMenu");
+
+
+  if (!menu) {
+    return;
+  }
+
+
+  menu.classList.toggle("active");
+}
+
+
+function closeMobileMenu() {
+
+  const menu =
+    getElement("mobileMenu");
+
+
+  if (menu) {
+
+    menu.classList.remove(
+      "active"
+    );
+  }
+}
+
+
+/* =========================================================
+   CLOSE MENU WHEN LINK IS CLICKED
+========================================================= */
+
+document.addEventListener(
+  "click",
+  function (event) {
+
+    const link =
+      event.target.closest(
+        "#mobileMenu a"
+      );
+
+
+    if (link) {
+
+      closeMobileMenu();
+    }
+
+  }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function (event) {
+
+    if (
+      event.key !== "Escape"
+    ) {
+      return;
+    }
+
+
+    closeMobileMenu();
+
+    closeProductPage();
+
+    closeFavorites();
+
+    closeMessages();
+
+    closeSellPage();
+
+  }
+);
+
+
+/* =========================================================
+   UPDATE UI AFTER FAVORITE CHANGES
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    favoritesCache =
+      getFavorites();
+
+    updateFavoriteButtons();
+
+    updateFavoriteCount();
+
+  }
+);
+
+
+/* =========================================================
+   KEEP FAVORITE COUNT UPDATED
+========================================================= */
+
+const originalToggleFavorite =
+  toggleFavorite;
+
+
+toggleFavorite = function (id) {
+
+  originalToggleFavorite(id);
+
+  updateFavoriteCount();
+};
+
+
+/* =========================================================
+   BASIC ONLINE / OFFLINE STATUS
+========================================================= */
+
+function updateConnectionStatus() {
+
+  const indicator =
+    getElement("connectionStatus");
+
+
+  if (!indicator) {
+    return;
+  }
+
+
+  if (navigator.onLine) {
+
+    indicator.innerText =
+      "Online";
+
+    indicator.classList.remove(
+      "offline"
+    );
+
+  } else {
+
+    indicator.innerText =
+      "Offline";
+
+    indicator.classList.add(
+      "offline"
+    );
+  }
+}
+
+
+window.addEventListener(
+  "online",
+  updateConnectionStatus
+);
+
+
+window.addEventListener(
+  "offline",
+  updateConnectionStatus
+);
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateConnectionStatus
+);
+
+
+/* =========================================================
+   IMAGE ERROR FALLBACK
+========================================================= */
+
+document.addEventListener(
+  "error",
+  function (event) {
+
+    const element =
+      event.target;
+
+
+    if (
+      element &&
+      element.tagName === "IMG"
+    ) {
+
+      if (
+        element.dataset.fallbackApplied
+      ) {
+        return;
+      }
+
+
+      element.dataset.fallbackApplied =
+        "true";
+
+
+      element.src =
+        DEFAULT_IMAGE;
+    }
+
+  },
+  true
+);
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 7
+   MESSAGING SYSTEM
+========================================================= */
+
+
+/* =========================================================
+   OPEN MESSAGES PAGE
+========================================================= */
+
+function openMessages() {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  hideAllPages();
+
+
+  const page =
+    getElement("messagesPage");
+
+
+  if (!page) {
+    return;
+  }
+
+
+  page.classList.add("active");
+
+
+  loadConversations();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   START CONVERSATION
+========================================================= */
+
+async function startConversation(listing) {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  if (!listing) {
+    return;
+  }
+
+
+  const sellerId =
+    listing.seller_id || null;
+
+
+  /*
+     Prevent a seller from messaging
+     themselves when seller_id exists.
+  */
+
+  if (
+    sellerId &&
+    String(sellerId) ===
+    String(currentUser.id)
+  ) {
+
+    alert(
+      "You cannot message yourself."
+    );
+
+    return;
+  }
+
+
+  /*
+     Open the messaging page first.
+  */
+
+  hideAllPages();
+
+
+  const page =
+    getElement("messagesPage");
+
+
+  if (page) {
+    page.classList.add("active");
+  }
+
+
+  currentConversationId = null;
+
+  currentConversationListingId =
+    listing.id;
+
+
+  /*
+     Look for an existing conversation.
+  */
+
+  let query =
+    supabaseClient
+      .from("conversations")
+      .select("*")
+      .eq("listing_id", listing.id);
+
+
+  if (sellerId) {
+
+    query = query
+      .eq("seller_id", sellerId)
+      .eq(
+        "buyer_id",
+        currentUser.id
+      );
+
+  } else {
+
+    query = query
+      .eq(
+        "buyer_id",
+        currentUser.id
+      );
+  }
+
+
+  const {
+    data: existing,
+    error
+  } = await query
+    .limit(1);
+
+
+  if (error) {
+
+    console.error(
+      "Conversation lookup error:",
+      error
+    );
+
+    /*
+       If the conversations table
+       is not configured yet, show
+       a useful message instead of
+       breaking the whole website.
+    */
+
+    alert(
+      "Messaging is not available yet. Please try again later."
+    );
+
+    return;
+  }
+
+
+  if (
+    existing &&
+    existing.length > 0
+  ) {
+
+    currentConversationId =
+      existing[0].id;
+
+  } else {
+
+    /*
+       Create a new conversation.
+    */
+
+    const conversationData = {
+      listing_id: listing.id,
+      buyer_id: currentUser.id,
+      seller_id: sellerId,
+      last_message: null
+    };
+
+
+    const {
+      data: created,
+      error: createError
+    } = await supabaseClient
+      .from("conversations")
+      .insert(
+        conversationData
+      )
+      .select()
+      .single();
+
+
+    if (createError) {
+
+      console.error(
+        "Conversation creation error:",
+        createError
+      );
+
+      alert(
+        "Unable to start the conversation."
+      );
+
+      return;
+    }
+
+
+    currentConversationId =
+      created.id;
+  }
+
+
+  /*
+     Display the chat.
+  */
+
+  await loadConversationMessages(
+    currentConversationId,
+    listing
+  );
+
+
+  loadConversations();
+}
+
+
+/* =========================================================
+   LOAD CONVERSATIONS
+========================================================= */
+
+async function loadConversations() {
+
+  const list =
+    getElement("conversationList");
+
+
+  if (!list || !currentUser) {
+    return;
+  }
+
+
+  list.innerHTML = `
+    <div class="loading-state">
+      Loading conversations...
+    </div>
+  `;
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("conversations")
+    .select("*")
+    .or(
+      "buyer_id.eq." +
+      currentUser.id +
+      ",seller_id.eq." +
+      currentUser.id
+    )
+    .order(
+      "updated_at",
+      {
+        ascending: false
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Conversation loading error:",
+      error
+    );
+
+
+    list.innerHTML = `
+      <div class="empty-state">
+        <h3>Messages unavailable</h3>
+        <p>
+          We could not load your conversations.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">💬</div>
+        <h3>No messages yet</h3>
+        <p>
+          When you contact a seller,
+          your conversations will appear here.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    data.map(
+      conversation =>
+        createConversationHTML(
+          conversation
+        )
+    ).join("");
+
+
+  updateUnreadBadges();
+}
+
+
+/* =========================================================
+   CONVERSATION HTML
+========================================================= */
+
+function createConversationHTML(
+  conversation
+) {
+
+  const id =
+    conversation.id;
+
+
+  const title =
+    conversation.listing_title ||
+    conversation.title ||
+    "Marketplace conversation";
+
+
+  const lastMessage =
+    conversation.last_message ||
+    "No messages yet";
+
+
+  const unread =
+    Number(
+      conversation.unread_count || 0
+    );
+
+
+  return `
+    <button
+      type="button"
+      class="conversation-item"
+      onclick="openConversation('${escapeAttribute(id)}')"
+    >
+
+      <div class="conversation-avatar">
+        💬
+      </div>
+
+      <div class="conversation-content">
+
+        <div class="conversation-title">
+          ${escapeHTML(title)}
+        </div>
+
+        <div class="conversation-preview">
+          ${escapeHTML(lastMessage)}
+        </div>
+
+      </div>
+
+      ${
+        unread > 0
+          ? `
+            <span class="unread-badge">
+              ${unread}
+            </span>
+          `
+          : ""
+      }
+
+    </button>
+  `;
+}
+
+
+/* =========================================================
+   OPEN EXISTING CONVERSATION
+========================================================= */
+
+async function openConversation(
+  conversationId
+) {
+
+  if (!conversationId) {
+    return;
+  }
+
+
+  currentConversationId =
+    conversationId;
+
+
+  const {
+    data: conversation,
+    error
+  } = await supabaseClient
+    .from("conversations")
+    .select("*")
+    .eq("id", conversationId)
+    .single();
+
+
+  if (error || !conversation) {
+
+    console.error(
+      "Conversation error:",
+      error
+    );
+
+    return;
+  }
+
+
+  currentConversationListingId =
+    conversation.listing_id ||
+    null;
+
+
+  let listing = null;
+
+
+  if (conversation.listing_id) {
+
+    const result =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .eq(
+          "id",
+          conversation.listing_id
+        )
+        .maybeSingle();
+
+
+    listing =
+      result.data || null;
+  }
+
+
+  await loadConversationMessages(
+    conversationId,
+    listing
+  );
+
+
+  markConversationRead(
+    conversationId
+  );
+}
+
+
+/* =========================================================
+   LOAD CHAT MESSAGES
+========================================================= */
+
+async function loadConversationMessages(
+  conversationId,
+  listing = null
+) {
+
+  const messageList =
+    getElement("messageList");
+
+
+  if (!messageList) {
+    return;
+  }
+
+
+  currentConversationId =
+    conversationId;
+
+
+  const header =
+    getElement("chatHeader");
+
+
+  if (header) {
+
+    header.innerHTML = `
+      <div class="chat-header-title">
+        ${
+          escapeHTML(
+            listing?.title ||
+            "SiomaMarket Chat"
+          )
+        }
+      </div>
+
+      <div class="chat-header-subtitle">
+        ${
+          escapeHTML(
+            listing?.seller_name ||
+            "Marketplace conversation"
+          )
+        }
+      </div>
+    `;
+  }
+
+
+  messageList.innerHTML = `
+    <div class="loading-state">
+      Loading messages...
+    </div>
+  `;
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .eq(
+      "conversation_id",
+      conversationId
+    )
+    .order(
+      "created_at",
+      {
+        ascending: true
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Messages loading error:",
+      error
+    );
+
+
+    messageList.innerHTML = `
+      <div class="empty-state">
+        <p>
+          Unable to load messages.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    messageList.innerHTML = `
+      <div class="empty-chat">
+        <p>
+          No messages yet.
+        </p>
+
+        <p>
+          Start the conversation below.
+        </p>
+      </div>
+    `;
+
+  } else {
+
+    messageList.innerHTML =
+      data.map(
+        message =>
+          createMessageHTML(message)
+      ).join("");
+  }
+
+
+  scrollChatToBottom();
+
+
+  startMessageRefresh();
+}
+
+
+/* =========================================================
+   MESSAGE HTML
+========================================================= */
+
+function createMessageHTML(
+  message
+) {
+
+  const isMine =
+    String(message.sender_id) ===
+    String(currentUser?.id);
+
+
+  const text =
+    message.message ||
+    message.content ||
+    "";
+
+
+  const time =
+    formatMessageTime(
+      message.created_at
+    );
+
+
+  return `
+    <div
+      class="chat-message-row ${
+        isMine
+          ? "mine"
+          : "theirs"
+      }"
+    >
+
+      <div
+        class="chat-message ${
+          isMine
+            ? "message-mine"
+            : "message-theirs"
+        }"
+      >
+
+        <div class="message-text">
+          ${escapeHTML(text)}
+        </div>
+
+        <div class="message-time">
+          ${escapeHTML(time)}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   FORMAT MESSAGE TIME
+========================================================= */
+
+function formatMessageTime(
+  value
+) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  const date =
+    new Date(value);
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "";
+  }
+
+
+  return date.toLocaleTimeString(
+    [],
+    {
+      hour: "numeric",
+      minute: "2-digit"
+    }
+  );
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+async function sendMessage() {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  if (!currentConversationId) {
+
+    alert(
+      "Please select a conversation first."
+    );
+
+    return;
+  }
+
+
+  const input =
+    getElement("messageInput");
+
+
+  if (!input) {
+    return;
+  }
+
+
+  const text =
+    input.value.trim();
+
+
+  if (!text) {
+    return;
+  }
+
+
+  const sendButton =
+    document.querySelector(
+      "[onclick*='sendMessage']"
+    );
+
+
+  if (sendButton) {
+    sendButton.disabled = true;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("messages")
+    .insert({
+      conversation_id:
+        currentConversationId,
+
+      sender_id:
+        currentUser.id,
+
+      message:
+        text
+    })
+    .select()
+    .single();
+
+
+  if (error) {
+
+    console.error(
+      "Send message error:",
+      error
+    );
+
+
+    alert(
+      "Unable to send your message."
+    );
+
+
+    if (sendButton) {
+      sendButton.disabled = false;
+    }
+
+    return;
+  }
+
+
+  input.value = "";
+
+
+  /*
+     Update conversation preview.
+  */
+
+  await supabaseClient
+    .from("conversations")
+    .update({
+      last_message: text,
+      updated_at:
+        new Date().toISOString()
+    })
+    .eq(
+      "id",
+      currentConversationId
+    );
+
+
+  await loadConversationMessages(
+    currentConversationId
+  );
+
+
+  loadConversations();
+
+
+  if (sendButton) {
+    sendButton.disabled = false;
+  }
+}
+
+
+/* =========================================================
+   ENTER TO SEND
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function (event) {
+
+    const input =
+      event.target;
+
+
+    if (
+      input &&
+      input.id === "messageInput" &&
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+      sendMessage();
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SCROLL CHAT TO BOTTOM
+========================================================= */
+
+function scrollChatToBottom() {
+
+  const messageList =
+    getElement("messageList");
+
+
+  if (!messageList) {
+    return;
+  }
+
+
+  messageList.scrollTop =
+    messageList.scrollHeight;
+}
+
+
+/* =========================================================
+   MARK CONVERSATION AS READ
+========================================================= */
+
+function markConversationRead(
+  conversationId
+) {
+
+  if (!conversationId) {
+    return;
+  }
+
+
+  try {
+
+    messageReadState =
+      JSON.parse(
+        localStorage.getItem(
+          MESSAGE_READ_KEY
+        ) || "{}"
+      );
+
+  } catch (error) {
+
+    messageReadState = {};
+  }
+
+
+  messageReadState[
+    String(conversationId)
+  ] = Date.now();
+
+
+  localStorage.setItem(
+    MESSAGE_READ_KEY,
+    JSON.stringify(
+      messageReadState
+    )
+  );
+
+
+  updateUnreadBadges();
+}
+
+
+/* =========================================================
+   UPDATE UNREAD BADGES
+========================================================= */
+
+function updateUnreadBadges() {
+
+  const badges =
+    document.querySelectorAll(
+      ".unread-badge"
+    );
+
+
+  if (!badges.length) {
+    return;
+  }
+}
+
+
+/* =========================================================
+   MESSAGE REFRESH
+========================================================= */
+
+function startMessageRefresh() {
+
+  stopMessageRefresh();
+
+
+  messageRefreshTimer =
+    setInterval(
+      async function () {
+
+        if (
+          !currentConversationId ||
+          !currentUser
+        ) {
+          return;
+        }
+
+
+        await loadConversationMessages(
+          currentConversationId
+        );
+
+      },
+      10000
+    );
+}
+
+
+function stopMessageRefresh() {
+
+  if (
+    messageRefreshTimer
+  ) {
+
+    clearInterval(
+      messageRefreshTimer
+    );
+
+    messageRefreshTimer = null;
+  }
+}
+
+
+/* =========================================================
+   CLOSE MESSAGES
+========================================================= */
+
+function closeMessages() {
+
+  stopMessageRefresh();
+
+
+  const page =
+    getElement("messagesPage");
+
+
+  if (page) {
+
+    page.classList.remove(
+      "active"
     );
   }
 
-  const urls = [];
 
-  for (
-    let i = 0;
-    i < files.length;
-    i++
-  ) {
-    const progress =
-      document.getElementById(
-        "publishButton"
-      );
+  currentConversationId =
+    null;
 
-    progress.innerText =
-      "⏳ UPLOADING PHOTO " +
-      (i + 1) +
-      " OF " +
-      files.length +
-      "...";
+  currentConversationListingId =
+    null;
 
-    const url =
-      await uploadProductImage(
-        files[i]
-      );
 
-    urls.push(url);
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+/* =========================================================
+   MESSAGE PAGE CLEANUP
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  function () {
+
+    stopMessageRefresh();
+
+  }
+);
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 8
+   SELLER DASHBOARD + EDIT + DELETE LISTINGS
+========================================================= */
+
+
+/* =========================================================
+   LOAD SELLER DASHBOARD
+========================================================= */
+
+async function loadSellerDashboard() {
+
+  if (!currentUser) {
+    return;
   }
 
-  return urls;
-         }
+  const container =
+    getElement("sellerListings");
+
+  const totalElement =
+    getElement("sellerTotalListings");
+
+  const activeElement =
+    getElement("sellerActiveListings");
+
+  const valueElement =
+    getElement("sellerMarketValue");
+
+
+  if (container) {
+    container.innerHTML = `
+      <div class="loading-state">
+        Loading your listings...
+      </div>
+    `;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("listings")
+    .select("*")
+    .eq(
+      "seller_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Seller listings error:",
+      error
+    );
+
+    /*
+       Fallback for databases where
+       seller_id has not been added yet.
+    */
+
+    const fallback =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .eq(
+          "seller_phone",
+          currentUser.user_metadata?.phone ||
+          ""
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (fallback.error) {
+
+      if (container) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Unable to load listings</h3>
+            <p>
+              Please check your connection and try again.
+            </p>
+          </div>
+        `;
+      }
+
+      return;
+    }
+
+
+    sellerListingsCache =
+      fallback.data || [];
+
+  } else {
+
+    sellerListingsCache =
+      data || [];
+  }
+
+
+  const listings =
+    sellerListingsCache;
+
+
+  const activeListings =
+    listings.filter(
+      item =>
+        item.status === "active"
+    );
+
+
+  const totalValue =
+    activeListings.reduce(
+      function (sum, item) {
+
+        return (
+          sum +
+          (Number(item.price) || 0)
+        );
+
+      },
+      0
+    );
+
+
+  if (totalElement) {
+    totalElement.innerText =
+      listings.length;
+  }
+
+
+  if (activeElement) {
+    activeElement.innerText =
+      activeListings.length;
+  }
+
+
+  if (valueElement) {
+    valueElement.innerText =
+      formatPrice(totalValue);
+  }
+
+
+  renderSellerListings(
+    listings,
+    container
+  );
+}
+
+
+/* =========================================================
+   RENDER SELLER LISTINGS
+========================================================= */
+
+function renderSellerListings(
+  listings,
+  container
+) {
+
+  if (!container) {
+    return;
+  }
+
+
+  if (
+    !listings ||
+    listings.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          📦
+        </div>
+
+        <h3>No listings yet</h3>
+
+        <p>
+          Products you publish will appear here.
+        </p>
+
+        <button
+          type="button"
+          class="primary-button"
+          onclick="sellNow()"
+        >
+          Sell Something
+        </button>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    listings.map(
+      item =>
+        createSellerListingHTML(item)
+    ).join("");
+}
+
+
+/* =========================================================
+   SELLER LISTING HTML
+========================================================= */
+
+function createSellerListingHTML(
+  item
+) {
+
+  const image =
+    getPrimaryImage(item);
+
+
+  const status =
+    item.status || "active";
+
+
+  const statusClass =
+    status.toLowerCase();
+
+
+  return `
+    <div
+      class="seller-listing-card"
+      data-listing-id="${escapeAttribute(item.id)}"
+    >
+
+      <div class="seller-listing-image">
+
+        <img
+          src="${escapeAttribute(image)}"
+          alt="${escapeAttribute(
+            item.title || "Product"
+          )}"
+          loading="lazy"
+        >
+
+      </div>
+
+
+      <div class="seller-listing-info">
+
+        <div class="seller-listing-top">
+
+          <span
+            class="listing-status ${escapeAttribute(
+              statusClass
+            )}"
+          >
+            ${escapeHTML(status)}
+          </span>
+
+        </div>
+
+
+        <h3>
+          ${escapeHTML(
+            item.title ||
+            "Untitled product"
+          )}
+        </h3>
+
+
+        <div class="seller-listing-price">
+          ${formatPrice(item.price)}
+        </div>
+
+
+        <div class="seller-listing-location">
+          📍 ${escapeHTML(
+            item.location || "Sioma"
+          )}
+        </div>
+
+
+        <div class="seller-listing-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="openProductDetails('${escapeAttribute(item.id)}')"
+          >
+            View
+          </button>
+
+
+          <button
+            type="button"
+            class="secondary-button"
+            onclick="openEditListing('${escapeAttribute(item.id)}')"
+          >
+            Edit
+          </button>
+
+
+          <button
+            type="button"
+            class="danger-button"
+            onclick="deleteListing('${escapeAttribute(item.id)}')"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   OPEN EDIT LISTING
+========================================================= */
+
+async function openEditListing(id) {
+
+  if (!currentUser || !id) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("listings")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+
+  if (error || !data) {
+
+    console.error(
+      "Edit listing error:",
+      error
+    );
+
+    alert(
+      "Unable to load this listing."
+    );
+
+    return;
+  }
+
+
+  /*
+     Verify ownership when seller_id
+     exists.
+  */
+
+  if (
+    data.seller_id &&
+    String(data.seller_id) !==
+    String(currentUser.id)
+  ) {
+
+    alert(
+      "You can only edit your own listings."
+    );
+
+    return;
+  }
+
+
+  const modal =
+    getElement("editModal");
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  const idInput =
+    getElement("editListingId");
+
+  const titleInput =
+    getElement("editTitle");
+
+  const descriptionInput =
+    getElement("editDescription");
+
+  const priceInput =
+    getElement("editPrice");
+
+  const categoryInput =
+    getElement("editCategory");
+
+  const locationInput =
+    getElement("editLocation");
+
+  const sellerNameInput =
+    getElement("editSellerName");
+
+  const sellerPhoneInput =
+    getElement("editSellerPhone");
+
+
+  if (idInput) {
+    idInput.value =
+      data.id;
+  }
+
+  if (titleInput) {
+    titleInput.value =
+      data.title || "";
+  }
+
+  if (descriptionInput) {
+    descriptionInput.value =
+      data.description || "";
+  }
+
+  if (priceInput) {
+    priceInput.value =
+      data.price ?? "";
+  }
+
+  if (categoryInput) {
+    categoryInput.value =
+      data.category || "Other";
+  }
+
+  if (locationInput) {
+    locationInput.value =
+      "Sioma";
+  }
+
+  if (sellerNameInput) {
+    sellerNameInput.value =
+      data.seller_name || "";
+  }
+
+  if (sellerPhoneInput) {
+    sellerPhoneInput.value =
+      data.seller_phone || "";
+  }
+
+
+  clearMessage("editMessage");
+
+
+  modal.classList.add("active");
+}
+
+
+/* =========================================================
+   CLOSE EDIT MODAL
+========================================================= */
+
+function closeEditModal() {
+
+  const modal =
+    getElement("editModal");
+
+
+  if (modal) {
+
+    modal.classList.remove(
+      "active"
+    );
+  }
+
+
+  clearMessage("editMessage");
+}
+
+
+/* =========================================================
+   SAVE EDITED LISTING
+========================================================= */
+
+async function saveEditedListing() {
+
+  if (!currentUser) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  const id =
+    getElement("editListingId")?.value;
+
+
+  const title =
+    getElement("editTitle")?.value.trim();
+
+
+  const description =
+    getElement("editDescription")?.value.trim();
+
+
+  const price =
+    getElement("editPrice")?.value;
+
+
+  const category =
+    getElement("editCategory")?.value;
+
+
+  const location =
+    getElement("editLocation")?.value;
+
+
+  const sellerName =
+    getElement("editSellerName")?.value.trim();
+
+
+  const sellerPhone =
+    getElement("editSellerPhone")?.value.trim();
+
+
+  if (!id) {
+
+    showMessage(
+      "editMessage",
+      "Listing ID is missing.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!title) {
+
+    showMessage(
+      "editMessage",
+      "Please enter a product title.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!price || Number(price) < 0) {
+
+    showMessage(
+      "editMessage",
+      "Please enter a valid price.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (
+    location &&
+    !isSioma(location)
+  ) {
+
+    showMessage(
+      "editMessage",
+      "SiomaMarket currently accepts listings from Sioma only.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const saveButton =
+    document.querySelector(
+      "#editModal button[onclick*='saveEditedListing']"
+    );
+
+
+  if (saveButton) {
+    saveButton.disabled = true;
+    saveButton.textContent =
+      "Saving...";
+  }
+
+
+  /*
+     Update by ID.
+
+     Ownership is also included
+     when seller_id exists.
+  */
+
+  let updateQuery =
+    supabaseClient
+      .from("listings")
+      .update({
+        title: title,
+        description: description,
+        price: Number(price),
+        category:
+          category || "Other",
+        location: "Sioma",
+        seller_name:
+          sellerName ||
+          "Sioma Seller",
+        seller_phone:
+          sellerPhone || ""
+      })
+      .eq("id", id);
+
+
+  if (currentUser.id) {
+
+    updateQuery =
+      updateQuery.eq(
+        "seller_id",
+        currentUser.id
+      );
+  }
+
+
+  const {
+    error
+  } = await updateQuery;
+
+
+  if (error) {
+
+    console.error(
+      "Update listing error:",
+      error
+    );
+
+
+    /*
+       Retry without seller_id for
+       older database structures.
+    */
+
+    const fallback =
+      await supabaseClient
+        .from("listings")
+        .update({
+          title: title,
+          description: description,
+          price: Number(price),
+          category:
+            category || "Other",
+          location: "Sioma",
+          seller_name:
+            sellerName ||
+            "Sioma Seller",
+          seller_phone:
+            sellerPhone || ""
+        })
+        .eq("id", id);
+
+
+    if (fallback.error) {
+
+      showMessage(
+        "editMessage",
+        "Unable to save the changes.",
+        "error"
+      );
+
+
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent =
+          "Save Changes";
+      }
+
+      return;
+    }
+  }
+
+
+  showMessage(
+    "editMessage",
+    "Listing updated successfully.",
+    "success"
+  );
+
+
+  await loadSellerDashboard();
+
+  await loadLatestProducts();
+
+
+  setTimeout(
+    function () {
+      closeEditModal();
+    },
+    900
+  );
+
+
+  if (saveButton) {
+    saveButton.disabled = false;
+    saveButton.textContent =
+      "Save Changes";
+  }
+}
+
+
+/* =========================================================
+   DELETE LISTING
+========================================================= */
+
+async function deleteListing(id) {
+
+  if (!currentUser || !id) {
+
+    openAuthModal();
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Are you sure you want to delete this listing?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  /*
+     First try ownership-protected
+     deletion.
+  */
+
+  let deleteQuery =
+    supabaseClient
+      .from("listings")
+      .delete()
+      .eq("id", id)
+      .eq(
+        "seller_id",
+        currentUser.id
+      );
+
+
+  const {
+    error
+  } = await deleteQuery;
+
+
+  if (error) {
+
+    console.error(
+      "Protected delete error:",
+      error
+    );
+
+
+    /*
+       Fallback for older listings
+       without seller_id.
+    */
+
+    const fallback =
+      await supabaseClient
+        .from("listings")
+        .delete()
+        .eq("id", id);
+
+
+    if (fallback.error) {
+
+      console.error(
+        "Delete listing error:",
+        fallback.error
+      );
+
+      alert(
+        "Unable to delete this listing."
+      );
+
+      return;
+    }
+  }
+
+
+  /*
+     Remove the listing from
+     local favorites as well.
+  */
+
+  let favorites =
+    getFavorites();
+
+
+  favorites =
+    favorites.filter(
+      item =>
+        String(item) !==
+        String(id)
+    );
+
+
+  saveFavorites(favorites);
+
+  favoritesCache =
+    favorites;
+
+
+  await loadSellerDashboard();
+
+  await loadLatestProducts();
+
+  await renderFavoritesPage();
+
+  updateFavoriteButtons();
+
+  updateFavoriteCount();
+
+
+  alert(
+    "Listing deleted successfully."
+  );
+}
+
+
+/* =========================================================
+   SELLER DASHBOARD REFRESH
+========================================================= */
+
+async function refreshSellerDashboard() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  await loadSellerDashboard();
+}
+
+
+/* =========================================================
+   CLOSE SELLER DASHBOARD
+========================================================= */
+
+function closeSellerDashboard() {
+
+  const dashboard =
+    getElement("sellerDashboard");
+
+
+  if (dashboard) {
+
+    dashboard.classList.remove(
+      "active"
+    );
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 9
+   ADMIN DASHBOARD + LISTING MANAGEMENT
+========================================================= */
+
+
+/* =========================================================
+   LOAD ADMIN DASHBOARD
+========================================================= */
+
+async function loadAdminDashboard() {
+
+  if (!(await isAdmin())) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const totalEl =
+    getElement("adminTotalListings");
+
+  const activeEl =
+    getElement("adminActiveListings");
+
+  const sellerEl =
+    getElement("adminSellerCount");
+
+  const valueEl =
+    getElement("adminMarketValue");
+
+  try {
+
+    const { data, error } =
+      await supabaseClient
+        .from("listings")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(
+        "Admin dashboard error:",
+        error
+      );
+
+      alert(
+        "Unable to load admin dashboard."
+      );
+
+      return;
+    }
+
+    adminListingsCache = data || [];
+
+    const total =
+      adminListingsCache.length;
+
+    const activeListings =
+      adminListingsCache.filter(
+        item =>
+          String(item.status || "")
+            .toLowerCase() === "active"
+      );
+
+    const marketValue =
+      activeListings.reduce(
+        (sum, item) =>
+          sum + (Number(item.price) || 0),
+        0
+      );
+
+    const sellers = new Set();
+
+    adminListingsCache.forEach(item => {
+
+      if (item.seller_id) {
+
+        sellers.add(
+          String(item.seller_id)
+        );
+
+      } else if (item.seller_phone) {
+
+        sellers.add(
+          String(item.seller_phone)
+        );
+
+      } else if (item.seller_name) {
+
+        sellers.add(
+          String(item.seller_name)
+        );
+
+      }
+
+    });
+
+    if (totalEl) {
+      totalEl.textContent =
+        total.toLocaleString("en-ZM");
+    }
+
+    if (activeEl) {
+      activeEl.textContent =
+        activeListings.length
+          .toLocaleString("en-ZM");
+    }
+
+    if (sellerEl) {
+      sellerEl.textContent =
+        sellers.size
+          .toLocaleString("en-ZM");
+    }
+
+    if (valueEl) {
+      valueEl.textContent =
+        formatPrice(marketValue);
+    }
+
+    await loadAdminListings("all");
+
+  } catch (error) {
+
+    console.error(
+      "Admin dashboard error:",
+      error
+    );
+
+    alert(
+      "Something went wrong loading admin data."
+    );
+  }
+}
+
+
+/* =========================================================
+   LOAD ADMIN LISTINGS
+========================================================= */
+
+async function loadAdminListings(
+  statusFilter = "all"
+) {
+
+  if (!(await isAdmin())) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const container =
+    getElement("adminListingsBody");
+
+  if (!container) return;
+
+  container.innerHTML =
+    `<tr>
+       <td colspan="7">
+         Loading listings...
+       </td>
+     </tr>`;
+
+  try {
+
+    let query =
+      supabaseClient
+        .from("listings")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (
+      statusFilter &&
+      statusFilter !== "all"
+    ) {
+      query =
+        query.eq(
+          "status",
+          statusFilter
+        );
+    }
+
+    const { data, error } =
+      await query;
+
+    if (error) {
+      console.error(
+        "Admin listings error:",
+        error
+      );
+
+      container.innerHTML =
+        `<tr>
+           <td colspan="7">
+             Unable to load listings.
+           </td>
+         </tr>`;
+
+      return;
+    }
+
+    adminListingsCache = data || [];
+
+    renderAdminListings(
+      adminListingsCache,
+      container
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Admin listings error:",
+      error
+    );
+
+    container.innerHTML =
+      `<tr>
+         <td colspan="7">
+           Error loading listings.
+         </td>
+       </tr>`;
+  }
+}
+
+
+/* =========================================================
+   RENDER ADMIN LISTINGS
+========================================================= */
+
+function renderAdminListings(
+  listings,
+  container
+) {
+
+  if (!listings.length) {
+
+    container.innerHTML =
+      `<tr>
+         <td colspan="7">
+           No listings found.
+         </td>
+       </tr>`;
+
+    return;
+  }
+
+  container.innerHTML =
+    listings.map(item => {
+
+      const images =
+        getProductImages(item);
+
+      const image =
+        images[0] ||
+        DEFAULT_IMAGE;
+
+      const title =
+        escapeHTML(
+          item.title || "Untitled"
+        );
+
+      const seller =
+        escapeHTML(
+          item.seller_name ||
+          "Unknown seller"
+        );
+
+      const location =
+        escapeHTML(
+          item.location || "Sioma"
+        );
+
+      const status =
+        String(
+          item.status || "active"
+        ).toLowerCase();
+
+      const id =
+        escapeAttribute(item.id);
+
+      return `
+        <tr>
+
+          <td>
+            <img
+              src="${escapeAttribute(image)}"
+              alt="${title}"
+              class="admin-listing-image"
+              onerror="this.src='${escapeAttribute(DEFAULT_IMAGE)}'"
+            >
+          </td>
+
+          <td>
+            <strong>${title}</strong>
+          </td>
+
+          <td>
+            ${formatPrice(item.price)}
+          </td>
+
+          <td>
+            ${seller}
+          </td>
+
+          <td>
+            ${location}
+          </td>
+
+          <td>
+
+            <select
+              onchange="updateListingStatus('${id}', this.value)"
+            >
+
+              <option
+                value="active"
+                ${status === "active" ? "selected" : ""}
+              >
+                Active
+              </option>
+
+              <option
+                value="sold"
+                ${status === "sold" ? "selected" : ""}
+              >
+                Sold
+              </option>
+
+              <option
+                value="hidden"
+                ${status === "hidden" ? "selected" : ""}
+              >
+                Hidden
+              </option>
+
+            </select>
+
+          </td>
+
+          <td>
+
+            <button
+              type="button"
+              onclick="openProductDetails('${id}')"
+            >
+              View
+            </button>
+
+            <button
+              type="button"
+              onclick="deleteAdminListing('${id}')"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   UPDATE LISTING STATUS
+========================================================= */
+
+async function updateListingStatus(
+  listingId,
+  newStatus
+) {
+
+  if (!(await isAdmin())) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const allowedStatuses = [
+    "active",
+    "sold",
+    "hidden"
+  ];
+
+  if (
+    !allowedStatuses.includes(
+      String(newStatus).toLowerCase()
+    )
+  ) {
+    alert("Invalid listing status.");
+    return;
+  }
+
+  try {
+
+    const { error } =
+      await supabaseClient
+        .from("listings")
+        .update({
+          status:
+            String(newStatus).toLowerCase()
+        })
+        .eq("id", listingId);
+
+    if (error) {
+
+      console.error(
+        "Status update error:",
+        error
+      );
+
+      alert(
+        "Unable to update listing status."
+      );
+
+      return;
+    }
+
+    await loadAdminDashboard();
+
+  } catch (error) {
+
+    console.error(
+      "Status update error:",
+      error
+    );
+
+    alert(
+      "Something went wrong updating the listing."
+    );
+  }
+}
+
+
+/* =========================================================
+   SHOW ALL ADMIN LISTINGS
+========================================================= */
+
+async function showAllAdminListings() {
+
+  await loadAdminListings("all");
+
+}
+
+
+/* =========================================================
+   SHOW ACTIVE ADMIN LISTINGS
+========================================================= */
+
+async function showActiveAdminListings() {
+
+  await loadAdminListings("active");
+
+}
+
+
+/* =========================================================
+   DELETE LISTING FROM ADMIN
+========================================================= */
+
+async function deleteAdminListing(
+  listingId
+) {
+
+  if (!(await isAdmin())) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "Delete this listing permanently?"
+    );
+
+  if (!confirmed) return;
+
+  try {
+
+    const { error } =
+      await supabaseClient
+        .from("listings")
+        .delete()
+        .eq("id", listingId);
+
+    if (error) {
+
+      console.error(
+        "Admin delete error:",
+        error
+      );
+
+      alert(
+        "Unable to delete listing."
+      );
+
+      return;
+    }
+
+    favoritesCache =
+      getFavorites()
+        .filter(
+          id =>
+            String(id) !==
+            String(listingId)
+        );
+
+    saveFavorites(
+      favoritesCache
+    );
+
+    await loadAdminDashboard();
+
+    await loadLatestProducts();
+
+    await renderFavoritesPage();
+
+  } catch (error) {
+
+    console.error(
+      "Admin delete error:",
+      error
+    );
+
+    alert(
+      "Something went wrong deleting the listing."
+    );
+  }
+}
+
+
+/* =========================================================
+   ADMIN BUTTON EVENTS
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const loadButton =
+      getElement("loadAdminListings");
+
+    const allButton =
+      getElement("showAllAdminListings");
+
+    const activeButton =
+      getElement("showActiveAdminListings");
+
+    if (loadButton) {
+
+      loadButton.addEventListener(
+        "click",
+        function () {
+
+          loadAdminListings("all");
+
+        }
+      );
+
+    }
+
+    if (allButton) {
+
+      allButton.addEventListener(
+        "click",
+        function () {
+
+          showAllAdminListings();
+
+        }
+      );
+
+    }
+
+    if (activeButton) {
+
+      activeButton.addEventListener(
+        "click",
+        function () {
+
+          showActiveAdminListings();
+
+        }
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   END PART 9
+========================================================= */
+/* =========================================================
+   SIOMAMARKET - SCRIPT.JS
+   PART 10
+   FINAL INITIALIZATION + SAFETY CHECKS
+========================================================= */
+
+
+/* =========================================================
+   SAFE PAGE INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function () {
+
+    console.log(
+      "SiomaMarket JavaScript loaded."
+    );
+
+    try {
+
+      await loadAuthSession();
+
+    } catch (error) {
+
+      console.error(
+        "Session initialization error:",
+        error
+      );
+
+    }
+
+    try {
+
+      await loadLatestProducts();
+
+    } catch (error) {
+
+      console.error(
+        "Product initialization error:",
+        error
+      );
+
+    }
+
+    try {
+
+      updateFavoriteButtons();
+      updateFavoriteCount();
+
+    } catch (error) {
+
+      console.error(
+        "Favorite initialization error:",
+        error
+      );
+
+    }
+
+    try {
+
+      loadSellerProfile();
+
+    } catch (error) {
+
+      console.error(
+        "Seller profile initialization error:",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SEARCH INPUT SAFETY
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const searchInput =
+      getElement("marketSearch");
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener(
+      "input",
+      function () {
+
+        clearTimeout(searchTimer);
+
+        searchTimer =
+          setTimeout(
+            function () {
+
+              searchMarket();
+
+            },
+            250
+          );
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================================================
+   ONLINE / OFFLINE MESSAGE
+========================================================= */
+
+window.addEventListener(
+  "online",
+  function () {
+
+    console.log(
+      "SiomaMarket: Internet connection restored."
+    );
+
+  }
+);
+
+window.addEventListener(
+  "offline",
+  function () {
+
+    console.log(
+      "SiomaMarket: Internet connection lost."
+    );
+
+  }
+);
+
+
+/* =========================================================
+   PREVENT BROKEN IMAGE DISPLAY
+========================================================= */
+
+document.addEventListener(
+  "error",
+  function (event) {
+
+    const element =
+      event.target;
+
+    if (
+      element &&
+      element.tagName === "IMG"
+    ) {
+
+      if (
+        !element.dataset.fallbackApplied
+      ) {
+
+        element.dataset.fallbackApplied =
+          "true";
+
+        element.src =
+          DEFAULT_IMAGE;
+      }
+
+    }
+
+  },
+  true
+);
+
+
+/* =========================================================
+   CLEANUP MESSAGE REFRESH
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  function () {
+
+    if (
+      typeof stopMessageRefresh ===
+      "function"
+    ) {
+
+      stopMessageRefresh();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SUPABASE CONNECTION CHECK
+========================================================= */
+
+async function checkSupabaseConnection() {
+
+  try {
+
+    const { error } =
+      await supabaseClient
+        .from("listings")
+        .select("id")
+        .eq("location", "Sioma")
+        .limit(1);
+
+    if (error) {
+
+      console.error(
+        "Supabase connection check failed:",
+        error
+      );
+
+      return false;
+    }
+
+    console.log(
+      "Supabase connection successful."
+    );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(
+      "Supabase connection error:",
+      error
+    );
+
+    return false;
+  }
+
+}
+
+
+/* =========================================================
+   GLOBAL ERROR REPORTING
+========================================================= */
+
+window.addEventListener(
+  "error",
+  function (event) {
+
+    console.error(
+      "SiomaMarket error:",
+      event.error ||
+      event.message
+    );
+
+  }
+);
+
+window.addEventListener(
+  "unhandledrejection",
+  function (event) {
+
+    console.error(
+      "SiomaMarket promise error:",
+      event.reason
+    );
+
+  }
+);
+
+
+/* =========================================================
+   FINAL STARTUP
+========================================================= */
+
+console.log(
+  "SiomaMarket V2.3 JavaScript ready."
+);
+
+
+/* =========================================================
+   END PART 10
+========================================================= */
