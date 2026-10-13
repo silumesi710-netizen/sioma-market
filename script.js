@@ -142,8 +142,12 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
    -------------------------------------------------------------------------- */
 async function loadListings() {
   const gridContainer = $('listingsGrid');
-  const queryText = $('searchInput').value;
-  const category = $('categorySelect').value;
+
+const searchElement = $('searchInput');
+const queryText = searchElement ? searchElement.value.trim() : '';
+
+const categoryElement = $('categorySelect');
+const category = categoryElement ? categoryElement.value : '';
 
   let query = supabaseClient
     .from('listings')
