@@ -1,1 +1,305 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#087f3d">
+
+  <meta
+    name="description"
+    content="SiomaMarket - Buy and sell products in Sioma and across Zambia."
+  >
+
+  <title>SiomaMarket | Zambia's Local Marketplace</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer
+  ></script>
+
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <a href="#home" class="brand" aria-label="SiomaMarket Home">
+        <img
+          src="SiomaMarket-logo.png"
+          alt="SiomaMarket logo"
+          class="site-logo"
+        >
+
+        <span class="brand-text">
+          <strong>SiomaMarket</strong>
+          <small>Your Local Marketplace</small>
+        </span>
+      </a>
+
+      <button
+        type="button"
+        class="account-button"
+        id="accountButton"
+      >
+        Account
+      </button>
+
+    </div>
+  </header>
+
+
+  <!-- MAIN CONTENT -->
+  <main id="home">
+
+    <!-- WELCOME SECTION -->
+    <section class="welcome-section">
+
+      <p class="welcome-label">WELCOME TO SIOMAMARKET 🇿🇲</p>
+
+      <h1>Buy and sell <span>locally.</span></h1>
+
+      <p class="welcome-description">
+        Discover products and connect with sellers in your community.
+      </p>
+
+      <!-- SEARCH -->
+      <form id="searchForm" class="search-form">
+
+        <label for="searchInput" class="visually-hidden">
+          Search products
+        </label>
+
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="What are you looking for?"
+          autocomplete="off"
+        >
+
+        <button type="submit" class="search-button">
+          Search
+        </button>
+
+      </form>
+
+      <!-- MAIN ACTIONS -->
+      <div class="hero-actions">
+
+        <button
+          type="button"
+          class="button button-primary"
+          id="buyButton"
+        >
+          Browse Products
+        </button>
+
+        <button
+          type="button"
+          class="button button-secondary"
+          id="sellButton"
+        >
+          + Sell a Product
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="section" id="categories">
+
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">EXPLORE</p>
+          <h2>Shop by Category</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+
+        <button class="category-card" data-category="Agriculture">
+          <span class="category-icon" aria-hidden="true">🌾</span>
+          <span>Agriculture</span>
+        </button>
+
+        <button class="category-card" data-category="Livestock">
+          <span class="category-icon" aria-hidden="true">🐄</span>
+          <span>Livestock</span>
+        </button>
+
+        <button class="category-card" data-category="Fish">
+          <span class="category-icon" aria-hidden="true">🐟</span>
+          <span>Fish</span>
+        </button>
+
+        <button class="category-card" data-category="Phones">
+          <span class="category-icon" aria-hidden="true">📱</span>
+          <span>Phones</span>
+        </button>
+
+        <button class="category-card" data-category="Vehicles">
+          <span class="category-icon" aria-hidden="true">🚗</span>
+          <span>Vehicles</span>
+        </button>
+
+        <button class="category-card" data-category="Houses">
+          <span class="category-icon" aria-hidden="true">🏠</span>
+          <span>Houses</span>
+        </button>
+
+        <button class="category-card" data-category="Clothes">
+          <span class="category-icon" aria-hidden="true">👕</span>
+          <span>Clothes</span>
+        </button>
+
+        <button class="category-card" data-category="Services">
+          <span class="category-icon" aria-hidden="true">🛠️</span>
+          <span>Services</span>
+        </button>
+
+        <button class="category-card" data-category="timber">
+          <span class="category-icon" aria-hidden="true">🪵</span>
+          <span>Timber</span>
+        </button>
+
+        <button class="category-card" data-category="Other">
+          <span class="category-icon" aria-hidden="true">🛍️</span>
+          <span>Other</span>
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- LATEST PRODUCTS -->
+    <section class="section" id="products">
+
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">FRESH FINDS</p>
+          <h2 id="productsHeading">Latest Products</h2>
+        </div>
+
+        <button
+          type="button"
+          class="text-button"
+          id="viewAllButton"
+        >
+          View all
+        </button>
+      </div>
+
+      <p
+        id="productMessage"
+        class="product-message"
+        role="status"
+        aria-live="polite"
+      >
+        Loading products...
+      </p>
+
+      <div
+        id="productGrid"
+        class="product-grid"
+        aria-live="polite"
+      ></div>
+
+    </section>
+
+
+    <!-- SELLER INVITATION -->
+    <section class="seller-banner" id="sell">
+
+      <div>
+        <p class="section-eyebrow">GROW YOUR BUSINESS</p>
+
+        <h2>Have something to sell?</h2>
+
+        <p>
+          Reach buyers in Sioma first. List your products on SiomaMarket.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="button button-primary"
+        id="startSellingButton"
+      >
+        Start Selling
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <p>
+      <strong>SiomaMarket</strong>
+      — Connecting local buyers and sellers.
+    </p>
+
+    <p>&copy; <span id="currentYear">2026</span> SiomaMarket.</p>
+
+  </footer>
+
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="bottom-navigation" aria-label="Main navigation">
+
+    <a href="#home" class="nav-item active" data-nav="home">
+      <span class="nav-icon" aria-hidden="true">⌂</span>
+      <span>Home</span>
+    </a>
+
+    <a href="#categories" class="nav-item" data-nav="categories">
+      <span class="nav-icon" aria-hidden="true">▦</span>
+      <span>Categories</span>
+    </a>
+
+    <button
+      type="button"
+      class="nav-item"
+      id="navSellButton"
+    >
+      <span class="nav-icon" aria-hidden="true">＋</span>
+      <span>Sell</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-item"
+      id="favoritesButton"
+    >
+      <span class="nav-icon" aria-hidden="true">♡</span>
+      <span>Favourites</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-item"
+      id="navAccountButton"
+    >
+      <span class="nav-icon" aria-hidden="true">♙</span>
+      <span>Account</span>
+    </button>
+
+  </nav>
+
+</body>
+  </html>
