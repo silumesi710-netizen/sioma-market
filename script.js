@@ -208,7 +208,31 @@ function renderListingsGrid(listings, container) {
 function handleSearch() {
   loadListings();
 }
+document.querySelectorAll('.category-card').forEach(button => {
+button.addEventListener('click', () => {
+const category = button.dataset.category;
 
+    const heading = document.getElementById('productsHeading');
+    const searchInput = document.getElementById('searchInput');
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    if (heading) {
+        heading.textContent = category === 'timber'
+            ? 'Timber Products'
+            : category + ' Products';
+    }
+
+    loadListings(category);
+    
+    document.getElementById('products')?.scrollIntoView({
+        behavior: 'smooth'
+    });
+});
+
+});
 async function handleCreateListing(e) {
   e.preventDefault();
   if (!currentUser) return alert('You must be logged in to post listings.');
