@@ -141,7 +141,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
    SECTION 6: CATALOG, LISTINGS & FAVORITES
    -------------------------------------------------------------------------- */
 async function loadListings() {
-  const gridContainer = $('listingsGrid');
+  const gridContainer = $('productGrid');
 
 const searchElement = $('searchInput');
 const queryText = searchElement ? searchElement.value.trim() : '';
