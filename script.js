@@ -6,8 +6,8 @@
    SECTION 1 & 2: SUPABASE CONFIGURATION & INITIALIZATION
    -------------------------------------------------------------------------- */
 // Replace these placeholders with your actual Supabase Project Settings!
-const SUPABASE_URL = "https://YOUR_ACTUAL_PROJECT_ID.supabase.co";
-const SUPABASE_KEY = "YOUR_ACTUAL_ANON_PUBLIC_KEY";
+const SUPABASE_URL = "https://luolbdjonzissgskjupd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
