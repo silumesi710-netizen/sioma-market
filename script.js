@@ -443,28 +443,4 @@ function handleVisibilityChange() {
 document.addEventListener('visibilitychange', handleVisibilityChange);
 
 // Initial Execution Step
-async function testSupabaseConnection() {
-try {
-const { data, error } = await supabaseClient
-.from('listings')
-.select('id')
-.limit(1);
-
-    if (error) {
-        console.error('Supabase connection test failed:', error.message);
-        alert('Database error: ' + error.message);
-        return;
-    }
-
-    console.log('Supabase connection successful!', data);
-    alert('Supabase connection successful!');
-    
-    loadListings();
-} catch (error) {
-    console.error('Connection test failed:', error);
-    alert('Connection failed. Check your Supabase configuration.');
-}
-
-}
-
-testSupabaseConnection();
+loadListings();
