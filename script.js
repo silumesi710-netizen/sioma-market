@@ -148,7 +148,6 @@ const queryText = searchElement ? searchElement.value.trim() : '';
 
 const categoryElement = $('categorySelect');
 const category = categoryElement ? categoryElement.value : '';
-
   let query = supabaseClient
     .from('listings')
     .select('*')
