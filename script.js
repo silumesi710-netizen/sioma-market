@@ -1,473 +1,1276 @@
 /* ==========================================================================
-   SIOMAMARKET - COMPLETE APPLICATION LOGIC
-   ========================================================================== */
+SIOMAMARKET — COMPLETE APPLICATION LOGIC
+Compatible with productGrid, productMessage, searchInput and category-card.
+========================================================================== */
 
-/* --------------------------------------------------------------------------
-   SECTION 1 & 2: SUPABASE CONFIGURATION & INITIALIZATION
-   -------------------------------------------------------------------------- */
-// Replace these placeholders with your actual Supabase Project Settings!
+/* ==========================================================================
+SECTION 1: SUPABASE CONFIGURATION
+========================================================================== */
+
 const SUPABASE_URL = "https://luolbdjonzissgskjupd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY =
+"sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
-/**
- * Shorthand DOM Selector Helper
- */
-const $ = (id) => document.getElementById(id);
-
-/**
- * Escapes dynamic string input to mitigate XSS in HTML string literals
- */
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+if (!window.supabase) {
+console.error(
+"Supabase library is missing. Check the Supabase script in index.html."
+);
 }
 
-/* --------------------------------------------------------------------------
-   SECTION 3: GLOBAL STATE MANAGEMENT
-   -------------------------------------------------------------------------- */
+const supabaseClient = window.supabase
+? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+: null;
+
+/* ==========================================================================
+SECTION 2: HELPER FUNCTIONS
+========================================================================== */
+
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(value) {
+if (value === null || value === undefined) {
+return "";
+}
+
+return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+function showMessage(message, type = "info") {
+const element = $("productMessage");
+
+if (!element) return;
+
+element.textContent = message;
+element.dataset.type = type;
+element.style.display = "block";
+
+}
+
+function hideMessage() {
+const element = $("productMessage");
+
+if (element) {
+    element.style.display = "none";
+}
+
+}
+
+function formatPrice(value) {
+const price = Number(value);
+
+if (!Number.isFinite(price)) {
+    return "Price on request";
+}
+
+return "K" + price.toLocaleString("en-ZM", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
+
+}
+
+function formatDate(value) {
+if (!value) return "";
+
+const date = new Date(value);
+
+if (Number.isNaN(date.getTime())) {
+    return "";
+}
+
+return date.toLocaleDateString("en-ZM", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+});
+
+}
+
+function showError(message) {
+console.error(message);
+alert(message);
+}
+
+function setElementDisplay(id, display) {
+const element = $(id);
+
+if (element) {
+    element.style.display = display;
+}
+
+}
+
+/* ==========================================================================
+SECTION 3: GLOBAL APPLICATION STATE
+========================================================================== */
+
 let currentUser = null;
 let sessionLoaded = false;
 let isAuthRegisterMode = false;
+
 let favoriteListingIds = new Set();
 
-// Messaging Specific State
 let currentConversationId = null;
 let currentConversationListingId = null;
 let currentConversationRecipientId = null;
 
-// Background Counter Refresh Interval Reference
+let selectedCategory = "";
 let counterInterval = null;
 
-/* --------------------------------------------------------------------------
-   SECTION 4: ROUTING & NAVIGATION
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+SECTION 4: NAVIGATION
+========================================================================== */
+
 function navigateTo(pageId) {
-  document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-  const target = $(pageId);
-  if (target) {
-    target.classList.add('active');
-  }
+document.querySelectorAll(".page-section").forEach((page) => {
+page.classList.remove("active");
+});
 
-  // Trigger page-specific data loads
-  if (pageId === 'homePage') loadListings();
-  if (pageId === 'favsPage') loadFavorites();
-  if (pageId === 'messagesPage') loadConversations();
+const target = $(pageId);
+
+if (target) {
+    target.classList.add("active");
 }
 
-/* --------------------------------------------------------------------------
-   SECTION 5: AUTHENTICATION & SESSION HANDLING
-   -------------------------------------------------------------------------- */
-function toggleAuthMode(e) {
-  if (e) e.preventDefault();
-  isAuthRegisterMode = !isAuthRegisterMode;
-  
-  $('authTitle').innerText = isAuthRegisterMode ? 'Create Account' : 'Sign In';
-  $('authSubmitBtn').innerText = isAuthRegisterMode ? 'Register' : 'Login';
-  $('authToggleText').innerText = isAuthRegisterMode ? 'Already have an account?' : 'Need an account?';
-  $('authToggleLink').innerText = isAuthRegisterMode ? 'Login' : 'Register';
+if (pageId === "homePage") {
+    loadListings();
 }
 
-async function handleAuthSubmit(e) {
-  e.preventDefault();
-  const email = $('authEmail').value;
-  const password = $('authPassword').value;
+if (pageId === "favsPage") {
+    loadFavorites();
+}
 
-  try {
+if (pageId === "messagesPage") {
+    loadConversations();
+}
+
+}
+
+/* ==========================================================================
+SECTION 5: AUTHENTICATION
+========================================================================== */
+
+function toggleAuthMode(event) {
+if (event) {
+event.preventDefault();
+}
+
+isAuthRegisterMode = !isAuthRegisterMode;
+
+const title = $("authTitle");
+const submitButton = $("authSubmitBtn");
+const toggleText = $("authToggleText");
+const toggleLink = $("authToggleLink");
+
+if (title) {
+    title.textContent = isAuthRegisterMode
+        ? "Create Account"
+        : "Sign In";
+}
+
+if (submitButton) {
+    submitButton.textContent = isAuthRegisterMode
+        ? "Register"
+        : "Login";
+}
+
+if (toggleText) {
+    toggleText.textContent = isAuthRegisterMode
+        ? "Already have an account?"
+        : "Need an account?";
+}
+
+if (toggleLink) {
+    toggleLink.textContent = isAuthRegisterMode
+        ? "Login"
+        : "Register";
+}
+
+}
+
+async function handleAuthSubmit(event) {
+if (event) {
+event.preventDefault();
+}
+
+if (!supabaseClient) {
+    showError("Supabase has not loaded. Refresh the page and try again.");
+    return;
+}
+
+const emailElement = $("authEmail");
+const passwordElement = $("authPassword");
+
+if (!emailElement || !passwordElement) {
+    showError("The login form fields could not be found.");
+    return;
+}
+
+const email = emailElement.value.trim();
+const password = passwordElement.value;
+
+if (!email || !password) {
+    showError("Enter your email address and password.");
+    return;
+}
+
+const submitButton = $("authSubmitBtn");
+
+if (submitButton) {
+    submitButton.disabled = true;
+}
+
+try {
     if (isAuthRegisterMode) {
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) throw error;
-      alert('Registration successful! Please log in with your credentials.');
-      toggleAuthMode();
+        const { error } = await supabaseClient.auth.signUp({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        alert(
+            "Registration submitted. Check your email if confirmation is required."
+        );
     } else {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      navigateTo('homePage');
+        const { error } =
+            await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
+
+        if (error) throw error;
+
+        navigateTo("homePage");
     }
-  } catch (err) {
-    alert(err.message);
-  }
+} catch (error) {
+    console.error("Authentication error:", error);
+    showError(error.message || "Authentication failed.");
+} finally {
+    if (submitButton) {
+        submitButton.disabled = false;
+    }
+}
+
 }
 
 async function handleLogout() {
-  await supabaseClient.auth.signOut();
-  navigateTo('homePage');
+if (!supabaseClient) return;
+
+const { error } = await supabaseClient.auth.signOut();
+
+if (error) {
+    showError(error.message);
+    return;
+}
+
+navigateTo("homePage");
+
 }
 
 async function handleUserSessionChanged() {
-  if (currentUser) {
-    $('authBtn').style.display = 'none';
-    $('logoutBtn').style.display = 'inline-block';
-    $('sellBtn').style.display = 'inline-block';
-    $('favsBtn').style.display = 'inline-block';
-    $('messagesBtn').style.display = 'inline-block';
+if (currentUser) {
+setElementDisplay("authBtn", "none");
+setElementDisplay("logoutBtn", "inline-block");
+setElementDisplay("sellBtn", "inline-block");
+setElementDisplay("favsBtn", "inline-block");
+setElementDisplay("messagesBtn", "inline-block");
+
     await loadFavoriteIds();
-  } else {
-    $('authBtn').style.display = 'inline-block';
-    $('logoutBtn').style.display = 'none';
-    $('sellBtn').style.display = 'none';
-    $('favsBtn').style.display = 'none';
-    $('messagesBtn').style.display = 'none';
+} else {
+    setElementDisplay("authBtn", "inline-block");
+    setElementDisplay("logoutBtn", "none");
+    setElementDisplay("sellBtn", "none");
+    setElementDisplay("favsBtn", "none");
+    setElementDisplay("messagesBtn", "none");
+
     favoriteListingIds.clear();
-  }
+
+    stopCounterRefresh();
 }
 
-/* Primary Auth Listener */
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  currentUser = session?.user || null;
-  sessionLoaded = true;
-  
-  setTimeout(async () => {
-    try {
-      await handleUserSessionChanged();
-      if (currentUser) {
-        startCounterRefresh();
-      } else {
-        stopCounterRefresh();
-      }
-    } catch (error) {
-      console.error("Auth UI refresh error:", error);
-    }
-  }, 0);
-});
+}
 
-/* --------------------------------------------------------------------------
-   SECTION 6: CATALOG, LISTINGS & FAVORITES
-   -------------------------------------------------------------------------- */
-async function loadListings() {
-  const gridContainer = $('productGrid');
+/* ==========================================================================
+SECTION 6: LISTINGS AND PRODUCT SEARCH
+========================================================================== */
 
-const searchElement = $('searchInput');
-const queryText = searchElement ? searchElement.value.trim() : '';
+async function loadListings(categoryOverride = null) {
+const gridContainer = $("productGrid");
 
-const categoryElement = $('categorySelect');
-const category = categoryElement ? categoryElement.value : '';
-  let query = supabaseClient
-    .from('listings')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (category) query = query.eq('category', category);
-  if (queryText) query = query.ilike('title', `%${queryText}%`);
-
-  const { data, error } = await query;
-  
-  if (error) {
-    console.error("Supabase Query Error:", error);
-    if (gridContainer) {
-      gridContainer.innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; color: var(--danger); padding: 2rem;">
-          <p><strong>Failed to load marketplace items.</strong></p>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-            Please ensure you have configured valid SUPABASE_URL and SUPABASE_KEY credentials and enabled SELECT RLS policies on the 'listings' table.
-          </p>
-        </div>
-      `;
-    }
+if (!gridContainer) {
+    console.error(
+        "Product grid not found. Check for id=\"productGrid\" in index.html."
+    );
     return;
-  }
+}
 
-  renderListingsGrid(data, gridContainer);
+if (!supabaseClient) {
+    showMessage("The marketplace connection is unavailable.", "error");
+    return;
+}
+
+const searchElement = $("searchInput");
+const queryText = searchElement
+    ? searchElement.value.trim()
+    : "";
+
+if (categoryOverride !== null) {
+    selectedCategory = categoryOverride;
+}
+
+const category = selectedCategory;
+
+showMessage("Loading products...");
+
+gridContainer.innerHTML = "";
+
+try {
+    let query = supabaseClient
+        .from("listings")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (category) {
+        query = query.eq("category", category);
+    }
+
+    if (queryText) {
+        query = query.ilike("title", "%" + queryText + "%");
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error("Product loading error:", error);
+
+        showMessage(
+            "Unable to load products. Please refresh and try again.",
+            "error"
+        );
+
+        return;
+    }
+
+    renderListingsGrid(data || [], gridContainer);
+
+    const heading = $("productsHeading");
+
+    if (heading) {
+        if (category) {
+            heading.textContent =
+                category.toLowerCase() === "timber"
+                    ? "Timber Products"
+                    : category + " Products";
+        } else if (queryText) {
+            heading.textContent = "Search Results";
+        } else {
+            heading.textContent = "Latest Products";
+        }
+    }
+
+} catch (error) {
+    console.error("Unexpected product loading error:", error);
+
+    showMessage(
+        "Something went wrong while loading products.",
+        "error"
+    );
+}
+
+}
+
+function getPrimaryImage(item) {
+if (!item || !item.image_url) {
+return "";
+}
+
+let images = item.image_url;
+
+if (typeof images === "string") {
+    try {
+        const parsed = JSON.parse(images);
+
+        if (Array.isArray(parsed)) {
+            images = parsed;
+        }
+    } catch (_) {
+        // A normal image URL is also supported.
+    }
+}
+
+if (Array.isArray(images)) {
+    return images.find((image) => typeof image === "string" && image) || "";
+}
+
+return typeof images === "string" ? images : "";
+
 }
 
 function renderListingsGrid(listings, container) {
-  if (!container) return;
-  container.innerHTML = '';
-  
-  if (!listings || listings.length === 0) {
-    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No listings found.</p>';
+if (!container) return;
+
+container.innerHTML = "";
+
+if (!listings || listings.length === 0) {
+    showMessage("No listings found. Check back soon!");
     return;
-  }
+}
 
-  listings.forEach(item => {
-    const isFav = favoriteListingIds.has(item.id);
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.onclick = () => openProductModal(item);
+hideMessage();
+
+listings.forEach((item) => {
+    const card = document.createElement("article");
+
+    card.className = "card";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute(
+        "aria-label",
+        "View product: " + (item.title || "Product")
+    );
+
+    const image = getPrimaryImage(item);
+    const safeTitle = escapeHtml(item.title || "Untitled product");
+    const safeCategory = escapeHtml(item.category || "Other");
+    const safeImage = escapeHtml(image);
+
+    const isFavorite = favoriteListingIds.has(item.id);
+
     card.innerHTML = `
-      <img class="card-img" src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.title)}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image';">
-      <div class="card-body">
-        <div class="card-price">$${Number(item.price).toFixed(2)}</div>
-        <div class="card-title">${escapeHtml(item.title)}</div>
-        <div class="card-footer">
-          <span>${escapeHtml(item.category)}</span>
-          ${currentUser ? `<button class="btn" onclick="event.stopPropagation(); toggleFavorite('${item.id}')">${isFav ? '❤️' : '🤍'}</button>` : ''}
+        <img
+            class="card-img"
+            src="${safeImage || "https://placehold.co/600x400?text=SiomaMarket"}"
+            alt="${safeTitle}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=No+Image';"
+        >
+
+        <div class="card-body">
+            <div class="card-price">
+                ${escapeHtml(formatPrice(item.price))}
+            </div>
+
+            <div class="card-title">
+                ${safeTitle}
+            </div>
+
+            <div class="card-footer">
+                <span>${safeCategory}</span>
+
+                ${
+                    currentUser
+                        ? `
+                            <button
+                                type="button"
+                                class="btn favorite-toggle"
+                                aria-label="${isFavorite ? "Remove from" : "Add to"} favourites"
+                            >
+                                ${isFavorite ? "♥" : "♡"}
+                            </button>
+                        `
+                        : ""
+                }
+            </div>
         </div>
-      </div>
     `;
+
+    card.addEventListener("click", () => {
+        openProductModal(item);
+    });
+
+    card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            openProductModal(item);
+        }
+    });
+
+    const favoriteButton = card.querySelector(".favorite-toggle");
+
+    if (favoriteButton) {
+        favoriteButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleFavorite(item.id);
+        });
+    }
+
     container.appendChild(card);
-  });
+});
+
 }
 
-function handleSearch() {
-  loadListings();
+function handleSearch(event) {
+if (event) {
+event.preventDefault();
 }
-document.querySelectorAll('.category-card').forEach(button => {
-button.addEventListener('click', () => {
-const category = button.dataset.category;
 
-    const heading = document.getElementById('productsHeading');
-    const searchInput = document.getElementById('searchInput');
+selectedCategory = "";
+loadListings("");
 
-    if (searchInput) {
-        searchInput.value = '';
-    }
+}
 
-    if (heading) {
-        heading.textContent = category === 'timber'
-            ? 'Timber Products'
-            : category + ' Products';
-    }
+function clearProductFilters() {
+selectedCategory = "";
 
-    loadListings(category);
-    
-    document.getElementById('products')?.scrollIntoView({
-        behavior: 'smooth'
+const searchInput = $("searchInput");
+
+if (searchInput) {
+    searchInput.value = "";
+}
+
+loadListings("");
+
+}
+
+/* ==========================================================================
+SECTION 7: CATEGORY BUTTONS
+========================================================================== */
+
+function bindCategoryButtons() {
+document.querySelectorAll(".category-card").forEach((button) => {
+if (button.dataset.bound === "true") return;
+
+    button.dataset.bound = "true";
+
+    button.addEventListener("click", () => {
+        const category = button.dataset.category;
+
+        if (!category) {
+            console.warn("Category button has no data-category value.");
+            return;
+        }
+
+        const searchInput = $("searchInput");
+
+        if (searchInput) {
+            searchInput.value = "";
+        }
+
+        selectedCategory = category;
+
+        loadListings(category);
+
+        const productsSection = $("products");
+
+        if (productsSection) {
+            productsSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
     });
 });
 
-});
-async function handleCreateListing(e) {
-  e.preventDefault();
-  if (!currentUser) return alert('You must be logged in to post listings.');
-
-  const payload = {
-    seller_id: currentUser.id,
-    title: $('listTitle').value,
-    price: parseFloat($('listPrice').value),
-    category: $('listCategory').value,
-    description: $('listDesc').value,
-    image_url: $('listImageUrl').value,
-    status: 'active'
-  };
-
-  const { error } = await supabaseClient.from('listings').insert([payload]);
-  if (error) {
-    alert(error.message);
-  } else {
-    alert('Listing published successfully!');
-    $('createListingForm').reset();
-    navigateTo('homePage');
-  }
 }
 
+/* ==========================================================================
+SECTION 8: CREATE A LISTING
+========================================================================== */
+
+async function handleCreateListing(event) {
+if (event) {
+event.preventDefault();
+}
+
+if (!currentUser) {
+    alert("Please sign in before posting a product.");
+    navigateTo("authPage");
+    return;
+}
+
+const titleElement = $("listTitle");
+const priceElement = $("listPrice");
+const categoryElement = $("listCategory");
+const descriptionElement = $("listDesc");
+const imageElement = $("listImageUrl");
+
+if (
+    !titleElement ||
+    !priceElement ||
+    !categoryElement ||
+    !descriptionElement ||
+    !imageElement
+) {
+    showError(
+        "Some listing form fields are missing. Check index.html."
+    );
+    return;
+}
+
+const title = titleElement.value.trim();
+const price = Number(priceElement.value);
+const category = categoryElement.value;
+const description = descriptionElement.value.trim();
+const imageUrl = imageElement.value.trim();
+
+if (!title || !category || !Number.isFinite(price) || price < 0) {
+    showError("Enter a product title, category, and valid price.");
+    return;
+}
+
+const payload = {
+    seller_id: currentUser.id,
+    title,
+    price,
+    category,
+    description,
+    image_url: imageUrl || null,
+    status: "active"
+};
+
+try {
+    const { error } = await supabaseClient
+        .from("listings")
+        .insert([payload]);
+
+    if (error) throw error;
+
+    alert("Your product has been published!");
+
+    const form = $("createListingForm");
+
+    if (form) {
+        form.reset();
+    }
+
+    selectedCategory = "";
+    navigateTo("homePage");
+
+} catch (error) {
+    console.error("Listing creation error:", error);
+
+    showError(
+        "Could not publish your product: " + error.message
+    );
+}
+
+}
+
+/* ==========================================================================
+SECTION 9: FAVOURITES
+========================================================================== */
+
 async function loadFavoriteIds() {
-  if (!currentUser) return;
-  const { data } = await supabaseClient.from('favorites').select('listing_id').eq('user_id', currentUser.id);
-  if (data) {
-    favoriteListingIds = new Set(data.map(f => f.listing_id));
-  }
+if (!currentUser || !supabaseClient) return;
+
+try {
+    const { data, error } = await supabaseClient
+        .from("favorites")
+        .select("listing_id")
+        .eq("user_id", currentUser.id);
+
+    if (error) throw error;
+
+    favoriteListingIds = new Set(
+        (data || []).map((favorite) => favorite.listing_id)
+    );
+
+} catch (error) {
+    console.error("Unable to load favourites:", error.message);
+}
+
 }
 
 async function toggleFavorite(listingId) {
-  if (!currentUser) return;
+if (!currentUser) {
+alert("Please sign in to save favourites.");
+navigateTo("authPage");
+return;
+}
 
-  if (favoriteListingIds.has(listingId)) {
-    await supabaseClient.from('favorites').delete().eq('user_id', currentUser.id).eq('listing_id', listingId);
-    favoriteListingIds.delete(listingId);
-  } else {
-    await supabaseClient.from('favorites').insert([{ user_id: currentUser.id, listing_id: listingId }]);
-    favoriteListingIds.add(listingId);
-  }
-  
-  loadListings();
-  if ($('favsPage').classList.contains('active')) loadFavorites();
+try {
+    if (favoriteListingIds.has(listingId)) {
+        const { error } = await supabaseClient
+            .from("favorites")
+            .delete()
+            .eq("user_id", currentUser.id)
+            .eq("listing_id", listingId);
+
+        if (error) throw error;
+
+        favoriteListingIds.delete(listingId);
+
+    } else {
+        const { error } = await supabaseClient
+            .from("favorites")
+            .insert([{
+                user_id: currentUser.id,
+                listing_id: listingId
+            }]);
+
+        if (error) throw error;
+
+        favoriteListingIds.add(listingId);
+    }
+
+    await loadListings();
+
+    const favoritesPage = $("favsPage");
+
+    if (favoritesPage && favoritesPage.classList.contains("active")) {
+        await loadFavorites();
+    }
+
+} catch (error) {
+    console.error("Favourite update error:", error);
+    showError("Unable to update favourites: " + error.message);
+}
+
 }
 
 async function loadFavorites() {
-  if (!currentUser) return;
-  const { data, error } = await supabaseClient.from('favorites').select('listing_id, listings(*)').eq('user_id', currentUser.id);
-  if (error) return console.error(error);
-  
-  const listings = data ? data.map(d => d.listings).filter(Boolean) : [];
-  renderListingsGrid(listings, $('favsGrid'));
+if (!currentUser || !supabaseClient) return;
+
+const grid = $("favsGrid");
+
+if (!grid) {
+    console.warn("The favourites grid was not found.");
+    return;
 }
 
+grid.innerHTML = "";
+
+try {
+    const { data, error } = await supabaseClient
+        .from("favorites")
+        .select("listing_id, listings(*)")
+        .eq("user_id", currentUser.id);
+
+    if (error) throw error;
+
+    const listings = (data || [])
+        .map((favorite) => favorite.listings)
+        .filter(Boolean);
+
+    renderListingsGrid(listings, grid);
+
+} catch (error) {
+    console.error("Unable to load favourites:", error);
+    grid.textContent = "Unable to load favourites.";
+}
+
+}
+
+/* ==========================================================================
+SECTION 10: PRODUCT DETAILS
+========================================================================== */
+
 function openProductModal(item) {
-  const modal = $('productModal');
-  $('modalDetails').innerHTML = `
-    <img src="${escapeHtml(item.image_url)}" style="width:100%; max-height: 300px; object-fit: cover; border-radius:6px; margin-bottom:1rem;" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image';">
-    <h2>${escapeHtml(item.title)}</h2>
-    <h3 style="color:var(--primary); margin:0.5rem 0;">$${Number(item.price).toFixed(2)}</h3>
-    <p><strong>Category:</strong> ${escapeHtml(item.category)}</p>
-    <p style="margin-top:0.5rem;">${escapeHtml(item.description)}</p>
-    ${currentUser && currentUser.id !== item.seller_id ? 
-      `<button class="btn btn-primary" style="margin-top:1rem; width:100%;" onclick="messageSeller('${item.id}', '${item.seller_id}')">Contact Seller</button>` : ''}
-  `;
-  modal.classList.add('active');
+const modal = $("productModal");
+const details = $("modalDetails");
+
+if (!modal || !details) {
+    console.error(
+        "Product modal elements are missing from index.html."
+    );
+    return;
+}
+
+const image = getPrimaryImage(item);
+
+details.innerHTML = `
+    <img
+        src="${escapeHtml(image || "https://placehold.co/600x400?text=No+Image")}"
+        alt="${escapeHtml(item.title || "Product")}"
+        style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;"
+        onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=No+Image';"
+    >
+
+    <h2>${escapeHtml(item.title || "Untitled product")}</h2>
+
+    <h3 style="color:var(--primary);margin:0.5rem 0;">
+        ${escapeHtml(formatPrice(item.price))}
+    </h3>
+
+    <p>
+        <strong>Category:</strong>
+        ${escapeHtml(item.category || "Other")}
+    </p>
+
+    ${
+        item.location
+            ? `<p><strong>Location:</strong> ${escapeHtml(item.location)}</p>`
+            : ""
+    }
+
+    ${
+        item.created_at
+            ? `<p><small>Listed ${escapeHtml(formatDate(item.created_at))}</small></p>`
+            : ""
+    }
+
+    <p style="margin-top:0.75rem;white-space:pre-wrap;">
+        ${escapeHtml(item.description || "No description provided.")}
+    </p>
+
+    ${
+        currentUser && item.seller_id && currentUser.id !== item.seller_id
+            ? `
+                <button
+                    type="button"
+                    id="contactSellerButton"
+                    class="btn btn-primary"
+                    style="margin-top:1rem;width:100%;"
+                >
+                    Contact Seller
+                </button>
+            `
+            : ""
+    }
+`;
+
+modal.classList.add("active");
+
+const contactButton = $("contactSellerButton");
+
+if (contactButton) {
+    contactButton.addEventListener("click", () => {
+        messageSeller(item.id, item.seller_id);
+    });
+}
+
 }
 
 function closeModal() {
-  $('productModal').classList.remove('active');
+const modal = $("productModal");
+
+if (modal) {
+    modal.classList.remove("active");
 }
 
-/* --------------------------------------------------------------------------
-   SECTION 7: MESSAGING SYSTEM & CHAT ENGINE
-   -------------------------------------------------------------------------- */
+}
+
+/* ==========================================================================
+SECTION 11: MESSAGING
+Requires a messages table with sender_id, receiver_id, content and
+created_at columns. listing_id is optional when sending a message.
+========================================================================== */
+
 function getConversationRecipient() {
-  return currentConversationRecipientId || null;
+return currentConversationRecipientId;
 }
 
 async function messageSeller(listingId, sellerId) {
-  closeModal();
-  if (!currentUser) return navigateTo('authPage');
-  if (sellerId === currentUser.id) return alert("You cannot message yourself.");
+closeModal();
 
-  openConversation(sellerId, sellerId, listingId);
-  navigateTo('messagesPage');
+if (!currentUser) {
+    navigateTo("authPage");
+    return;
+}
+
+if (!sellerId || sellerId === currentUser.id) {
+    alert("You cannot message yourself.");
+    return;
+}
+
+currentConversationId = sellerId;
+currentConversationRecipientId = sellerId;
+currentConversationListingId = listingId || null;
+
+navigateTo("messagesPage");
+
+await openConversation(
+    sellerId,
+    sellerId,
+    listingId || null
+);
+
 }
 
 async function openConversation(conversationId, otherUserId, listingId = null) {
-  currentConversationId = conversationId;
-  currentConversationListingId = listingId;
-  currentConversationRecipientId = otherUserId;
+if (!currentUser) return;
 
-  $('chatInputArea').style.display = 'flex';
-  await loadConversationMessages(otherUserId, listingId);
+currentConversationId = conversationId || otherUserId;
+currentConversationRecipientId = otherUserId;
+currentConversationListingId = listingId;
+
+const inputArea = $("chatInputArea");
+
+if (inputArea) {
+    inputArea.style.display = "flex";
+}
+
+await loadConversationMessages(otherUserId, listingId);
+
+await loadConversations();
+
 }
 
 async function loadConversations() {
-  if (!currentUser) return;
-  const { data, error } = await supabaseClient
-    .from('messages')
-    .select('*')
-    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
-    .order('created_at', { ascending: false });
+if (!currentUser || !supabaseClient) return;
 
-  if (error) return console.error(error);
+const listContainer = $("conversationsList");
 
-  const conversationsMap = new Map();
-  data.forEach(msg => {
-    const otherId = msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id;
-    if (!conversationsMap.has(otherId)) {
-      conversationsMap.set(otherId, msg);
+if (!listContainer) return;
+
+listContainer.innerHTML = "<p>Loading conversations...</p>";
+
+try {
+    const { data, error } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .or(
+            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+        )
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const conversationsMap = new Map();
+
+    (data || []).forEach((message) => {
+        const otherId =
+            message.sender_id === currentUser.id
+                ? message.receiver_id
+                : message.sender_id;
+
+        if (otherId && !conversationsMap.has(otherId)) {
+            conversationsMap.set(otherId, message);
+        }
+    });
+
+    listContainer.innerHTML = "";
+
+    if (conversationsMap.size === 0) {
+        listContainer.textContent = "No active conversations yet.";
+        return;
     }
-  });
 
-  const listContainer = $('conversationsList');
-  listContainer.innerHTML = '';
+    conversationsMap.forEach((lastMessage, otherId) => {
+        const item = document.createElement("button");
 
-  if (conversationsMap.size === 0) {
-    listContainer.innerHTML = '<p style="padding:1rem; color:var(--text-muted); font-size:0.875rem;">No active chats.</p>';
+        item.type = "button";
+        item.className = "chat-item";
+
+        if (currentConversationRecipientId === otherId) {
+            item.classList.add("active");
+        }
+
+        const title = document.createElement("strong");
+        title.textContent = "User ..." + otherId.slice(-6);
+
+        const preview = document.createElement("p");
+        preview.textContent = lastMessage.content || "Message";
+        preview.style.overflow = "hidden";
+        preview.style.textOverflow = "ellipsis";
+        preview.style.whiteSpace = "nowrap";
+
+        item.appendChild(title);
+        item.appendChild(preview);
+
+        item.addEventListener("click", () => {
+            openConversation(
+                otherId,
+                otherId,
+                lastMessage.listing_id || null
+            );
+        });
+
+        listContainer.appendChild(item);
+    });
+
+} catch (error) {
+    console.error("Conversation loading error:", error);
+
+    listContainer.textContent =
+        "Unable to load conversations. Check your database permissions.";
+}
+
+}
+
+async function loadConversationMessages(recipientId, listingId = null) {
+if (!currentUser || !recipientId || !supabaseClient) return;
+
+const msgContainer = $("chatMessages");
+
+if (!msgContainer) return;
+
+msgContainer.innerHTML = "";
+
+try {
+    const { data, error } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .or(
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${currentUser.id})`
+        )
+        .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach((message) => {
+        const messageElement = document.createElement("div");
+
+        messageElement.className =
+            "message " +
+            (
+                message.sender_id === currentUser.id
+                    ? "sent"
+                    : "received"
+            );
+
+        messageElement.textContent = message.content || "";
+
+        msgContainer.appendChild(messageElement);
+    });
+
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+} catch (error) {
+    console.error("Message loading error:", error);
+
+    msgContainer.textContent =
+        "Unable to load messages. Check your database permissions.";
+}
+
+}
+
+async function sendMessage(event) {
+if (event) {
+event.preventDefault();
+}
+
+if (!currentUser) {
+    alert("Please sign in before sending a message.");
     return;
-  }
-
-  conversationsMap.forEach((lastMsg, otherId) => {
-    const item = document.createElement('div');
-    item.className = `chat-item ${currentConversationRecipientId === otherId ? 'active' : ''}`;
-    item.onclick = () => openConversation(otherId, otherId, lastMsg.listing_id);
-    item.innerHTML = `
-      <strong>User ID: ...${otherId.slice(-6)}</strong>
-      <p style="font-size:0.75rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-        ${escapeHtml(lastMsg.content)}
-      </p>
-    `;
-    listContainer.appendChild(item);
-  });
 }
 
-async function loadConversationMessages(recipientId, listingId) {
-  if (!currentUser || !recipientId) return;
+const recipientId = getConversationRecipient();
+const input = $("chatInput");
 
-  const { data, error } = await supabaseClient
-    .from('messages')
-    .select('*')
-    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${currentUser.id})`)
-    .order('created_at', { ascending: true });
-
-  if (error) return console.error(error);
-
-  const msgContainer = $('chatMessages');
-  msgContainer.innerHTML = '';
-
-  data.forEach(msg => {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${msg.sender_id === currentUser.id ? 'sent' : 'received'}`;
-    msgDiv.innerText = msg.content;
-    msgContainer.appendChild(msgDiv);
-  });
-
-  msgContainer.scrollTop = msgContainer.scrollHeight;
+if (!input) {
+    showError("The message input field was not found.");
+    return;
 }
 
-async function sendMessage() {
-  const recipientId = getConversationRecipient();
-  const content = $('chatInput').value.trim();
+const content = input.value.trim();
 
-  if (!recipientId) return alert('Unable to identify the recipient.');
-  if (!content) return;
+if (!recipientId) {
+    showError("Choose a conversation before sending a message.");
+    return;
+}
 
-  const payload = {
+if (!content) return;
+
+const payload = {
     sender_id: currentUser.id,
     receiver_id: recipientId,
-    listing_id: currentConversationListingId,
-    content: content
-  };
+    content
+};
 
-  const { error } = await supabaseClient.from('messages').insert([payload]);
-  if (error) {
-    alert(error.message);
-  } else {
-    $('chatInput').value = '';
-    loadConversationMessages(recipientId, currentConversationListingId);
-    loadConversations();
-  }
+if (currentConversationListingId) {
+    payload.listing_id = currentConversationListingId;
 }
 
-/* --------------------------------------------------------------------------
-   SECTION 8 & 9: COUNTERS, REALTIME SYNC & LIFECYCLE
-   -------------------------------------------------------------------------- */
-async function updateAllCounters() {
-  if (!currentUser) return;
-  const { count, error } = await supabaseClient
-    .from('messages')
-    .select('*', { count: 'exact', head: true })
-    .eq('receiver_id', currentUser.id)
-    .eq('is_read', false);
+try {
+    const { error } = await supabaseClient
+        .from("messages")
+        .insert([payload]);
 
-  if (!error && count !== null) {
-    const badge = $('msgCounter');
-    if (count > 0) {
-      badge.innerText = count;
-      badge.style.display = 'inline-block';
-    } else {
-      badge.style.display = 'none';
+    if (error) throw error;
+
+    input.value = "";
+
+    await loadConversationMessages(
+        recipientId,
+        currentConversationListingId
+    );
+
+    await loadConversations();
+
+    await updateAllCounters();
+
+} catch (error) {
+    console.error("Message sending error:", error);
+
+    showError("Unable to send message: " + error.message);
+}
+
+}
+
+/* ==========================================================================
+SECTION 12: MESSAGE COUNTERS
+========================================================================== */
+
+async function updateAllCounters() {
+if (!currentUser || !supabaseClient) return;
+
+const badge = $("msgCounter");
+
+if (!badge) return;
+
+try {
+    const { count, error } = await supabaseClient
+        .from("messages")
+        .select("*", {
+            count: "exact",
+            head: true
+        })
+        .eq("receiver_id", currentUser.id)
+        .eq("is_read", false);
+
+    if (error) {
+        console.warn("Message counter unavailable:", error.message);
+        return;
     }
-  }
+
+    badge.textContent = String(count || 0);
+    badge.style.display = count > 0 ? "inline-block" : "none";
+
+} catch (error) {
+    console.error("Counter update error:", error);
+}
+
 }
 
 function startCounterRefresh() {
-  updateAllCounters();
-  if (!counterInterval) {
+updateAllCounters();
+
+if (!counterInterval) {
     counterInterval = setInterval(updateAllCounters, 15000);
-  }
+}
+
 }
 
 function stopCounterRefresh() {
-  if (counterInterval) {
-    clearInterval(counterInterval);
-    counterInterval = null;
-  }
+if (counterInterval) {
+clearInterval(counterInterval);
+counterInterval = null;
 }
+
+const badge = $("msgCounter");
+
+if (badge) {
+    badge.style.display = "none";
+}
+
+}
+
+/* ==========================================================================
+SECTION 13: VISIBILITY AND REFRESH
+========================================================================== */
 
 function handleVisibilityChange() {
-  if (!document.hidden && currentUser) {
-    updateAllCounters();
-    const messagesPage = $('messagesPage');
-    if (currentConversationRecipientId && messagesPage && messagesPage.classList.contains('active')) {
-      loadConversationMessages(currentConversationRecipientId, currentConversationListingId);
-    }
-  }
+if (document.hidden || !currentUser) return;
+
+updateAllCounters();
+
+const messagesPage = $("messagesPage");
+
+if (
+    currentConversationRecipientId &&
+    messagesPage &&
+    messagesPage.classList.contains("active")
+) {
+    loadConversationMessages(
+        currentConversationRecipientId,
+        currentConversationListingId
+    );
 }
 
-// Bind App Visibility Listener
-document.addEventListener('visibilitychange', handleVisibilityChange);
+}
 
-// Initial Execution Step
-loadListings();
+/* ==========================================================================
+SECTION 14: APPLICATION INITIALIZATION
+========================================================================== */
+
+async function initializeSiomaMarket() {
+bindCategoryButtons();
+
+const searchForm = $("searchForm");
+
+if (searchForm && searchForm.dataset.bound !== "true") {
+    searchForm.dataset.bound = "true";
+
+    searchForm.addEventListener("submit", handleSearch);
+}
+
+if (!supabaseClient) {
+    showMessage(
+        "The marketplace connection could not start.",
+        "error"
+    );
+    return;
+}
+
+try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    currentUser = data.session?.user || null;
+    sessionLoaded = true;
+
+    await handleUserSessionChanged();
+
+    if (currentUser) {
+        startCounterRefresh();
+    }
+
+} catch (error) {
+    console.error("Session initialization error:", error);
+}
+
+await loadListings();
+
+}
+
+/* ==========================================================================
+SECTION 15: AUTHENTICATION STATE LISTENER
+========================================================================== */
+
+if (supabaseClient) {
+supabaseClient.auth.onAuthStateChange((event, session) => {
+currentUser = session?.user || null;
+sessionLoaded = true;
+
+    setTimeout(async () => {
+        try {
+            await handleUserSessionChanged();
+
+            if (currentUser) {
+                startCounterRefresh();
+            } else {
+                stopCounterRefresh();
+            }
+
+            if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+                await loadListings();
+            }
+
+        } catch (error) {
+            console.error(
+                "Authentication state update error:",
+                error
+            );
+        }
+    }, 0);
+});
+
+}
+
+/* ==========================================================================
+SECTION 16: START APPLICATION
+========================================================================== */
+
+document.addEventListener(
+"visibilitychange",
+handleVisibilityChange
+);
+
+if (document.readyState === "loading") {
+document.addEventListener(
+"DOMContentLoaded",
+initializeSiomaMarket,
+{ once: true }
+);
+} else {
+initializeSiomaMarket();
+       }
