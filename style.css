@@ -1048,3 +1048,139 @@ body.modal-open {
     border-radius: 20px 20px 0 0;
   }
    }
+/* =========================================
+   SIOMAMARKET MODAL LAYOUT FIX
+========================================= */
+
+.app-modal,
+.app-modal * {
+  box-sizing: border-box;
+}
+
+.app-modal[hidden] {
+  display: none !important;
+}
+
+.app-modal:not([hidden]) {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  overflow-y: auto !important;
+  background: rgba(0, 0, 0, 0.60) !important;
+}
+
+.app-modal .app-modal-content {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 460px !important;
+  max-height: 90vh !important;
+  margin: auto !important;
+  padding: 26px 20px !important;
+  overflow-y: auto !important;
+  background: #ffffff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22) !important;
+  color: #123524 !important;
+}
+
+.app-modal .app-modal-content form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin: 18px 0 0 !important;
+}
+
+.app-modal .app-modal-content label {
+  display: block !important;
+  width: 100% !important;
+  margin: 8px 0 2px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+}
+
+.app-modal .app-modal-content input:not([type="file"]),
+.app-modal .app-modal-content select,
+.app-modal .app-modal-content textarea {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  padding: 12px !important;
+  border: 1px solid #d5e2d9 !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  color: #123524 !important;
+  font: inherit !important;
+  font-size: 16px !important;
+}
+
+.app-modal .app-modal-content textarea {
+  min-height: 100px !important;
+}
+
+.app-modal .app-modal-content input[type="file"] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.app-modal .app-modal-content button {
+  cursor: pointer;
+}
+
+.app-modal #authSubmitBtn,
+.app-modal #publishListingBtn {
+  display: block !important;
+  width: 100% !important;
+  min-height: 48px !important;
+  margin-top: 12px !important;
+  padding: 12px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: #ffca28 !important;
+  color: #123524 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.app-modal .modal-close {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: #edf8f1 !important;
+  color: #075b2d !important;
+  font-size: 26px !important;
+}
+
+@media (max-width: 480px) {
+  .app-modal:not([hidden]) {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .app-modal .app-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 88vh !important;
+    padding: 26px 18px !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+}
