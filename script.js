@@ -1,1276 +1,1072 @@
-/* ==========================================================================
-SIOMAMARKET — COMPLETE APPLICATION LOGIC
-Compatible with productGrid, productMessage, searchInput and category-card.
-========================================================================== */
+/* =========================================================
+   SIOMAMARKET — SELLING SYSTEM
+   Supabase authentication, product uploads and listings
+========================================================= */
 
-/* ==========================================================================
-SECTION 1: SUPABASE CONFIGURATION
-========================================================================== */
+"use strict";
 
-const SUPABASE_URL = "https://luolbdjonzissgskjupd.supabase.co";
+/* =========================================================
+   1. SUPABASE CONFIGURATION
+========================================================= */
+
+const SUPABASE_URL =
+  "https://luolbdjonzissgskjupd.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
+  "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
 
-if (!window.supabase) {
-console.error(
-"Supabase library is missing. Check the Supabase script in index.html."
-);
-}
+const IMAGE_BUCKET = "Product-images";
+const MAX_PRODUCT_IMAGES = 3;
+const MAX_IMAGE_SIZE = 6 * 1024 * 1024;
 
-const supabaseClient = window.supabase
-? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-: null;
-
-/* ==========================================================================
-SECTION 2: HELPER FUNCTIONS
-========================================================================== */
-
-const $ = (id) => document.getElementById(id);
-
-function escapeHtml(value) {
-if (value === null || value === undefined) {
-return "";
-}
-
-return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-function showMessage(message, type = "info") {
-const element = $("productMessage");
-
-if (!element) return;
-
-element.textContent = message;
-element.dataset.type = type;
-element.style.display = "block";
-
-}
-
-function hideMessage() {
-const element = $("productMessage");
-
-if (element) {
-    element.style.display = "none";
-}
-
-}
-
-function formatPrice(value) {
-const price = Number(value);
-
-if (!Number.isFinite(price)) {
-    return "Price on request";
-}
-
-return "K" + price.toLocaleString("en-ZM", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-});
-
-}
-
-function formatDate(value) {
-if (!value) return "";
-
-const date = new Date(value);
-
-if (Number.isNaN(date.getTime())) {
-    return "";
-}
-
-return date.toLocaleDateString("en-ZM", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-});
-
-}
-
-function showError(message) {
-console.error(message);
-alert(message);
-}
-
-function setElementDisplay(id, display) {
-const element = $(id);
-
-if (element) {
-    element.style.display = display;
-}
-
-}
-
-/* ==========================================================================
-SECTION 3: GLOBAL APPLICATION STATE
-========================================================================== */
-
+let supabaseClient = null;
 let currentUser = null;
-let sessionLoaded = false;
-let isAuthRegisterMode = false;
+let isRegistering = false;
+let selectedProductImages = [];
 
-let favoriteListingIds = new Set();
 
-let currentConversationId = null;
-let currentConversationListingId = null;
-let currentConversationRecipientId = null;
+/* =========================================================
+   2. INITIALIZE APPLICATION
+========================================================= */
 
-let selectedCategory = "";
-let counterInterval = null;
+document.addEventListener("DOMContentLoaded", async () => {
+  if (!window.supabase || !window.supabase.createClient) {
+    showProductMessage(
+      "Unable to connect. Please check the Supabase script.",
+      true
+    );
+    return;
+  }
 
-/* ==========================================================================
-SECTION 4: NAVIGATION
-========================================================================== */
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-function navigateTo(pageId) {
-document.querySelectorAll(".page-section").forEach((page) => {
-page.classList.remove("active");
+  connectButtons();
+  connectForms();
+  connectPhotoInput();
+  connectSearch();
+
+  await restoreSession();
+  await loadListings();
+
+  supabaseClient.auth.onAuthStateChange(
+    (_event, session) => {
+      currentUser = session?.user || null;
+      updateAccountButtons();
+    }
+  );
 });
 
-const target = $(pageId);
 
-if (target) {
-    target.classList.add("active");
+/* =========================================================
+   3. SMALL HELPERS
+========================================================= */
+
+function byId(id) {
+  return document.getElementById(id);
 }
 
-if (pageId === "homePage") {
-    loadListings();
+function showProductMessage(message, isError = false) {
+  const element = byId("productMessage");
+
+  if (!element) return;
+
+  element.textContent = message;
+  element.classList.toggle("error", isError);
 }
 
-if (pageId === "favsPage") {
-    loadFavorites();
+function showSellMessage(message, isError = false) {
+  const element = byId("sellMessage");
+
+  if (!element) return;
+
+  element.textContent = message;
+  element.classList.toggle("error", isError);
 }
 
-if (pageId === "messagesPage") {
-    loadConversations();
+function formatPrice(price) {
+  const amount = Number(price);
+
+  if (!Number.isFinite(amount)) {
+    return "Price on request";
+  }
+
+  return "K" + amount.toLocaleString("en-ZM", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
 }
 
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    };
+
+    return entities[character];
+  });
 }
 
-/* ==========================================================================
-SECTION 5: AUTHENTICATION
-========================================================================== */
+function getProductImages(value) {
+  if (!value) return [];
 
-function toggleAuthMode(event) {
-if (event) {
-event.preventDefault();
+  if (Array.isArray(value)) {
+    return value.filter(item => typeof item === "string");
+  }
+
+  if (typeof value !== "string") {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+
+    if (Array.isArray(parsed)) {
+      return parsed.filter(item => typeof item === "string");
+    }
+  } catch (_error) {
+    // Older listings may contain a single image URL.
+  }
+
+  return [value];
 }
 
-isAuthRegisterMode = !isAuthRegisterMode;
+function getPrimaryImage(listing) {
+  const images = getProductImages(listing.image_url);
 
-const title = $("authTitle");
-const submitButton = $("authSubmitBtn");
-const toggleText = $("authToggleText");
-const toggleLink = $("authToggleLink");
-
-if (title) {
-    title.textContent = isAuthRegisterMode
-        ? "Create Account"
-        : "Sign In";
+  return images[0] ||
+    "https://placehold.co/600x400?text=SiomaMarket";
 }
 
-if (submitButton) {
-    submitButton.textContent = isAuthRegisterMode
-        ? "Register"
-        : "Login";
+
+/* =========================================================
+   4. MODAL CONTROLS
+========================================================= */
+
+function openModal(id) {
+  const modal = byId(id);
+
+  if (!modal) return;
+
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
 }
 
-if (toggleText) {
-    toggleText.textContent = isAuthRegisterMode
-        ? "Already have an account?"
-        : "Need an account?";
+function closeModal(id) {
+  const modal = byId(id);
+
+  if (!modal) return;
+
+  modal.hidden = true;
+
+  const anotherOpen = document.querySelector(
+    ".app-modal:not([hidden])"
+  );
+
+  if (!anotherOpen) {
+    document.body.classList.remove("modal-open");
+  }
 }
 
-if (toggleLink) {
-    toggleLink.textContent = isAuthRegisterMode
-        ? "Login"
-        : "Register";
+function closeAllModals() {
+  document.querySelectorAll(".app-modal").forEach(modal => {
+    modal.hidden = true;
+  });
+
+  document.body.classList.remove("modal-open");
 }
 
+
+/* =========================================================
+   5. CONNECT HOMEPAGE BUTTONS
+========================================================= */
+
+function connectButtons() {
+  const accountButtons = [
+    "accountButton",
+    "navAccountButton"
+  ];
+
+  accountButtons.forEach(id => {
+    byId(id)?.addEventListener("click", handleAccountClick);
+  });
+
+  const sellButtons = [
+    "sellButton",
+    "startSellingButton",
+    "navSellButton"
+  ];
+
+  sellButtons.forEach(id => {
+    byId(id)?.addEventListener("click", handleSellClick);
+  });
+
+  byId("buyButton")?.addEventListener("click", () => {
+    byId("products")?.scrollIntoView({
+      behavior: "smooth"
+    });
+  });
+
+  byId("favoritesButton")?.addEventListener("click", () => {
+    alert("Favorites will be connected in the next stage.");
+  });
+
+  document.querySelectorAll("[data-close-modal]").forEach(button => {
+    button.addEventListener("click", () => {
+      closeModal(button.dataset.closeModal);
+    });
+  });
+
+  document.querySelectorAll(".app-modal").forEach(modal => {
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeModal(modal.id);
+      }
+    });
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeAllModals();
+    }
+  });
+
+  byId("authToggleLink")?.addEventListener("click", () => {
+    setAuthMode(!isRegistering);
+  });
+}
+
+async function handleAccountClick() {
+  if (currentUser) {
+    const shouldLogout = confirm(
+      "You are logged in. Do you want to log out?"
+    );
+
+    if (shouldLogout) {
+      await logoutUser();
+    }
+
+    return;
+  }
+
+  setAuthMode(false);
+  openModal("authModal");
+}
+
+async function handleSellClick() {
+  if (!currentUser) {
+    setAuthMode(false);
+    openModal("authModal");
+
+    const message = byId("authMessage");
+
+    if (message) {
+      message.textContent =
+        "Please log in or register before selling a product.";
+    }
+
+    return;
+  }
+
+  showSellMessage("");
+  openModal("sellModal");
+}
+
+
+/* =========================================================
+   6. RESTORE LOGIN SESSION
+========================================================= */
+
+async function restoreSession() {
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    console.error("Session error:", error.message);
+    return;
+  }
+
+  currentUser = data.session?.user || null;
+
+  updateAccountButtons();
+}
+
+function updateAccountButtons() {
+  const buttonIds = [
+    "accountButton",
+    "navAccountButton"
+  ];
+
+  buttonIds.forEach(id => {
+    const button = byId(id);
+
+    if (!button) return;
+
+    button.setAttribute(
+      "aria-label",
+      currentUser ? "Account and logout" : "Log in or register"
+    );
+  });
+}
+
+
+/* =========================================================
+   7. LOGIN AND REGISTRATION FORM
+========================================================= */
+
+function connectForms() {
+  byId("authForm")?.addEventListener(
+    "submit",
+    handleAuthSubmit
+  );
+
+  byId("sellForm")?.addEventListener(
+    "submit",
+    handlePublishListing
+  );
+}
+
+function setAuthMode(registering) {
+  isRegistering = registering;
+
+  const title = byId("authTitle");
+  const submit = byId("authSubmitBtn");
+  const toggleText = byId("authToggleText");
+  const toggleLink = byId("authToggleLink");
+  const registerFields = byId("registerFields");
+  const password = byId("authPassword");
+
+  if (title) {
+    title.textContent = registering
+      ? "Create Your Account"
+      : "Welcome to SiomaMarket";
+  }
+
+  if (submit) {
+    submit.textContent = registering
+      ? "Create Account"
+      : "Log In";
+  }
+
+  if (toggleText) {
+    toggleText.textContent = registering
+      ? "Already have an account?"
+      : "Don't have an account?";
+  }
+
+  if (toggleLink) {
+    toggleLink.textContent = registering
+      ? "Log In"
+      : "Register";
+  }
+
+  if (registerFields) {
+    registerFields.hidden = !registering;
+  }
+
+  if (password) {
+    password.autocomplete = registering
+      ? "new-password"
+      : "current-password";
+  }
+
+  const message = byId("authMessage");
+
+  if (message) {
+    message.textContent = registering
+      ? "Create your free SiomaMarket account."
+      : "Log in to buy or sell on SiomaMarket.";
+  }
+
+  byId("authFullName")?.toggleAttribute(
+    "required",
+    registering
+  );
+
+  byId("authPhone")?.toggleAttribute(
+    "required",
+    registering
+  );
+
+  byId("authLocation")?.toggleAttribute(
+    "required",
+    registering
+  );
 }
 
 async function handleAuthSubmit(event) {
-if (event) {
-event.preventDefault();
-}
+  event.preventDefault();
 
-if (!supabaseClient) {
-    showError("Supabase has not loaded. Refresh the page and try again.");
+  const submit = byId("authSubmitBtn");
+  const email = byId("authEmail")?.value.trim();
+  const password = byId("authPassword")?.value;
+
+  if (!email || !password) {
+    alert("Enter your email address and password.");
     return;
-}
+  }
 
-const emailElement = $("authEmail");
-const passwordElement = $("authPassword");
-
-if (!emailElement || !passwordElement) {
-    showError("The login form fields could not be found.");
+  if (password.length < 6) {
+    alert("Your password must contain at least 6 characters.");
     return;
-}
+  }
 
-const email = emailElement.value.trim();
-const password = passwordElement.value;
+  if (submit) {
+    submit.disabled = true;
+    submit.textContent = "Please wait...";
+  }
 
-if (!email || !password) {
-    showError("Enter your email address and password.");
-    return;
-}
-
-const submitButton = $("authSubmitBtn");
-
-if (submitButton) {
-    submitButton.disabled = true;
-}
-
-try {
-    if (isAuthRegisterMode) {
-        const { error } = await supabaseClient.auth.signUp({
-            email,
-            password
-        });
-
-        if (error) throw error;
-
-        alert(
-            "Registration submitted. Check your email if confirmation is required."
-        );
+  try {
+    if (isRegistering) {
+      await registerUser(email, password);
     } else {
-        const { error } =
-            await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
-
-        if (error) throw error;
-
-        navigateTo("homePage");
+      await loginUser(email, password);
     }
-} catch (error) {
+  } catch (error) {
     console.error("Authentication error:", error);
-    showError(error.message || "Authentication failed.");
-} finally {
-    if (submitButton) {
-        submitButton.disabled = false;
+
+    alert(
+      error.message ||
+      "Authentication failed. Please try again."
+    );
+  } finally {
+    if (submit) {
+      submit.disabled = false;
+      submit.textContent = isRegistering
+        ? "Create Account"
+        : "Log In";
     }
+  }
 }
 
+async function registerUser(email, password) {
+  const fullName = byId("authFullName")?.value.trim();
+  const phone = byId("authPhone")?.value.trim();
+  const location = byId("authLocation")?.value.trim();
+
+  if (!fullName || !phone || !location) {
+    throw new Error("Complete all registration fields.");
+  }
+
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        phone,
+        location
+      }
+    }
+  });
+
+  if (error) throw error;
+
+  if (data.session) {
+    currentUser = data.session.user;
+
+    await saveSellerProfile({
+      id: currentUser.id,
+      full_name: fullName,
+      phone,
+      location
+    });
+
+    updateAccountButtons();
+    closeModal("authModal");
+
+    alert("Your account has been created successfully.");
+  } else {
+    alert(
+      "Registration submitted. Check your email to confirm your account, then log in."
+    );
+
+    setAuthMode(false);
+  }
 }
 
-async function handleLogout() {
-if (!supabaseClient) return;
+async function loginUser(email, password) {
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
 
-const { error } = await supabaseClient.auth.signOut();
+  if (error) throw error;
 
-if (error) {
-    showError(error.message);
+  currentUser = data.user;
+
+  updateAccountButtons();
+  closeModal("authModal");
+
+  alert("Welcome back to SiomaMarket!");
+}
+
+async function logoutUser() {
+  const {
+    error
+  } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert("Unable to log out: " + error.message);
     return;
+  }
+
+  currentUser = null;
+  updateAccountButtons();
+
+  alert("You have logged out.");
 }
 
-navigateTo("homePage");
+async function saveSellerProfile(profile) {
+  const {
+    error
+  } = await supabaseClient
+    .from("seller_profiles")
+    .upsert(profile, {
+      onConflict: "id"
+    });
 
-}
-
-async function handleUserSessionChanged() {
-if (currentUser) {
-setElementDisplay("authBtn", "none");
-setElementDisplay("logoutBtn", "inline-block");
-setElementDisplay("sellBtn", "inline-block");
-setElementDisplay("favsBtn", "inline-block");
-setElementDisplay("messagesBtn", "inline-block");
-
-    await loadFavoriteIds();
-} else {
-    setElementDisplay("authBtn", "inline-block");
-    setElementDisplay("logoutBtn", "none");
-    setElementDisplay("sellBtn", "none");
-    setElementDisplay("favsBtn", "none");
-    setElementDisplay("messagesBtn", "none");
-
-    favoriteListingIds.clear();
-
-    stopCounterRefresh();
-}
-
-}
-
-/* ==========================================================================
-SECTION 6: LISTINGS AND PRODUCT SEARCH
-========================================================================== */
-
-async function loadListings(categoryOverride = null) {
-const gridContainer = $("productGrid");
-
-if (!gridContainer) {
+  if (error) {
     console.error(
-        "Product grid not found. Check for id=\"productGrid\" in index.html."
+      "Seller profile could not be saved:",
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   8. PRODUCT PHOTO SELECTION
+========================================================= */
+
+function connectPhotoInput() {
+  const input = byId("sellImage");
+
+  if (!input) return;
+
+  input.addEventListener("change", () => {
+    const files = Array.from(input.files || []);
+
+    selectedProductImages = [];
+    const errors = [];
+
+    if (files.length > MAX_PRODUCT_IMAGES) {
+      errors.push("Choose no more than 3 photos.");
+    }
+
+    files.slice(0, MAX_PRODUCT_IMAGES).forEach(file => {
+      if (!file.type.startsWith("image/")) {
+        errors.push(file.name + " is not an image.");
+        return;
+      }
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        errors.push(file.name + " exceeds the 6 MB limit.");
+        return;
+      }
+
+      selectedProductImages.push(file);
+    });
+
+    renderImagePreviews();
+
+    if (errors.length) {
+      showSellMessage(errors.join(" "), true);
+    } else {
+      showSellMessage("");
+    }
+  });
+}
+
+function renderImagePreviews() {
+  const preview = byId("imagePreview");
+  const counter = byId("photoCounter");
+
+  if (counter) {
+    counter.textContent =
+      selectedProductImages.length + " / 3 photos selected";
+  }
+
+  if (!preview) return;
+
+  preview.replaceChildren();
+
+  selectedProductImages.forEach(file => {
+    const image = document.createElement("img");
+    const objectUrl = URL.createObjectURL(file);
+
+    image.src = objectUrl;
+    image.alt = "Selected product photo";
+    image.style.width = "90px";
+    image.style.height = "90px";
+    image.style.objectFit = "cover";
+    image.style.borderRadius = "8px";
+    image.style.margin = "4px";
+
+    image.addEventListener("load", () => {
+      URL.revokeObjectURL(objectUrl);
+    }, { once: true });
+
+    preview.appendChild(image);
+  });
+}
+
+
+/* =========================================================
+   9. UPLOAD PRODUCT PHOTOS
+========================================================= */
+
+async function uploadProductImages(files) {
+  const uploadedUrls = [];
+
+  for (const file of files) {
+    const extension = (
+      file.name.split(".").pop() || "jpg"
+    ).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    const filePath =
+      currentUser.id + "/" +
+      Date.now() + "-" +
+      crypto.randomUUID() + "." +
+      extension;
+
+    const {
+      error: uploadError
+    } = await supabaseClient.storage
+      .from(IMAGE_BUCKET)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (uploadError) {
+      throw new Error(
+        "Photo upload failed: " + uploadError.message
+      );
+    }
+
+    const {
+      data
+    } = supabaseClient.storage
+      .from(IMAGE_BUCKET)
+      .getPublicUrl(filePath);
+
+    uploadedUrls.push(data.publicUrl);
+  }
+
+  return uploadedUrls;
+}
+
+
+/* =========================================================
+   10. PUBLISH A PRODUCT
+========================================================= */
+
+async function handlePublishListing(event) {
+  event.preventDefault();
+
+  if (!currentUser) {
+    showSellMessage(
+      "Please log in before publishing a product.",
+      true
+    );
+
+    closeModal("sellModal");
+    setAuthMode(false);
+    openModal("authModal");
+    return;
+  }
+
+  const title = byId("sellTitle")?.value.trim();
+  const description = byId("sellDescription")?.value.trim();
+  const price = Number(byId("sellPrice")?.value);
+  const category = byId("sellCategory")?.value;
+  const location = byId("sellLocation")?.value.trim();
+  const sellerName = byId("sellerName")?.value.trim();
+  const sellerPhone = byId("sellerPhone")?.value.trim();
+  const button = byId("publishListingBtn");
+
+  if (
+    !title ||
+    !description ||
+    !Number.isFinite(price) ||
+    price <= 0 ||
+    !category ||
+    !location ||
+    !sellerName ||
+    !sellerPhone
+  ) {
+    showSellMessage(
+      "Please complete every required field correctly.",
+      true
     );
     return;
-}
+  }
 
-if (!supabaseClient) {
-    showMessage("The marketplace connection is unavailable.", "error");
+  if (selectedProductImages.length > MAX_PRODUCT_IMAGES) {
+    showSellMessage(
+      "Choose no more than 3 photos.",
+      true
+    );
     return;
-}
+  }
 
-const searchElement = $("searchInput");
-const queryText = searchElement
-    ? searchElement.value.trim()
-    : "";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Publishing...";
+  }
 
-if (categoryOverride !== null) {
-    selectedCategory = categoryOverride;
-}
+  showSellMessage("Preparing your product...");
 
-const category = selectedCategory;
+  try {
+    const imageUrls = await uploadProductImages(
+      selectedProductImages
+    );
 
-showMessage("Loading products...");
+    const listing = {
+      user_id: currentUser.id,
+      title,
+      description,
+      price,
+      category,
+      location,
+      seller_name: sellerName,
+      seller_phone: sellerPhone,
+      image_url: JSON.stringify(imageUrls),
+      status: "active"
+    };
 
-gridContainer.innerHTML = "";
-
-try {
-    let query = supabaseClient
-        .from("listings")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-    if (category) {
-        query = query.eq("category", category);
-    }
-
-    if (queryText) {
-        query = query.ilike("title", "%" + queryText + "%");
-    }
-
-    const { data, error } = await query;
+    const {
+      error
+    } = await supabaseClient
+      .from("listings")
+      .insert(listing);
 
     if (error) {
-        console.error("Product loading error:", error);
-
-        showMessage(
-            "Unable to load products. Please refresh and try again.",
-            "error"
-        );
-
-        return;
+      throw error;
     }
 
-    renderListingsGrid(data || [], gridContainer);
+    showSellMessage("Product published successfully!");
 
-    const heading = $("productsHeading");
+    byId("sellForm")?.reset();
 
-    if (heading) {
-        if (category) {
-            heading.textContent =
-                category.toLowerCase() === "timber"
-                    ? "Timber Products"
-                    : category + " Products";
-        } else if (queryText) {
-            heading.textContent = "Search Results";
-        } else {
-            heading.textContent = "Latest Products";
-        }
+    selectedProductImages = [];
+    renderImagePreviews();
+
+    const locationInput = byId("sellLocation");
+
+    if (locationInput) {
+      locationInput.value = "Sioma";
     }
 
-} catch (error) {
-    console.error("Unexpected product loading error:", error);
+    closeModal("sellModal");
 
-    showMessage(
-        "Something went wrong while loading products.",
-        "error"
+    showProductMessage(
+      "Your product has been published successfully!"
     );
-}
-
-}
-
-function getPrimaryImage(item) {
-if (!item || !item.image_url) {
-return "";
-}
-
-let images = item.image_url;
-
-if (typeof images === "string") {
-    try {
-        const parsed = JSON.parse(images);
-
-        if (Array.isArray(parsed)) {
-            images = parsed;
-        }
-    } catch (_) {
-        // A normal image URL is also supported.
-    }
-}
-
-if (Array.isArray(images)) {
-    return images.find((image) => typeof image === "string" && image) || "";
-}
-
-return typeof images === "string" ? images : "";
-
-}
-
-function renderListingsGrid(listings, container) {
-if (!container) return;
-
-container.innerHTML = "";
-
-if (!listings || listings.length === 0) {
-    showMessage("No listings found. Check back soon!");
-    return;
-}
-
-hideMessage();
-
-listings.forEach((item) => {
-    const card = document.createElement("article");
-
-    card.className = "card";
-    card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.setAttribute(
-        "aria-label",
-        "View product: " + (item.title || "Product")
-    );
-
-    const image = getPrimaryImage(item);
-    const safeTitle = escapeHtml(item.title || "Untitled product");
-    const safeCategory = escapeHtml(item.category || "Other");
-    const safeImage = escapeHtml(image);
-
-    const isFavorite = favoriteListingIds.has(item.id);
-
-    card.innerHTML = `
-        <img
-            class="card-img"
-            src="${safeImage || "https://placehold.co/600x400?text=SiomaMarket"}"
-            alt="${safeTitle}"
-            loading="lazy"
-            onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=No+Image';"
-        >
-
-        <div class="card-body">
-            <div class="card-price">
-                ${escapeHtml(formatPrice(item.price))}
-            </div>
-
-            <div class="card-title">
-                ${safeTitle}
-            </div>
-
-            <div class="card-footer">
-                <span>${safeCategory}</span>
-
-                ${
-                    currentUser
-                        ? `
-                            <button
-                                type="button"
-                                class="btn favorite-toggle"
-                                aria-label="${isFavorite ? "Remove from" : "Add to"} favourites"
-                            >
-                                ${isFavorite ? "♥" : "♡"}
-                            </button>
-                        `
-                        : ""
-                }
-            </div>
-        </div>
-    `;
-
-    card.addEventListener("click", () => {
-        openProductModal(item);
-    });
-
-    card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            openProductModal(item);
-        }
-    });
-
-    const favoriteButton = card.querySelector(".favorite-toggle");
-
-    if (favoriteButton) {
-        favoriteButton.addEventListener("click", (event) => {
-            event.stopPropagation();
-            toggleFavorite(item.id);
-        });
-    }
-
-    container.appendChild(card);
-});
-
-}
-
-function handleSearch(event) {
-if (event) {
-event.preventDefault();
-}
-
-selectedCategory = "";
-loadListings("");
-
-}
-
-function clearProductFilters() {
-selectedCategory = "";
-
-const searchInput = $("searchInput");
-
-if (searchInput) {
-    searchInput.value = "";
-}
-
-loadListings("");
-
-}
-
-/* ==========================================================================
-SECTION 7: CATEGORY BUTTONS
-========================================================================== */
-
-function bindCategoryButtons() {
-document.querySelectorAll(".category-card").forEach((button) => {
-if (button.dataset.bound === "true") return;
-
-    button.dataset.bound = "true";
-
-    button.addEventListener("click", () => {
-        const category = button.dataset.category;
-
-        if (!category) {
-            console.warn("Category button has no data-category value.");
-            return;
-        }
-
-        const searchInput = $("searchInput");
-
-        if (searchInput) {
-            searchInput.value = "";
-        }
-
-        selectedCategory = category;
-
-        loadListings(category);
-
-        const productsSection = $("products");
-
-        if (productsSection) {
-            productsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-    });
-});
-
-}
-
-/* ==========================================================================
-SECTION 8: CREATE A LISTING
-========================================================================== */
-
-async function handleCreateListing(event) {
-if (event) {
-event.preventDefault();
-}
-
-if (!currentUser) {
-    alert("Please sign in before posting a product.");
-    navigateTo("authPage");
-    return;
-}
-
-const titleElement = $("listTitle");
-const priceElement = $("listPrice");
-const categoryElement = $("listCategory");
-const descriptionElement = $("listDesc");
-const imageElement = $("listImageUrl");
-
-if (
-    !titleElement ||
-    !priceElement ||
-    !categoryElement ||
-    !descriptionElement ||
-    !imageElement
-) {
-    showError(
-        "Some listing form fields are missing. Check index.html."
-    );
-    return;
-}
-
-const title = titleElement.value.trim();
-const price = Number(priceElement.value);
-const category = categoryElement.value;
-const description = descriptionElement.value.trim();
-const imageUrl = imageElement.value.trim();
-
-if (!title || !category || !Number.isFinite(price) || price < 0) {
-    showError("Enter a product title, category, and valid price.");
-    return;
-}
-
-const payload = {
-    seller_id: currentUser.id,
-    title,
-    price,
-    category,
-    description,
-    image_url: imageUrl || null,
-    status: "active"
-};
-
-try {
-    const { error } = await supabaseClient
-        .from("listings")
-        .insert([payload]);
-
-    if (error) throw error;
-
-    alert("Your product has been published!");
-
-    const form = $("createListingForm");
-
-    if (form) {
-        form.reset();
-    }
-
-    selectedCategory = "";
-    navigateTo("homePage");
-
-} catch (error) {
-    console.error("Listing creation error:", error);
-
-    showError(
-        "Could not publish your product: " + error.message
-    );
-}
-
-}
-
-/* ==========================================================================
-SECTION 9: FAVOURITES
-========================================================================== */
-
-async function loadFavoriteIds() {
-if (!currentUser || !supabaseClient) return;
-
-try {
-    const { data, error } = await supabaseClient
-        .from("favorites")
-        .select("listing_id")
-        .eq("user_id", currentUser.id);
-
-    if (error) throw error;
-
-    favoriteListingIds = new Set(
-        (data || []).map((favorite) => favorite.listing_id)
-    );
-
-} catch (error) {
-    console.error("Unable to load favourites:", error.message);
-}
-
-}
-
-async function toggleFavorite(listingId) {
-if (!currentUser) {
-alert("Please sign in to save favourites.");
-navigateTo("authPage");
-return;
-}
-
-try {
-    if (favoriteListingIds.has(listingId)) {
-        const { error } = await supabaseClient
-            .from("favorites")
-            .delete()
-            .eq("user_id", currentUser.id)
-            .eq("listing_id", listingId);
-
-        if (error) throw error;
-
-        favoriteListingIds.delete(listingId);
-
-    } else {
-        const { error } = await supabaseClient
-            .from("favorites")
-            .insert([{
-                user_id: currentUser.id,
-                listing_id: listingId
-            }]);
-
-        if (error) throw error;
-
-        favoriteListingIds.add(listingId);
-    }
 
     await loadListings();
 
-    const favoritesPage = $("favsPage");
+    alert("Your product is now published on SiomaMarket!");
+  } catch (error) {
+    console.error("Publishing error:", error);
 
-    if (favoritesPage && favoritesPage.classList.contains("active")) {
-        await loadFavorites();
-    }
-
-} catch (error) {
-    console.error("Favourite update error:", error);
-    showError("Unable to update favourites: " + error.message);
-}
-
-}
-
-async function loadFavorites() {
-if (!currentUser || !supabaseClient) return;
-
-const grid = $("favsGrid");
-
-if (!grid) {
-    console.warn("The favourites grid was not found.");
-    return;
-}
-
-grid.innerHTML = "";
-
-try {
-    const { data, error } = await supabaseClient
-        .from("favorites")
-        .select("listing_id, listings(*)")
-        .eq("user_id", currentUser.id);
-
-    if (error) throw error;
-
-    const listings = (data || [])
-        .map((favorite) => favorite.listings)
-        .filter(Boolean);
-
-    renderListingsGrid(listings, grid);
-
-} catch (error) {
-    console.error("Unable to load favourites:", error);
-    grid.textContent = "Unable to load favourites.";
-}
-
-}
-
-/* ==========================================================================
-SECTION 10: PRODUCT DETAILS
-========================================================================== */
-
-function openProductModal(item) {
-const modal = $("productModal");
-const details = $("modalDetails");
-
-if (!modal || !details) {
-    console.error(
-        "Product modal elements are missing from index.html."
+    showSellMessage(
+      error.message ||
+      "Unable to publish your product. Please try again.",
+      true
     );
-    return;
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Publish Product";
+    }
+  }
 }
 
-const image = getPrimaryImage(item);
 
-details.innerHTML = `
+/* =========================================================
+   11. LOAD ACTIVE PRODUCTS
+========================================================= */
+
+async function loadListings() {
+  const grid = byId("productGrid");
+
+  if (!grid) return;
+
+  showProductMessage("Loading products...");
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("listings")
+    .select(
+      "id, title, description, price, category, location, image_url, seller_name, seller_phone, status, created_at"
+    )
+    .eq("status", "active")
+    .order("created_at", {
+      ascending: false
+    })
+    .limit(24);
+
+  if (error) {
+    console.error("Loading products failed:", error.message);
+
+    grid.replaceChildren();
+
+    showProductMessage(
+      "Products could not be loaded. Please refresh and try again.",
+      true
+    );
+
+    return;
+  }
+
+  grid.replaceChildren();
+
+  if (!data || data.length === 0) {
+    showProductMessage(
+      "No products yet. Be the first to sell on SiomaMarket!"
+    );
+
+    return;
+  }
+
+  data.forEach(listing => {
+    grid.appendChild(createProductCard(listing));
+  });
+
+  showProductMessage("");
+}
+
+
+/* =========================================================
+   12. RENDER PRODUCT CARDS
+========================================================= */
+
+function createProductCard(listing) {
+  const card = document.createElement("article");
+
+  card.className = "product-card";
+
+  const imageUrl = getPrimaryImage(listing);
+  const title = escapeHTML(listing.title);
+  const category = escapeHTML(listing.category);
+  const location = escapeHTML(listing.location);
+  const seller = escapeHTML(listing.seller_name || "Sioma seller");
+
+  card.innerHTML = `
     <img
-        src="${escapeHtml(image || "https://placehold.co/600x400?text=No+Image")}"
-        alt="${escapeHtml(item.title || "Product")}"
-        style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;"
-        onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=No+Image';"
+      class="product-image"
+      src="${escapeHTML(imageUrl)}"
+      alt="${title}"
+      loading="lazy"
     >
 
-    <h2>${escapeHtml(item.title || "Untitled product")}</h2>
+    <div class="product-info">
+      <p class="product-category">${category}</p>
+      <h3 class="product-title">${title}</h3>
+      <p class="product-price">${formatPrice(listing.price)}</p>
+      <p class="product-location">${location}</p>
+      <p class="product-seller">${seller}</p>
 
-    <h3 style="color:var(--primary);margin:0.5rem 0;">
-        ${escapeHtml(formatPrice(item.price))}
-    </h3>
+      <button
+        type="button"
+        class="view-product-button"
+      >
+        View Product
+      </button>
+    </div>
+  `;
 
-    <p>
-        <strong>Category:</strong>
-        ${escapeHtml(item.category || "Other")}
-    </p>
+  const image = card.querySelector(".product-image");
 
-    ${
-        item.location
-            ? `<p><strong>Location:</strong> ${escapeHtml(item.location)}</p>`
-            : ""
-    }
+  image.addEventListener("error", () => {
+    image.src =
+      "https://placehold.co/600x400?text=SiomaMarket";
+  }, { once: true });
 
-    ${
-        item.created_at
-            ? `<p><small>Listed ${escapeHtml(formatDate(item.created_at))}</small></p>`
-            : ""
-    }
-
-    <p style="margin-top:0.75rem;white-space:pre-wrap;">
-        ${escapeHtml(item.description || "No description provided.")}
-    </p>
-
-    ${
-        currentUser && item.seller_id && currentUser.id !== item.seller_id
-            ? `
-                <button
-                    type="button"
-                    id="contactSellerButton"
-                    class="btn btn-primary"
-                    style="margin-top:1rem;width:100%;"
-                >
-                    Contact Seller
-                </button>
-            `
-            : ""
-    }
-`;
-
-modal.classList.add("active");
-
-const contactButton = $("contactSellerButton");
-
-if (contactButton) {
-    contactButton.addEventListener("click", () => {
-        messageSeller(item.id, item.seller_id);
-    });
-}
-
-}
-
-function closeModal() {
-const modal = $("productModal");
-
-if (modal) {
-    modal.classList.remove("active");
-}
-
-}
-
-/* ==========================================================================
-SECTION 11: MESSAGING
-Requires a messages table with sender_id, receiver_id, content and
-created_at columns. listing_id is optional when sending a message.
-========================================================================== */
-
-function getConversationRecipient() {
-return currentConversationRecipientId;
-}
-
-async function messageSeller(listingId, sellerId) {
-closeModal();
-
-if (!currentUser) {
-    navigateTo("authPage");
-    return;
-}
-
-if (!sellerId || sellerId === currentUser.id) {
-    alert("You cannot message yourself.");
-    return;
-}
-
-currentConversationId = sellerId;
-currentConversationRecipientId = sellerId;
-currentConversationListingId = listingId || null;
-
-navigateTo("messagesPage");
-
-await openConversation(
-    sellerId,
-    sellerId,
-    listingId || null
-);
-
-}
-
-async function openConversation(conversationId, otherUserId, listingId = null) {
-if (!currentUser) return;
-
-currentConversationId = conversationId || otherUserId;
-currentConversationRecipientId = otherUserId;
-currentConversationListingId = listingId;
-
-const inputArea = $("chatInputArea");
-
-if (inputArea) {
-    inputArea.style.display = "flex";
-}
-
-await loadConversationMessages(otherUserId, listingId);
-
-await loadConversations();
-
-}
-
-async function loadConversations() {
-if (!currentUser || !supabaseClient) return;
-
-const listContainer = $("conversationsList");
-
-if (!listContainer) return;
-
-listContainer.innerHTML = "<p>Loading conversations...</p>";
-
-try {
-    const { data, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .or(
-            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
-        )
-        .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    const conversationsMap = new Map();
-
-    (data || []).forEach((message) => {
-        const otherId =
-            message.sender_id === currentUser.id
-                ? message.receiver_id
-                : message.sender_id;
-
-        if (otherId && !conversationsMap.has(otherId)) {
-            conversationsMap.set(otherId, message);
-        }
+  card.querySelector(".view-product-button")
+    .addEventListener("click", () => {
+      showListingDetails(listing);
     });
 
-    listContainer.innerHTML = "";
+  image.addEventListener("click", () => {
+    showListingDetails(listing);
+  });
 
-    if (conversationsMap.size === 0) {
-        listContainer.textContent = "No active conversations yet.";
-        return;
+  return card;
+}
+
+
+/* =========================================================
+   13. PRODUCT DETAILS
+========================================================= */
+
+function showListingDetails(listing) {
+  const images = getProductImages(listing.image_url);
+
+  const details = [
+    listing.title,
+    "",
+    "Price: " + formatPrice(listing.price),
+    "Category: " + (listing.category || ""),
+    "Location: " + (listing.location || ""),
+    "",
+    listing.description || "",
+    "",
+    "Seller: " + (listing.seller_name || "Seller"),
+    "Phone: " + (listing.seller_phone || "")
+  ].join("\n");
+
+  const shouldContact = confirm(
+    details + "\n\nPress OK to contact the seller on WhatsApp."
+  );
+
+  if (!shouldContact) return;
+
+  const phone = normalizeZambianPhone(listing.seller_phone);
+
+  if (!phone) {
+    alert("The seller has not provided a valid phone number.");
+    return;
+  }
+
+  const message = encodeURIComponent(
+    "Hello, I found your product on SiomaMarket: " +
+    listing.title
+  );
+
+  window.open(
+    "https://wa.me/" + phone + "?text=" + message,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+function normalizeZambianPhone(value) {
+  let phone = String(value || "").replace(/\D/g, "");
+
+  if (phone.startsWith("00")) {
+    phone = phone.slice(2);
+  }
+
+  if (phone.startsWith("0")) {
+    phone = "260" + phone.slice(1);
+  } else if (phone.startsWith("9") && phone.length === 9) {
+    phone = "260" + phone;
+  }
+
+  if (!phone.startsWith("260")) {
+    return "";
+  }
+
+  return phone;
+}
+
+
+/* =========================================================
+   14. SEARCH PRODUCTS
+========================================================= */
+
+function connectSearch() {
+  const form = byId("searchForm");
+  const input = byId("searchInput");
+
+  if (form) {
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      await searchListings(input?.value.trim() || "");
+    });
+  }
+
+  document.querySelectorAll("[data-category]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const category = button.dataset.category;
+
+      if (category) {
+        await searchListings("", category);
+      }
+    });
+  });
+}
+
+async function searchListings(searchText = "", category = "") {
+  const grid = byId("productGrid");
+
+  if (!grid) return;
+
+  showProductMessage("Searching products...");
+
+  let query = supabaseClient
+    .from("listings")
+    .select(
+      "id, title, description, price, category, location, image_url, seller_name, seller_phone, status, created_at"
+    )
+    .eq("status", "active")
+    .order("created_at", {
+      ascending: false
+    })
+    .limit(100);
+
+  if (searchText) {
+    const safeSearch = searchText.replace(/[,%()]/g, " ").trim();
+
+    if (safeSearch) {
+      query = query.ilike("title", "%" + safeSearch + "%");
     }
+  }
 
-    conversationsMap.forEach((lastMessage, otherId) => {
-        const item = document.createElement("button");
+  if (category) {
+    query = query.ilike("category", category);
+  }
 
-        item.type = "button";
-        item.className = "chat-item";
+  const {
+    data,
+    error
+  } = await query;
 
-        if (currentConversationRecipientId === otherId) {
-            item.classList.add("active");
-        }
+  if (error) {
+    console.error("Search failed:", error.message);
 
-        const title = document.createElement("strong");
-        title.textContent = "User ..." + otherId.slice(-6);
-
-        const preview = document.createElement("p");
-        preview.textContent = lastMessage.content || "Message";
-        preview.style.overflow = "hidden";
-        preview.style.textOverflow = "ellipsis";
-        preview.style.whiteSpace = "nowrap";
-
-        item.appendChild(title);
-        item.appendChild(preview);
-
-        item.addEventListener("click", () => {
-            openConversation(
-                otherId,
-                otherId,
-                lastMessage.listing_id || null
-            );
-        });
-
-        listContainer.appendChild(item);
-    });
-
-} catch (error) {
-    console.error("Conversation loading error:", error);
-
-    listContainer.textContent =
-        "Unable to load conversations. Check your database permissions.";
-}
-
-}
-
-async function loadConversationMessages(recipientId, listingId = null) {
-if (!currentUser || !recipientId || !supabaseClient) return;
-
-const msgContainer = $("chatMessages");
-
-if (!msgContainer) return;
-
-msgContainer.innerHTML = "";
-
-try {
-    const { data, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .or(
-            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${currentUser.id})`
-        )
-        .order("created_at", { ascending: true });
-
-    if (error) throw error;
-
-    (data || []).forEach((message) => {
-        const messageElement = document.createElement("div");
-
-        messageElement.className =
-            "message " +
-            (
-                message.sender_id === currentUser.id
-                    ? "sent"
-                    : "received"
-            );
-
-        messageElement.textContent = message.content || "";
-
-        msgContainer.appendChild(messageElement);
-    });
-
-    msgContainer.scrollTop = msgContainer.scrollHeight;
-
-} catch (error) {
-    console.error("Message loading error:", error);
-
-    msgContainer.textContent =
-        "Unable to load messages. Check your database permissions.";
-}
-
-}
-
-async function sendMessage(event) {
-if (event) {
-event.preventDefault();
-}
-
-if (!currentUser) {
-    alert("Please sign in before sending a message.");
-    return;
-}
-
-const recipientId = getConversationRecipient();
-const input = $("chatInput");
-
-if (!input) {
-    showError("The message input field was not found.");
-    return;
-}
-
-const content = input.value.trim();
-
-if (!recipientId) {
-    showError("Choose a conversation before sending a message.");
-    return;
-}
-
-if (!content) return;
-
-const payload = {
-    sender_id: currentUser.id,
-    receiver_id: recipientId,
-    content
-};
-
-if (currentConversationListingId) {
-    payload.listing_id = currentConversationListingId;
-}
-
-try {
-    const { error } = await supabaseClient
-        .from("messages")
-        .insert([payload]);
-
-    if (error) throw error;
-
-    input.value = "";
-
-    await loadConversationMessages(
-        recipientId,
-        currentConversationListingId
+    showProductMessage(
+      "Search failed. Please try again.",
+      true
     );
 
-    await loadConversations();
-
-    await updateAllCounters();
-
-} catch (error) {
-    console.error("Message sending error:", error);
-
-    showError("Unable to send message: " + error.message);
-}
-
-}
-
-/* ==========================================================================
-SECTION 12: MESSAGE COUNTERS
-========================================================================== */
-
-async function updateAllCounters() {
-if (!currentUser || !supabaseClient) return;
-
-const badge = $("msgCounter");
-
-if (!badge) return;
-
-try {
-    const { count, error } = await supabaseClient
-        .from("messages")
-        .select("*", {
-            count: "exact",
-            head: true
-        })
-        .eq("receiver_id", currentUser.id)
-        .eq("is_read", false);
-
-    if (error) {
-        console.warn("Message counter unavailable:", error.message);
-        return;
-    }
-
-    badge.textContent = String(count || 0);
-    badge.style.display = count > 0 ? "inline-block" : "none";
-
-} catch (error) {
-    console.error("Counter update error:", error);
-}
-
-}
-
-function startCounterRefresh() {
-updateAllCounters();
-
-if (!counterInterval) {
-    counterInterval = setInterval(updateAllCounters, 15000);
-}
-
-}
-
-function stopCounterRefresh() {
-if (counterInterval) {
-clearInterval(counterInterval);
-counterInterval = null;
-}
-
-const badge = $("msgCounter");
-
-if (badge) {
-    badge.style.display = "none";
-}
-
-}
-
-/* ==========================================================================
-SECTION 13: VISIBILITY AND REFRESH
-========================================================================== */
-
-function handleVisibilityChange() {
-if (document.hidden || !currentUser) return;
-
-updateAllCounters();
-
-const messagesPage = $("messagesPage");
-
-if (
-    currentConversationRecipientId &&
-    messagesPage &&
-    messagesPage.classList.contains("active")
-) {
-    loadConversationMessages(
-        currentConversationRecipientId,
-        currentConversationListingId
-    );
-}
-
-}
-
-/* ==========================================================================
-SECTION 14: APPLICATION INITIALIZATION
-========================================================================== */
-
-async function initializeSiomaMarket() {
-bindCategoryButtons();
-
-const searchForm = $("searchForm");
-
-if (searchForm && searchForm.dataset.bound !== "true") {
-    searchForm.dataset.bound = "true";
-
-    searchForm.addEventListener("submit", handleSearch);
-}
-
-if (!supabaseClient) {
-    showMessage(
-        "The marketplace connection could not start.",
-        "error"
-    );
     return;
-}
+  }
 
-try {
-    const { data, error } = await supabaseClient.auth.getSession();
+  grid.replaceChildren();
 
-    if (error) throw error;
+  if (!data || data.length === 0) {
+    showProductMessage("No matching products found.");
+    return;
+  }
 
-    currentUser = data.session?.user || null;
-    sessionLoaded = true;
+  data.forEach(listing => {
+    grid.appendChild(createProductCard(listing));
+  });
 
-    await handleUserSessionChanged();
+  showProductMessage("");
 
-    if (currentUser) {
-        startCounterRefresh();
-    }
-
-} catch (error) {
-    console.error("Session initialization error:", error);
-}
-
-await loadListings();
-
-}
-
-/* ==========================================================================
-SECTION 15: AUTHENTICATION STATE LISTENER
-========================================================================== */
-
-if (supabaseClient) {
-supabaseClient.auth.onAuthStateChange((event, session) => {
-currentUser = session?.user || null;
-sessionLoaded = true;
-
-    setTimeout(async () => {
-        try {
-            await handleUserSessionChanged();
-
-            if (currentUser) {
-                startCounterRefresh();
-            } else {
-                stopCounterRefresh();
-            }
-
-            if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
-                await loadListings();
-            }
-
-        } catch (error) {
-            console.error(
-                "Authentication state update error:",
-                error
-            );
-        }
-    }, 0);
-});
-
-}
-
-/* ==========================================================================
-SECTION 16: START APPLICATION
-========================================================================== */
-
-document.addEventListener(
-"visibilitychange",
-handleVisibilityChange
-);
-
-if (document.readyState === "loading") {
-document.addEventListener(
-"DOMContentLoaded",
-initializeSiomaMarket,
-{ once: true }
-);
-} else {
-initializeSiomaMarket();
-       }
+  byId("products")?.scrollIntoView({
+    behavior: "smooth"
+  });
+      }
