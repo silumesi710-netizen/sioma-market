@@ -1184,3 +1184,32 @@ body.modal-open {
     border-radius: 20px 20px 0 0 !important;
   }
 }
+/* =========================================================
+   SIOMAMARKET FAVORITES BUTTON
+========================================================= */
+
+.favorite-button {
+    display: block;
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 11px 14px;
+    border: 1px solid #087f3d;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #087f3d;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.favorite-button.is-favorite {
+    background: #e8f6ee;
+    color: #075b2d;
+    border-color: #075b2d;
+}
+
+.favorite-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
