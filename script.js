@@ -886,6 +886,15 @@ function createProductCard(listing) {
     >
 
     <div class="product-info">
+    <button
+    type="button"
+    class="favorite-button"
+    data-favorite-id="${escapeHTML(listing.id)}"
+    aria-label="Save ${title} to favorites"
+    aria-pressed="false"
+>
+    ♡ Favorite
+</button>
       <p class="product-category">${category}</p>
       <h3 class="product-title">${title}</h3>
       <p class="product-price">${formatPrice(listing.price)}</p>
@@ -902,7 +911,11 @@ function createProductCard(listing) {
   `;
 
   const image = card.querySelector(".product-image");
+const favoriteButton = card.querySelector(".favorite-button");
 
+favoriteButton.addEventListener("click", async () => {
+    await toggleFavorite(listing.id, favoriteButton);
+});
   image.addEventListener("error", () => {
     image.src =
       "https://placehold.co/600x400?text=SiomaMarket";
