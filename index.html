@@ -418,5 +418,66 @@
     </form>
   </div>
 </div>
+  <!-- SIOMAMARKET MESSAGING WINDOW -->
+<div id="messagesModal" class="app-modal" aria-hidden="true">
+    <div class="app-modal-content messages-modal-content">
+
+        <div class="messages-header">
+            <h2>💬 My Messages</h2>
+            <button
+                type="button"
+                data-close-modal
+                aria-label="Close messages"
+            >✕</button>
+        </div>
+
+        <div class="messages-layout">
+
+            <!-- CONVERSATION LIST -->
+            <aside class="conversation-sidebar">
+                <h3>Conversations</h3>
+                <div id="conversationList">
+                    <p>Loading conversations...</p>
+                </div>
+            </aside>
+
+            <!-- ACTIVE CONVERSATION -->
+            <section class="conversation-panel">
+
+                <div id="conversationHeading">
+                    <p>Select a conversation to start messaging.</p>
+                </div>
+
+                <div
+                    id="messagesList"
+                    role="log"
+                    aria-live="polite"
+                >
+                    <p>Your messages will appear here.</p>
+                </div>
+
+                <form id="sendMessageForm">
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Type your message..."
+                        maxlength="2000"
+                        autocomplete="off"
+                        required
+                    >
+
+                    <button type="submit" id="sendMessageButton">
+                        Send
+                    </button>
+                </form>
+
+                <p id="messageStatus" role="status"></p>
+
+            </section>
+        </div>
+
+    </div>
+</div>
+<!-- END SIOMAMARKET MESSAGING WINDOW -->
 </body>
   </html>
