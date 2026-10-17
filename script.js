@@ -23,7 +23,13 @@ let supabaseClient = null;
 let currentUser = null;
 let isRegistering = false;
 let selectedProductImages = [];
+/* =========================================================
+   SIOMAMARKET FAVORITES
+========================================================= */
 
+let favoriteListingIds = new Set();
+let showingFavorites = false;
+let favoritesLoading = false;
 
 /* =========================================================
    2. INITIALIZE APPLICATION
@@ -213,9 +219,9 @@ function connectButtons() {
     });
   });
 
-  byId("favoritesButton")?.addEventListener("click", () => {
-    alert("Favorites will be connected in the next stage.");
-  });
+  byId("favoritesButton")?.addEventListener("click", async () => {
+    await showFavorites();
+});
 
   document.querySelectorAll("[data-close-modal]").forEach(button => {
     button.addEventListener("click", () => {
@@ -1070,3 +1076,228 @@ async function searchListings(searchText = "", category = "") {
     behavior: "smooth"
   });
       }
+/* =========================================================
+   15. SIOMAMARKET FAVORITES SYSTEM
+========================================================= */
+
+/* Load the logged-in user's favorite product IDs */
+
+async function loadFavoriteIds() {
+    favoriteListingIds = new Set();
+
+    if (!currentUser) {
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("favorites")
+        .select("listing_id")
+        .eq("user_id", currentUser.id);
+
+    if (error) {
+        console.error("Unable to load favorites:", error.message);
+        return;
+    }
+
+    (data || []).forEach(item => {
+        favoriteListingIds.add(String(item.listing_id));
+    });
+}
+
+
+/* Save or remove a product from favorites */
+
+async function toggleFavorite(listingId, button) {
+    if (!currentUser) {
+        alert("Please log in to save your favorite products.");
+
+        setAuthMode(false);
+        openModal("authModal");
+
+        return;
+    }
+
+    if (!supabaseClient) {
+        alert("Connection unavailable. Please refresh the page.");
+        return;
+    }
+
+    const id = String(listingId);
+    const alreadyFavorite = favoriteListingIds.has(id);
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    try {
+        if (alreadyFavorite) {
+            const { error } = await supabaseClient
+                .from("favorites")
+                .delete()
+                .eq("user_id", currentUser.id)
+                .eq("listing_id", listingId);
+
+            if (error) {
+                throw error;
+            }
+
+            favoriteListingIds.delete(id);
+
+        } else {
+            const { error } = await supabaseClient
+                .from("favorites")
+                .insert({
+                    user_id: currentUser.id,
+                    listing_id: listingId
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            favoriteListingIds.add(id);
+        }
+
+        updateFavoriteButtons();
+
+        if (showingFavorites) {
+            await showFavorites();
+        }
+
+    } catch (error) {
+        console.error("Favorite update failed:", error.message);
+
+        alert(
+            "Unable to update favorites. Please try again.\n\n" +
+            error.message
+        );
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+
+/* Update the appearance of every visible favorite button */
+
+function updateFavoriteButtons() {
+    document.querySelectorAll("[data-favorite-id]").forEach(button => {
+        const id = button.dataset.favoriteId;
+        const saved = favoriteListingIds.has(String(id));
+
+        button.classList.toggle("is-favorite", saved);
+
+        button.textContent = saved ? "♥ Saved" : "♡ Favorite";
+
+        button.setAttribute(
+            "aria-pressed",
+            saved ? "true" : "false"
+        );
+    });
+}
+
+
+/* Open the Favorites page */
+
+async function showFavorites() {
+    if (!currentUser) {
+        alert("Please log in to view your favorites.");
+
+        setAuthMode(false);
+        openModal("authModal");
+
+        return;
+    }
+
+    const grid = byId("productGrid");
+
+    if (!grid) {
+        alert("The product grid could not be found.");
+        return;
+    }
+
+    showingFavorites = true;
+
+    showProductMessage("Loading your favorite products...");
+
+    grid.replaceChildren();
+
+    await loadFavoriteIds();
+
+    const ids = Array.from(favoriteListingIds);
+
+    if (ids.length === 0) {
+        showProductMessage(
+            "You have no favorites yet. Browse products and tap ♡ Favorite to save them."
+        );
+
+        byId("products")?.scrollIntoView({
+            behavior: "smooth"
+        });
+
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("listings")
+        .select(
+            "id, title, description, price, category, location, image_url, seller_name, seller_phone, status, created_at"
+        )
+        .in("id", ids)
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Unable to load favorite products:", error.message);
+
+        showProductMessage(
+            "Unable to load your favorites. Please try again.",
+            true
+        );
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        showProductMessage(
+            "Your saved products are no longer available."
+        );
+
+        return;
+    }
+
+    data.forEach(listing => {
+        grid.appendChild(createProductCard(listing));
+    });
+
+    updateFavoriteButtons();
+
+    showProductMessage("");
+
+    byId("products")?.scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+
+/* Return from Favorites to all products */
+
+async function showAllProducts() {
+    showingFavorites = false;
+    await loadListings();
+}
+
+
+/* Update favorites when the customer logs in or out */
+
+async function refreshFavorites() {
+    favoriteListingIds = new Set();
+
+    if (currentUser) {
+        await loadFavoriteIds();
+    }
+
+    updateFavoriteButtons();
+        }
