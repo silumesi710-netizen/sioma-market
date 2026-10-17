@@ -1314,3 +1314,490 @@ async function refreshFavorites() {
 
     updateFavoriteButtons();
         }
+/* =========================================================
+   16. SIOMAMARKET MESSAGING SYSTEM
+========================================================= */
+
+let currentConversationId = null;
+let currentConversationListingId = null;
+let currentConversationRecipientId = null;
+let messageRefreshTimer = null;
+let messagingInitialized = false;
+
+
+/* =========================================================
+   16.1 CONNECT MESSAGING BUTTONS
+========================================================= */
+
+function connectMessagingSystem() {
+    if (messagingInitialized) return;
+
+    messagingInitialized = true;
+
+    const messagesButton = byId("navMessagesButton");
+    const sendForm = byId("sendMessageForm");
+
+    messagesButton?.addEventListener("click", async () => {
+        if (!currentUser) {
+            alert("Please log in to view your messages.");
+            setAuthMode(false);
+            openModal("authModal");
+            return;
+        }
+
+        await openMessagesWindow();
+    });
+
+    sendForm?.addEventListener("submit", sendMessage);
+
+    byId("conversationList")?.addEventListener("click", async event => {
+        const button = event.target.closest("[data-conversation-id]");
+
+        if (!button) return;
+
+        const conversationId = button.dataset.conversationId;
+        const recipientId = button.dataset.recipientId;
+        const listingId = button.dataset.listingId;
+
+        await openConversation(
+            conversationId,
+            recipientId,
+            listingId
+        );
+    });
+
+    updateUnreadMessagesBadge();
+}
+
+
+/* =========================================================
+   16.2 OPEN MESSAGES WINDOW
+========================================================= */
+
+async function openMessagesWindow() {
+    if (!currentUser) {
+        alert("Please log in to view your messages.");
+        return;
+    }
+
+    const modal = byId("messagesModal");
+
+    if (!modal) {
+        console.error("Messages modal was not found.");
+        return;
+    }
+
+    openModal("messagesModal");
+
+    const list = byId("conversationList");
+
+    if (list) {
+        list.innerHTML = "<p>Loading conversations...</p>";
+    }
+
+    const status = byId("messageStatus");
+
+    if (status) status.textContent = "";
+
+    await loadConversations();
+
+    if (messageRefreshTimer) {
+        clearInterval(messageRefreshTimer);
+    }
+
+    messageRefreshTimer = setInterval(() => {
+        if (
+            !document.hidden &&
+            !byId("messagesModal")?.hidden &&
+            currentUser
+        ) {
+            loadConversations();
+            if (currentConversationId) {
+                loadConversationMessages(currentConversationId);
+            }
+        }
+    }, 10000);
+}
+
+
+/* =========================================================
+   16.3 LOAD CONVERSATIONS
+========================================================= */
+
+async function loadConversations() {
+    const list = byId("conversationList");
+
+    if (!list || !supabaseClient || !currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from("conversations")
+        .select(`
+            id,
+            listing_id,
+            buyer_id,
+            seller_id,
+            created_at,
+            updated_at
+        `)
+        .or(
+            `buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`
+        )
+        .order("updated_at", { ascending: false });
+
+    if (error) {
+        console.error("Conversation loading failed:", error);
+
+        list.replaceChildren();
+
+        const errorText = document.createElement("p");
+        errorText.textContent =
+            "Unable to load conversations. Check your database permissions.";
+
+        list.appendChild(errorText);
+        return;
+    }
+
+    list.replaceChildren();
+
+    if (!data || data.length === 0) {
+        const empty = document.createElement("p");
+
+        empty.textContent =
+            "No conversations yet. Open a product to start a conversation with its seller.";
+
+        list.appendChild(empty);
+        return;
+    }
+
+    const listingIds = [
+        ...new Set(data.map(item => item.listing_id))
+    ];
+
+    const { data: listings, error: listingError } =
+        await supabaseClient
+            .from("listings")
+            .select("id, title")
+            .in("id", listingIds);
+
+    if (listingError) {
+        console.error("Conversation product lookup failed:", listingError);
+    }
+
+    const listingMap = new Map(
+        (listings || []).map(item => [
+            String(item.id),
+            item.title
+        ])
+    );
+
+    data.forEach(conversation => {
+        const isBuyer =
+            conversation.buyer_id === currentUser.id;
+
+        const recipientId = isBuyer
+            ? conversation.seller_id
+            : conversation.buyer_id;
+
+        const productTitle =
+            listingMap.get(String(conversation.listing_id)) ||
+            "Marketplace product";
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.dataset.conversationId = conversation.id;
+        button.dataset.recipientId = recipientId;
+        button.dataset.listingId = conversation.listing_id;
+
+        button.className = "conversation-item";
+
+        const title = document.createElement("strong");
+        title.textContent = productTitle;
+
+        const subtitle = document.createElement("span");
+        subtitle.textContent = isBuyer
+            ? "Seller conversation"
+            : "Buyer conversation";
+
+        button.append(title, subtitle);
+
+        if (conversation.id === currentConversationId) {
+            button.classList.add("active");
+        }
+
+        list.appendChild(button);
+    });
+
+    await updateUnreadMessagesBadge();
+}
+
+
+/* =========================================================
+   16.4 OPEN A CONVERSATION
+========================================================= */
+
+async function openConversation(
+    conversationId,
+    recipientId,
+    listingId
+) {
+    if (!currentUser) return;
+
+    currentConversationId = conversationId;
+    currentConversationRecipientId = recipientId;
+    currentConversationListingId = listingId;
+
+    const heading = byId("conversationHeading");
+
+    if (heading) {
+        heading.replaceChildren();
+
+        const title = document.createElement("p");
+        title.textContent = "Marketplace conversation";
+
+        heading.appendChild(title);
+    }
+
+    const input = byId("messageInput");
+
+    if (input) input.disabled = false;
+
+    const sendButton = byId("sendMessageButton");
+
+    if (sendButton) sendButton.disabled = false;
+
+    await loadConversationMessages(conversationId);
+
+    document
+        .querySelectorAll("[data-conversation-id]")
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.conversationId === conversationId
+            );
+        });
+}
+
+
+/* =========================================================
+   16.5 LOAD MESSAGES IN A CONVERSATION
+========================================================= */
+
+async function loadConversationMessages(conversationId) {
+    const container = byId("messagesList");
+
+    if (!container || !currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from("messages")
+        .select("id, conversation_id, sender_id, message, created_at, is_read")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("Message loading failed:", error);
+
+        container.replaceChildren();
+
+        const errorText = document.createElement("p");
+        errorText.textContent = "Unable to load messages.";
+
+        container.appendChild(errorText);
+        return;
+    }
+
+    container.replaceChildren();
+
+    if (!data || data.length === 0) {
+        const empty = document.createElement("p");
+        empty.textContent = "No messages yet. Say hello!";
+
+        container.appendChild(empty);
+    }
+
+    (data || []).forEach(message => {
+        const bubble = document.createElement("div");
+
+        bubble.className =
+            message.sender_id === currentUser.id
+                ? "message-bubble sent"
+                : "message-bubble received";
+
+        const text = document.createElement("p");
+        text.textContent = message.message;
+
+        const time = document.createElement("small");
+        time.textContent = new Date(
+            message.created_at
+        ).toLocaleString();
+
+        bubble.append(text, time);
+        container.appendChild(bubble);
+    });
+
+    container.scrollTop = container.scrollHeight;
+
+    const unreadIds = (data || [])
+        .filter(message =>
+            message.sender_id !== currentUser.id &&
+            !message.is_read
+        )
+        .map(message => message.id);
+
+    if (unreadIds.length > 0) {
+        const { error: readError } = await supabaseClient
+            .from("messages")
+            .update({ is_read: true })
+            .in("id", unreadIds);
+
+        if (readError) {
+            console.error(
+                "Unable to mark messages as read:",
+                readError
+            );
+        }
+
+        await updateUnreadMessagesBadge();
+    }
+}
+
+
+/* =========================================================
+   16.6 SEND A MESSAGE
+========================================================= */
+
+async function sendMessage(event) {
+    event.preventDefault();
+
+    if (!currentUser) {
+        alert("Please log in to send messages.");
+        return;
+    }
+
+    if (
+        !currentConversationId ||
+        !currentConversationRecipientId
+    ) {
+        const status = byId("messageStatus");
+
+        if (status) {
+            status.textContent =
+                "Please select a conversation first.";
+        }
+
+        return;
+    }
+
+    const input = byId("messageInput");
+    const button = byId("sendMessageButton");
+    const status = byId("messageStatus");
+
+    const messageText = input?.value.trim();
+
+    if (!messageText) return;
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Sending...";
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from("messages")
+            .insert({
+                conversation_id: currentConversationId,
+                sender_id: currentUser.id,
+                message: messageText,
+                is_read: false
+            });
+
+        if (error) throw error;
+
+        if (input) input.value = "";
+
+        if (status) status.textContent = "Message sent.";
+
+        await loadConversationMessages(currentConversationId);
+
+        await supabaseClient
+            .from("conversations")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("id", currentConversationId);
+
+        await loadConversations();
+
+    } catch (error) {
+        console.error("Sending message failed:", error);
+
+        if (status) {
+            status.textContent =
+                "Message could not be sent: " + error.message;
+        }
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Send";
+        }
+    }
+}
+
+
+/* =========================================================
+   16.7 UNREAD MESSAGE COUNT
+========================================================= */
+
+async function updateUnreadMessagesBadge() {
+    const badge = byId("unreadMessagesBadge");
+
+    if (!badge || !supabaseClient || !currentUser) {
+        if (badge) badge.hidden = true;
+        return;
+    }
+
+    const { count, error } = await supabaseClient
+        .from("messages")
+        .select("id", {
+            count: "exact",
+            head: true
+        })
+        .neq("sender_id", currentUser.id)
+        .eq("is_read", false);
+
+    if (error) {
+        console.error("Unread message count failed:", error);
+        badge.hidden = true;
+        return;
+    }
+
+    badge.textContent = String(count || 0);
+    badge.hidden = !count;
+}
+
+
+/* =========================================================
+   16.8 CLOSE MESSAGES CLEANLY
+========================================================= */
+
+function closeMessagesWindow() {
+    closeModal("messagesModal");
+
+    if (messageRefreshTimer) {
+        clearInterval(messageRefreshTimer);
+        messageRefreshTimer = null;
+    }
+}
+
+
+/* =========================================================
+   16.9 CONNECT MESSAGING AFTER PAGE LOAD
+========================================================= */
+
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        connectMessagingSystem
+    );
+} else {
+    connectMessagingSystem();
+       }
