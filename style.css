@@ -1228,3 +1228,64 @@ flex-shrink: 0 !important;
 display: block !important;
 margin: 0 auto 8px !important;
 }
+/* ==========================================
+SIOMAMARKET — MOBILE HEADER UPGRADE
+========================================== */
+
+@media screen and (max-width: 600px) {
+
+header {
+width: 100%;
+max-width: 100%;
+box-sizing: border-box;
+}
+
+header .header-inner {
+width: 100%;
+max-width: 100%;
+box-sizing: border-box;
+padding: 10px 12px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 8px;
+}
+
+header .header-inner > .site-logo,
+header .site-logo {
+width: 220px !important;
+height: 85px !important;
+max-width: 90% !important;
+object-fit: contain !important;
+object-position: center;
+margin: 0 auto !important;
+}
+
+header input,
+header button,
+header select {
+max-width: 100%;
+box-sizing: border-box;
+}
+
+header button {
+min-height: 42px;
+}
+
+header input {
+min-height: 42px;
+font-size: 16px;
+}
+}
+
+/* Prevent horizontal overflow on mobile */
+html,
+body {
+max-width: 100%;
+overflow-x: hidden;
+box-sizing: border-box;
+}
+
+img {
+max-width: 100%;
+}
