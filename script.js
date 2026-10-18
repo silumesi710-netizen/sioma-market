@@ -1,6 +1,6 @@
 /* =========================================================
    SIOMAMARKET — COMPLETE APPLICATION
-   Part 1: Configuration, authentication, publishing, products
+   Products, Authentication, Selling, Favorites and Messages
    ========================================================= */
 
 "use strict";
@@ -16,6 +16,10 @@ const IMAGE_BUCKET = "Product-images";
 const MAX_PRODUCT_IMAGES = 3;
 const MAX_IMAGE_SIZE = 6 * 1024 * 1024;
 
+const LISTING_COLUMNS =
+    "id, title, description, price, category, location, " +
+    "image_url, seller_name, seller_phone, status, created_at, user_id";
+
 let supabaseClient = null;
 let currentUser = null;
 let isRegistering = false;
@@ -26,32 +30,18 @@ let showingFavorites = false;
 let currentConversationId = null;
 let currentConversationListingId = null;
 let currentConversationRecipientId = null;
+
 let messageRefreshTimer = null;
-let messagingInitialized = false;
 let applicationInitialized = false;
+let messagingInitialized = false;
+let searchRequestNumber = 0;
 
 /* =========================================================
-   2. HELPERS
+   2. BASIC HELPERS
    ========================================================= */
 
 function byId(id) {
     return document.getElementById(id);
-}
-
-function showProductMessage(message, isError = false) {
-    const element = byId("productMessage");
-    if (!element) return;
-
-    element.textContent = message;
-    element.classList.toggle("error", isError);
-}
-
-function showSellMessage(message, isError = false) {
-    const element = byId("sellMessage");
-    if (!element) return;
-
-    element.textContent = message;
-    element.classList.toggle("error", isError);
 }
 
 function escapeHTML(value) {
@@ -77,6 +67,39 @@ function formatPrice(price) {
     });
 }
 
+function showProductMessage(message, isError = false) {
+    const element = byId("productMessage");
+
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.toggle("error", isError);
+}
+
+function showSellMessage(message, isError = false) {
+    const element = byId("sellMessage");
+
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.toggle("error", isError);
+}
+
+function showAuthMessage(message, isError = false) {
+    const element = byId("authMessage");
+
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.toggle("error", isError);
+}
+
+function reportError(context, error) {
+    console.error("[SiomaMarket] " + context, error);
+
+    return error?.message || "Something went wrong. Please try again.";
+}
+
 function getProductImages(value) {
     if (!value) return [];
 
@@ -84,7 +107,9 @@ function getProductImages(value) {
         return value.filter(item => typeof item === "string");
     }
 
-    if (typeof value !== "string") return [];
+    if (typeof value !== "string") {
+        return [];
+    }
 
     try {
         const parsed = JSON.parse(value);
@@ -93,108 +118,138 @@ function getProductImages(value) {
             return parsed.filter(item => typeof item === "string");
         }
     } catch (_) {
-        // Support older listings containing one image URL.
+        // Older listings may store one image URL as plain text.
     }
 
     return [value];
 }
 
 function getPrimaryImage(listing) {
-    return getProductImages(listing.image_url)[0]
-        || "https://placehold.co/600x400?text=SiomaMarket";
-}
-
-function showError(error, context) {
-    console.error(context, error);
-
-    return error?.message
-        || "Something went wrong. Please try again.";
+    return getProductImages(listing.image_url)[0] ||
+        "https://placehold.co/600x400?text=SiomaMarket";
 }
 
 function openModal(id) {
     const modal = byId(id);
-    if (!modal) return;
+
+    if (!modal) {
+        console.warn("Modal not found:", id);
+        return;
+    }
 
     modal.hidden = false;
+    modal.style.display = "";
+
     document.body.classList.add("modal-open");
 }
 
 function closeModal(id) {
     const modal = byId(id);
+
     if (!modal) return;
 
     modal.hidden = true;
+    modal.style.display = "";
 
     if (!document.querySelector(".app-modal:not([hidden])")) {
         document.body.classList.remove("modal-open");
     }
 
-    if (id === "messagesModal" && messageRefreshTimer) {
-        clearInterval(messageRefreshTimer);
-        messageRefreshTimer = null;
+    if (id === "messagesModal") {
+        stopMessageRefresh();
     }
 }
 
 function closeAllModals() {
     document.querySelectorAll(".app-modal").forEach(modal => {
         modal.hidden = true;
+        modal.style.display = "";
     });
 
     document.body.classList.remove("modal-open");
 
+    stopMessageRefresh();
+}
+
+function stopMessageRefresh() {
     if (messageRefreshTimer) {
         clearInterval(messageRefreshTimer);
         messageRefreshTimer = null;
     }
 }
 
+function showLoginModal(message = "") {
+    setAuthMode(false);
+
+    if (message) {
+        showAuthMessage(message);
+    }
+
+    openModal("authModal");
+}
+
 /* =========================================================
-   3. INITIALIZE APPLICATION ONCE
+   3. INITIALIZE THE APPLICATION
    ========================================================= */
 
 async function initializeSiomaMarket() {
     if (applicationInitialized) return;
+
     applicationInitialized = true;
 
     if (!window.supabase?.createClient) {
         showProductMessage(
-            "Supabase failed to load. Check the Supabase script in your HTML.",
+            "Supabase failed to load. Check the script tags in index.html.",
             true
         );
+
+        console.error("Supabase JavaScript library is unavailable.");
         return;
     }
 
-    supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+    try {
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
-    connectButtons();
-    connectForms();
-    connectPhotoInput();
-    connectSearch();
-    connectMessagingSystem();
+        connectButtons();
+        connectForms();
+        connectPhotoInput();
+        connectSearch();
+        connectMessagingSystem();
 
-    await restoreSession();
-    await loadListings();
-    await refreshFavorites();
+        await restoreSession();
+        await loadListings();
+        await refreshFavorites();
+        await updateUnreadMessagesBadge();
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-        currentUser = session?.user || null;
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            currentUser = session?.user || null;
 
-        updateAccountButtons();
+            updateAccountButtons();
 
-        // Defer database operations to avoid doing additional
-        // Supabase requests inside the authentication callback.
-        setTimeout(async () => {
-            await refreshFavorites();
-            await updateUnreadMessagesBadge();
+            // Run additional requests outside the auth callback.
+            setTimeout(async () => {
+                await refreshFavorites();
+                await updateUnreadMessagesBadge();
 
-            if (showingFavorites && currentUser) {
-                await showFavorites();
-            }
-        }, 0);
-    });
+                if (showingFavorites && currentUser) {
+                    await showFavorites();
+                }
+            }, 0);
+        });
+
+        console.log("SiomaMarket initialized successfully.");
+
+    } catch (error) {
+        reportError("Application initialization failed", error);
+
+        showProductMessage(
+            "SiomaMarket could not initialize. Check the browser console.",
+            true
+        );
+    }
 }
 
 if (document.readyState === "loading") {
@@ -245,10 +300,13 @@ function connectButtons() {
     });
 
     document.addEventListener("keydown", event => {
-        if (event.key === "Escape") closeAllModals();
+        if (event.key === "Escape") {
+            closeAllModals();
+        }
     });
 
-    byId("authToggleLink")?.addEventListener("click", () => {
+    byId("authToggleLink")?.addEventListener("click", event => {
+        event.preventDefault();
         setAuthMode(!isRegistering);
     });
 }
@@ -262,21 +320,14 @@ async function handleAccountClick() {
         return;
     }
 
-    setAuthMode(false);
-    openModal("authModal");
+    showLoginModal();
 }
 
 async function handleSellClick() {
     if (!currentUser) {
-        setAuthMode(false);
-        openModal("authModal");
-
-        const message = byId("authMessage");
-
-        if (message) {
-            message.textContent =
-                "Please log in or register before selling a product.";
-        }
+        showLoginModal(
+            "Please log in or register before selling a product."
+        );
 
         return;
     }
@@ -293,17 +344,19 @@ async function restoreSession() {
     const { data, error } = await supabaseClient.auth.getSession();
 
     if (error) {
-        console.error("Session restoration failed:", error.message);
+        reportError("Session restoration failed", error);
         return;
     }
 
     currentUser = data.session?.user || null;
+
     updateAccountButtons();
 }
 
 function updateAccountButtons() {
     ["accountButton", "navAccountButton"].forEach(id => {
         const button = byId(id);
+
         if (!button) return;
 
         button.setAttribute(
@@ -327,7 +380,6 @@ function setAuthMode(registering) {
     const toggleLink = byId("authToggleLink");
     const registerFields = byId("registerFields");
     const password = byId("authPassword");
-    const message = byId("authMessage");
 
     if (title) {
         title.textContent = registering
@@ -359,15 +411,15 @@ function setAuthMode(registering) {
             : "current-password";
     }
 
-    if (message) {
-        message.textContent = registering
-            ? "Create your free SiomaMarket account."
-            : "Log in to buy or sell on SiomaMarket.";
-    }
-
     ["authFullName", "authPhone", "authLocation"].forEach(id => {
         byId(id)?.toggleAttribute("required", registering);
     });
+
+    showAuthMessage(
+        registering
+            ? "Create your free SiomaMarket account."
+            : "Log in to buy or sell on SiomaMarket."
+    );
 }
 
 async function handleAuthSubmit(event) {
@@ -378,12 +430,20 @@ async function handleAuthSubmit(event) {
     const password = byId("authPassword")?.value;
 
     if (!email || !password) {
-        alert("Enter your email address and password.");
+        showAuthMessage(
+            "Enter your email address and password.",
+            true
+        );
+
         return;
     }
 
     if (password.length < 6) {
-        alert("Your password must contain at least 6 characters.");
+        showAuthMessage(
+            "Your password must contain at least 6 characters.",
+            true
+        );
+
         return;
     }
 
@@ -399,7 +459,10 @@ async function handleAuthSubmit(event) {
             await loginUser(email, password);
         }
     } catch (error) {
-        alert(showError(error, "Authentication failed"));
+        showAuthMessage(
+            reportError("Authentication failed", error),
+            true
+        );
     } finally {
         if (submit) {
             submit.disabled = false;
@@ -446,11 +509,14 @@ async function registerUser(email, password) {
         updateAccountButtons();
         closeModal("authModal");
 
+        await refreshFavorites();
+        await updateUnreadMessagesBadge();
+
         alert("Your SiomaMarket account has been created.");
         return;
     }
 
-    alert(
+    showAuthMessage(
         "Registration submitted. Check your email to confirm your account, then log in."
     );
 
@@ -489,15 +555,17 @@ async function logoutUser() {
     favoriteListingIds.clear();
     showingFavorites = false;
 
+    currentConversationId = null;
+    currentConversationListingId = null;
+    currentConversationRecipientId = null;
+
+    stopMessageRefresh();
+
     updateAccountButtons();
     updateFavoriteButtons();
-
-    if (messageRefreshTimer) {
-        clearInterval(messageRefreshTimer);
-        messageRefreshTimer = null;
-    }
-
     closeAllModals();
+
+    await loadListings();
 
     alert("You have logged out of SiomaMarket.");
 }
@@ -508,11 +576,9 @@ async function saveSellerProfile(profile) {
         .upsert(profile, { onConflict: "id" });
 
     if (error) {
-        console.error("Seller profile save failed:", error.message);
-
         throw new Error(
-            "Your account exists, but your seller profile could not be saved: "
-            + error.message
+            "Your account exists, but your seller profile could not be saved: " +
+            error.message
         );
     }
 }
@@ -523,7 +589,11 @@ async function saveSellerProfile(profile) {
 
 function connectPhotoInput() {
     const input = byId("sellImage");
+
     if (!input) return;
+
+    input.setAttribute("accept", "image/*");
+    input.setAttribute("multiple", "");
 
     input.addEventListener("change", () => {
         const files = Array.from(input.files || []);
@@ -596,7 +666,7 @@ function renderImagePreviews() {
 }
 
 /* =========================================================
-   7. UPLOAD PHOTOS TO SUPABASE STORAGE
+   7. UPLOAD PHOTOS
    ========================================================= */
 
 async function uploadProductImages(files) {
@@ -607,11 +677,10 @@ async function uploadProductImages(files) {
             file.name.split(".").pop() || "jpg"
         ).toLowerCase().replace(/[^a-z0-9]/g, "");
 
-        const uniqueName = (
-            globalThis.crypto?.randomUUID
-                ? crypto.randomUUID()
-                : Date.now() + "-" + Math.random().toString(36).slice(2)
-        );
+        const uniqueName = globalThis.crypto?.randomUUID
+            ? crypto.randomUUID()
+            : Date.now() + "-" +
+                Math.random().toString(36).slice(2);
 
         const filePath =
             currentUser.id + "/" + uniqueName + "." + extension;
@@ -650,10 +719,12 @@ async function handlePublishListing(event) {
     event.preventDefault();
 
     if (!currentUser) {
-        showSellMessage("Please log in before publishing.", true);
         closeModal("sellModal");
-        setAuthMode(false);
-        openModal("authModal");
+
+        showLoginModal(
+            "Please log in before publishing a product."
+        );
+
         return;
     }
 
@@ -682,6 +753,7 @@ async function handlePublishListing(event) {
             "Please complete every required field correctly.",
             true
         );
+
         return;
     }
 
@@ -695,9 +767,10 @@ async function handlePublishListing(event) {
         file.size > MAX_IMAGE_SIZE
     )) {
         showSellMessage(
-            "Check your photos. Each must be an image no larger than 6 MB.",
+            "Each photo must be an image no larger than 6 MB.",
             true
         );
+
         return;
     }
 
@@ -739,10 +812,8 @@ async function handlePublishListing(event) {
         selectedProductImages = [];
         renderImagePreviews();
 
-        const locationInput = byId("sellLocation");
-
-        if (locationInput) {
-            locationInput.value = "Sioma";
+        if (byId("sellLocation")) {
+            byId("sellLocation").value = "Sioma";
         }
 
         closeModal("sellModal");
@@ -756,9 +827,10 @@ async function handlePublishListing(event) {
         );
 
         alert("Your product is now published on SiomaMarket!");
+
     } catch (error) {
         showSellMessage(
-            showError(error, "Product publishing failed"),
+            reportError("Product publishing failed", error),
             true
         );
     } finally {
@@ -770,24 +842,7 @@ async function handlePublishListing(event) {
 }
 
 /* =========================================================
-   END OF PART 1
-   Part 2 continues with product loading, search and favorites.
-   =========================================================*/
-/* =========================================================
-   SIOMAMARKET — COMPLETE APPLICATION
-   Part 2: Products, Search, Categories and Favorites
-   ========================================================= */
-
-/* =========================================================
-   9. PRODUCT DATABASE COLUMNS
-   ========================================================= */
-
-const LISTING_COLUMNS =
-    "id, title, description, price, category, location, " +
-    "image_url, seller_name, seller_phone, status, created_at, user_id";
-
-/* =========================================================
-   10. LOAD ACTIVE PRODUCTS
+   9. LOAD ACTIVE PRODUCTS
    ========================================================= */
 
 async function loadListings() {
@@ -796,6 +851,7 @@ async function loadListings() {
     if (!grid || !supabaseClient) return;
 
     showingFavorites = false;
+
     showProductMessage("Loading products...");
 
     const { data, error } = await supabaseClient
@@ -806,7 +862,7 @@ async function loadListings() {
         .limit(24);
 
     if (error) {
-        console.error("Loading products failed:", error.message);
+        reportError("Loading products failed", error);
 
         grid.replaceChildren();
 
@@ -833,12 +889,11 @@ async function loadListings() {
     });
 
     updateFavoriteButtons();
-
     showProductMessage("");
 }
 
 /* =========================================================
-   11. CREATE PRODUCT CARDS
+   10. PRODUCT CARDS
    ========================================================= */
 
 function createProductCard(listing) {
@@ -869,28 +924,18 @@ function createProductCard(listing) {
                 data-favorite-id="${escapeHTML(listing.id)}"
                 aria-label="Save ${title} to favorites"
                 aria-pressed="false"
-            >
-                ♡ Favorite
-            </button>
+            >♡ Favorite</button>
 
             <p class="product-category">${category}</p>
-
             <h3 class="product-title">${title}</h3>
-
-            <p class="product-price">
-                ${formatPrice(listing.price)}
-            </p>
-
+            <p class="product-price">${formatPrice(listing.price)}</p>
             <p class="product-location">${location}</p>
-
             <p class="product-seller">${seller}</p>
 
             <button
                 type="button"
                 class="view-product-button"
-            >
-                View Product
-            </button>
+            >View Product</button>
         </div>
     `;
 
@@ -911,15 +956,14 @@ function createProductCard(listing) {
     });
 
     image.addEventListener("error", () => {
-        image.src =
-            "https://placehold.co/600x400?text=SiomaMarket";
+        image.src = "https://placehold.co/600x400?text=SiomaMarket";
     }, { once: true });
 
     return card;
 }
 
 /* =========================================================
-   12. PRODUCT DETAILS AND SELLER CONTACT
+   11. PRODUCT DETAILS AND SELLER CONTACT
    ========================================================= */
 
 function showListingDetails(listing) {
@@ -937,8 +981,7 @@ function showListingDetails(listing) {
     ].join("\n");
 
     const shouldContact = confirm(
-        details +
-        "\n\nPress OK to contact the seller on WhatsApp."
+        details + "\n\nPress OK to contact the seller on WhatsApp."
     );
 
     if (!shouldContact) return;
@@ -958,16 +1001,8 @@ function showListingDetails(listing) {
     const whatsappUrl =
         "https://wa.me/" + phone + "?text=" + message;
 
-    window.open(
-        whatsappUrl,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 }
-
-/* =========================================================
-   13. ZAMBIAN PHONE NUMBER FORMATTING
-   ========================================================= */
 
 function normalizeZambianPhone(value) {
     let phone = String(value || "").replace(/\D/g, "");
@@ -982,12 +1017,6 @@ function normalizeZambianPhone(value) {
         phone = "260" + phone;
     }
 
-    if (!phone.startsWith("260")) {
-        return "";
-    }
-
-    // Zambian mobile numbers should contain 12 digits
-    // when written with the country code.
     if (!/^260\d{9}$/.test(phone)) {
         return "";
     }
@@ -996,7 +1025,7 @@ function normalizeZambianPhone(value) {
 }
 
 /* =========================================================
-   14. SEARCH AND CATEGORY FILTERS
+   12. SEARCH AND CATEGORY FILTERS
    ========================================================= */
 
 function connectSearch() {
@@ -1006,11 +1035,7 @@ function connectSearch() {
     form?.addEventListener("submit", async event => {
         event.preventDefault();
 
-        showingFavorites = false;
-
-        await searchListings(
-            input?.value.trim() || ""
-        );
+        await searchListings(input?.value.trim() || "");
     });
 
     document.querySelectorAll("[data-category]").forEach(button => {
@@ -1018,8 +1043,6 @@ function connectSearch() {
             const category = button.dataset.category;
 
             if (!category) return;
-
-            showingFavorites = false;
 
             await searchListings("", category);
         });
@@ -1030,6 +1053,8 @@ async function searchListings(searchText = "", category = "") {
     const grid = byId("productGrid");
 
     if (!grid || !supabaseClient) return;
+
+    const requestNumber = ++searchRequestNumber;
 
     showingFavorites = false;
 
@@ -1043,7 +1068,6 @@ async function searchListings(searchText = "", category = "") {
         .limit(100);
 
     const cleanedSearch = String(searchText || "")
-        .replace(/[,%()]/g, " ")
         .trim();
 
     if (cleanedSearch) {
@@ -1059,14 +1083,12 @@ async function searchListings(searchText = "", category = "") {
 
     const { data, error } = await query;
 
+    if (requestNumber !== searchRequestNumber) return;
+
     if (error) {
-        console.error("Search failed:", error.message);
+        reportError("Search failed", error);
 
-        showProductMessage(
-            "Search failed. Please try again.",
-            true
-        );
-
+        showProductMessage("Search failed. Please try again.", true);
         return;
     }
 
@@ -1087,7 +1109,6 @@ async function searchListings(searchText = "", category = "") {
     });
 
     updateFavoriteButtons();
-
     showProductMessage("");
 
     byId("products")?.scrollIntoView({
@@ -1096,7 +1117,7 @@ async function searchListings(searchText = "", category = "") {
 }
 
 /* =========================================================
-   15. LOAD FAVORITE PRODUCT IDS
+   13. FAVORITES
    ========================================================= */
 
 async function loadFavoriteIds() {
@@ -1110,11 +1131,7 @@ async function loadFavoriteIds() {
         .eq("user_id", currentUser.id);
 
     if (error) {
-        console.error(
-            "Unable to load favorites:",
-            error.message
-        );
-
+        reportError("Unable to load favorites", error);
         return;
     }
 
@@ -1123,32 +1140,16 @@ async function loadFavoriteIds() {
     });
 }
 
-/* =========================================================
-   16. ADD OR REMOVE A FAVORITE
-   ========================================================= */
-
 async function toggleFavorite(listingId, button) {
     if (!currentUser) {
-        alert("Please log in to save favorite products.");
-
-        setAuthMode(false);
-        openModal("authModal");
-
-        return;
-    }
-
-    if (!supabaseClient) {
-        alert("Connection unavailable. Please refresh the page.");
+        showLoginModal("Please log in to save favorite products.");
         return;
     }
 
     const id = String(listingId);
-
     const alreadyFavorite = favoriteListingIds.has(id);
 
-    if (button) {
-        button.disabled = true;
-    }
+    if (button) button.disabled = true;
 
     try {
         if (alreadyFavorite) {
@@ -1161,6 +1162,7 @@ async function toggleFavorite(listingId, button) {
             if (error) throw error;
 
             favoriteListingIds.delete(id);
+
         } else {
             const { error } = await supabaseClient
                 .from("favorites")
@@ -1179,28 +1181,20 @@ async function toggleFavorite(listingId, button) {
         if (showingFavorites) {
             await showFavorites();
         }
-    } catch (error) {
-        console.error("Favorite update failed:", error);
 
+    } catch (error) {
         alert(
             "Unable to update favorites. Check your database permissions.\n\n" +
-            (error.message || "")
+            reportError("Favorite update failed", error)
         );
     } finally {
-        if (button) {
-            button.disabled = false;
-        }
+        if (button) button.disabled = false;
     }
 }
-
-/* =========================================================
-   17. UPDATE FAVORITE BUTTONS
-   ========================================================= */
 
 function updateFavoriteButtons() {
     document.querySelectorAll("[data-favorite-id]").forEach(button => {
         const id = String(button.dataset.favoriteId);
-
         const saved = favoriteListingIds.has(id);
 
         button.classList.toggle("is-favorite", saved);
@@ -1216,26 +1210,15 @@ function updateFavoriteButtons() {
     });
 }
 
-/* =========================================================
-   18. DISPLAY FAVORITES
-   ========================================================= */
-
 async function showFavorites() {
     if (!currentUser) {
-        alert("Please log in to view your favorites.");
-
-        setAuthMode(false);
-        openModal("authModal");
-
+        showLoginModal("Please log in to view your favorites.");
         return;
     }
 
     const grid = byId("productGrid");
 
-    if (!grid || !supabaseClient) {
-        alert("The product grid is unavailable.");
-        return;
-    }
+    if (!grid || !supabaseClient) return;
 
     showingFavorites = true;
 
@@ -1249,7 +1232,7 @@ async function showFavorites() {
 
     if (ids.length === 0) {
         showProductMessage(
-            "You have no favorites yet. Browse products and tap ♡ Favorite to save them."
+            "You have no favorites yet. Browse products and tap Favorite to save them."
         );
 
         byId("products")?.scrollIntoView({
@@ -1267,10 +1250,7 @@ async function showFavorites() {
         .order("created_at", { ascending: false });
 
     if (error) {
-        console.error(
-            "Unable to load favorite products:",
-            error.message
-        );
+        reportError("Unable to load favorite products", error);
 
         showProductMessage(
             "Unable to load your favorites. Please try again.",
@@ -1283,10 +1263,7 @@ async function showFavorites() {
     grid.replaceChildren();
 
     if (!data || data.length === 0) {
-        showProductMessage(
-            "Your saved products are no longer available."
-        );
-
+        showProductMessage("Your saved products are no longer available.");
         return;
     }
 
@@ -1295,17 +1272,12 @@ async function showFavorites() {
     });
 
     updateFavoriteButtons();
-
     showProductMessage("");
 
     byId("products")?.scrollIntoView({
         behavior: "smooth"
     });
 }
-
-/* =========================================================
-   19. REFRESH FAVORITES AFTER LOGIN OR LOGOUT
-   ========================================================= */
 
 async function refreshFavorites() {
     favoriteListingIds = new Set();
@@ -1318,655 +1290,510 @@ async function refreshFavorites() {
 }
 
 /* =========================================================
-   END OF PART 2
-   Part 3 completes the messaging system.
+   14. MESSAGING BUTTONS AND EVENTS
    ========================================================= */
-/* =========================================================
-SIOMAMARKET — PART 3
-MESSAGING SYSTEM
-Uses existing Supabase tables:
-conversations, messages, listings
-========================================================= */
-
-/* =========================================================
-
-1. MESSAGING STATE
-   ========================================================= */
-
-let currentConversationId = null;
-let currentConversationListingId = null;
-let currentConversationRecipientId = null;
-let messageRefreshInterval = null;
-let messagingEventsConnected = false;
-
-/* =========================================================
-2. SAFE HTML HELPER
-========================================================= */
-
-function escapeMessageHTML(value) {
-return String(value ?? "").replace(/[&<>"']/g, function (character) {
-const entities = {
-"&": "&",
-"<": "<",
-">": ">",
-'"': """,
-"'": "'"
-};
-
-    return entities[character];
-});
-
-}
-
-/* =========================================================
-3. CONNECT MESSAGING BUTTONS
-========================================================= */
 
 function connectMessagingSystem() {
-if (messagingEventsConnected) {
-return;
-}
+    if (messagingInitialized) return;
 
-messagingEventsConnected = true;
+    messagingInitialized = true;
 
-const messagesButtonIds = [
-    "navMessagesButton",
-    "messagesButton",
-    "accountMessagesButton"
-];
-
-messagesButtonIds.forEach(function (buttonId) {
-    const button = document.getElementById(buttonId);
-
-    if (button) {
-        button.addEventListener("click", function (event) {
+    [
+        "navMessagesButton",
+        "messagesButton",
+        "accountMessagesButton"
+    ].forEach(id => {
+        byId(id)?.addEventListener("click", event => {
             event.preventDefault();
             openMessagesWindow();
         });
-    }
-});
+    });
 
-const sendMessageForm = document.getElementById("sendMessageForm");
-
-if (sendMessageForm) {
-    sendMessageForm.addEventListener("submit", async function (event) {
+    byId("sendMessageForm")?.addEventListener("submit", async event => {
         event.preventDefault();
         await sendCurrentMessage();
     });
-}
 
-const conversationList = document.getElementById("conversationList");
+    byId("conversationList")?.addEventListener("click", async event => {
+        const button = event.target.closest("[data-conversation-id]");
 
-if (conversationList) {
-    conversationList.addEventListener("click", async function (event) {
-        const conversationButton = event.target.closest(
-            "[data-conversation-id]"
-        );
-
-        if (!conversationButton) {
-            return;
-        }
-
-        const conversationId =
-            conversationButton.getAttribute("data-conversation-id");
-
-        const listingId =
-            conversationButton.getAttribute("data-listing-id");
-
-        const recipientId =
-            conversationButton.getAttribute("data-recipient-id");
-
-        if (!conversationId) {
-            return;
-        }
+        if (!button) return;
 
         await openConversation(
-            conversationId,
-            listingId || null,
-            recipientId || null
+            button.getAttribute("data-conversation-id"),
+            button.getAttribute("data-listing-id") || null,
+            button.getAttribute("data-recipient-id") || null
         );
     });
-}
 
-const messagesModal = document.getElementById("messagesModal");
-
-if (messagesModal) {
-    messagesModal.addEventListener("click", function (event) {
-        if (event.target === messagesModal) {
+    byId("messagesModal")?.addEventListener("click", event => {
+        if (event.target === byId("messagesModal")) {
             closeMessagesWindow();
         }
     });
 }
 
-updateUnreadMessagesBadge();
-
-}
-
 /* =========================================================
-4. OPEN MESSAGES WINDOW
-========================================================= */
+   15. OPEN AND CLOSE MESSAGES
+   ========================================================= */
 
 async function openMessagesWindow() {
-if (!currentUser) {
-showAuthModal();
-return;
-}
-
-const messagesModal = document.getElementById("messagesModal");
-
-if (messagesModal) {
-    messagesModal.style.display = "flex";
-    messagesModal.classList.add("active");
-    messagesModal.setAttribute("aria-hidden", "false");
-}
-
-const messagesList = document.getElementById("messagesList");
-
-if (messagesList) {
-    messagesList.textContent = "Loading messages...";
-}
-
-await loadConversations();
-
-if (messageRefreshInterval) {
-    clearInterval(messageRefreshInterval);
-}
-
-messageRefreshInterval = setInterval(async function () {
     if (!currentUser) {
-        clearInterval(messageRefreshInterval);
-        messageRefreshInterval = null;
+        showLoginModal("Please log in to view your messages.");
         return;
     }
 
-    await updateUnreadMessagesBadge();
+    const modal = byId("messagesModal");
 
-    if (currentConversationId) {
-        await loadConversationMessages(currentConversationId, false);
-    }
-}, 10000);
+    if (modal) {
+        modal.hidden = false;
+        modal.style.display = "flex";
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
 
-}
-
-/* =========================================================
-5. CLOSE MESSAGES WINDOW
-========================================================= */
-
-function closeMessagesWindow() {
-const messagesModal = document.getElementById("messagesModal");
-
-if (messagesModal) {
-    messagesModal.style.display = "none";
-    messagesModal.classList.remove("active");
-    messagesModal.setAttribute("aria-hidden", "true");
-}
-
-if (messageRefreshInterval) {
-    clearInterval(messageRefreshInterval);
-    messageRefreshInterval = null;
-}
-
-}
-
-/* =========================================================
-6. LOAD USER CONVERSATIONS
-========================================================= */
-
-async function loadConversations() {
-const conversationList = document.getElementById("conversationList");
-
-if (!conversationList) {
-    console.warn(
-        "SiomaMarket: conversationList element was not found in HTML."
-    );
-    return;
-}
-
-if (!currentUser) {
-    conversationList.textContent = "Please log in to view your messages.";
-    return;
-}
-
-conversationList.textContent = "Loading conversations...";
-
-try {
-    const { data: conversations, error } = await supabase
-        .from("conversations")
-        .select(
-            "id, listing_id, buyer_id, seller_id, created_at, updated_at"
-        )
-        .or(
-            "buyer_id.eq." + currentUser.id +
-            ",seller_id.eq." + currentUser.id
-        )
-        .order("updated_at", { ascending: false });
-
-    if (error) {
-        throw error;
+        document.body.classList.add("modal-open");
     }
 
-    if (!conversations || conversations.length === 0) {
-        conversationList.textContent = "You have no conversations yet.";
-        return;
+    const list = byId("messagesList");
+
+    if (list) {
+        list.textContent = "Select a conversation to view messages.";
     }
-
-    const listingIds = [
-        ...new Set(
-            conversations
-                .map(function (conversation) {
-                    return conversation.listing_id;
-                })
-                .filter(function (id) {
-                    return id !== null && id !== undefined;
-                })
-        )
-    ];
-
-    let listingMap = {};
-
-    if (listingIds.length > 0) {
-        const { data: listings, error: listingsError } = await supabase
-            .from("listings")
-            .select("id, title")
-            .in("id", listingIds);
-
-        if (!listingsError && listings) {
-            listings.forEach(function (listing) {
-                listingMap[String(listing.id)] = listing.title;
-            });
-        }
-    }
-
-    conversationList.innerHTML = "";
-
-    conversations.forEach(function (conversation) {
-        const isBuyer =
-            conversation.buyer_id === currentUser.id;
-
-        const recipientId = isBuyer
-            ? conversation.seller_id
-            : conversation.buyer_id;
-
-        const listingTitle =
-            listingMap[String(conversation.listing_id)] ||
-            "Marketplace conversation";
-
-        const button = document.createElement("button");
-
-        button.type = "button";
-        button.className = "conversation-item";
-        button.setAttribute(
-            "data-conversation-id",
-            conversation.id
-        );
-
-        button.setAttribute(
-            "data-listing-id",
-            conversation.listing_id || ""
-        );
-
-        button.setAttribute(
-            "data-recipient-id",
-            recipientId || ""
-        );
-
-        button.style.width = "100%";
-        button.style.textAlign = "left";
-        button.style.padding = "12px";
-        button.style.marginBottom = "8px";
-        button.style.border = "1px solid #e2e8e5";
-        button.style.borderRadius = "10px";
-        button.style.background = "#ffffff";
-        button.style.cursor = "pointer";
-
-        const title = document.createElement("strong");
-        title.textContent = listingTitle;
-
-        const subtitle = document.createElement("div");
-        subtitle.textContent = isBuyer
-            ? "Seller conversation"
-            : "Buyer conversation";
-
-        subtitle.style.fontSize = "13px";
-        subtitle.style.marginTop = "4px";
-        subtitle.style.color = "#64748b";
-
-        button.appendChild(title);
-        button.appendChild(subtitle);
-
-        conversationList.appendChild(button);
-    });
-
-    if (
-        currentConversationId &&
-        !conversations.some(function (conversation) {
-            return conversation.id === currentConversationId;
-        })
-    ) {
-        currentConversationId = null;
-        currentConversationListingId = null;
-        currentConversationRecipientId = null;
-    }
-
-    await updateUnreadMessagesBadge();
-
-} catch (error) {
-    console.error("SiomaMarket: could not load conversations:", error);
-
-    conversationList.textContent =
-        "Unable to load conversations. Please try again.";
-}
-
-}
-
-/* =========================================================
-7. OPEN A CONVERSATION
-========================================================= */
-
-async function openConversation(
-conversationId,
-listingId = null,
-recipientId = null
-) {
-if (!currentUser) {
-showAuthModal();
-return;
-}
-
-currentConversationId = conversationId;
-currentConversationListingId = listingId;
-currentConversationRecipientId = recipientId;
-
-const conversationHeading =
-    document.getElementById("conversationHeading");
-
-const messageInput =
-    document.getElementById("messageInput");
-
-const sendMessageButton =
-    document.getElementById("sendMessageButton");
-
-if (conversationHeading) {
-    conversationHeading.textContent = "Conversation";
-}
-
-if (messageInput) {
-    messageInput.disabled = false;
-}
-
-if (sendMessageButton) {
-    sendMessageButton.disabled = false;
-}
-
-document.querySelectorAll("[data-conversation-id]").forEach(
-    function (button) {
-        button.classList.toggle(
-            "active",
-            button.getAttribute("data-conversation-id") ===
-                conversationId
-        );
-    }
-);
-
-await loadConversationMessages(conversationId, true);
-
-}
-
-/* =========================================================
-8. LOAD MESSAGES IN A CONVERSATION
-========================================================= */
-
-async function loadConversationMessages(
-conversationId,
-markAsRead = true
-) {
-const messagesList = document.getElementById("messagesList");
-
-if (!messagesList || !currentUser || !conversationId) {
-    return;
-}
-
-try {
-    const { data: messages, error } = await supabase
-        .from("messages")
-        .select(
-            "id, conversation_id, sender_id, message, created_at, is_read"
-        )
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true });
-
-    if (error) {
-        throw error;
-    }
-
-    messagesList.innerHTML = "";
-
-    if (!messages || messages.length === 0) {
-        messagesList.textContent =
-            "No messages yet. Send the first message.";
-        return;
-    }
-
-    const unreadIncomingIds = [];
-
-    messages.forEach(function (message) {
-        const isMine =
-            message.sender_id === currentUser.id;
-
-        const messageBubble = document.createElement("div");
-
-        messageBubble.className = isMine
-            ? "message-bubble message-mine"
-            : "message-bubble message-theirs";
-
-        messageBubble.style.maxWidth = "85%";
-        messageBubble.style.padding = "10px 12px";
-        messageBubble.style.marginBottom = "10px";
-        messageBubble.style.borderRadius = "12px";
-        messageBubble.style.whiteSpace = "pre-wrap";
-        messageBubble.style.overflowWrap = "anywhere";
-
-        if (isMine) {
-            messageBubble.style.marginLeft = "auto";
-            messageBubble.style.background = "#e8f6ee";
-        } else {
-            messageBubble.style.marginRight = "auto";
-            messageBubble.style.background = "#f1f5f9";
-        }
-
-        const messageText = document.createElement("div");
-        messageText.textContent = message.message || "";
-
-        const timestamp = document.createElement("small");
-
-        const date = message.created_at
-            ? new Date(message.created_at)
-            : null;
-
-        timestamp.textContent =
-            date && !Number.isNaN(date.getTime())
-                ? date.toLocaleString()
-                : "";
-
-        timestamp.style.display = "block";
-        timestamp.style.marginTop = "5px";
-        timestamp.style.fontSize = "11px";
-        timestamp.style.color = "#64748b";
-
-        messageBubble.appendChild(messageText);
-        messageBubble.appendChild(timestamp);
-        messagesList.appendChild(messageBubble);
-
-        if (
-            markAsRead &&
-            !isMine &&
-            message.is_read === false
-        ) {
-            unreadIncomingIds.push(message.id);
-        }
-    });
-
-    messagesList.scrollTop = messagesList.scrollHeight;
-
-    if (unreadIncomingIds.length > 0) {
-        const { error: readError } = await supabase
-            .from("messages")
-            .update({ is_read: true })
-            .in("id", unreadIncomingIds);
-
-        if (readError) {
-            console.warn(
-                "SiomaMarket: messages could not be marked as read:",
-                readError.message
-            );
-        }
-    }
-
-    await updateUnreadMessagesBadge();
-
-} catch (error) {
-    console.error("SiomaMarket: could not load messages:", error);
-
-    messagesList.textContent =
-        "Unable to load messages. Please try again.";
-}
-
-}
-
-/* =========================================================
-9. SEND A MESSAGE
-========================================================= */
-
-async function sendCurrentMessage() {
-if (!currentUser) {
-showAuthModal();
-return;
-}
-
-if (!currentConversationId) {
-    alert("Please select a conversation first.");
-    return;
-}
-
-const messageInput =
-    document.getElementById("messageInput");
-
-const sendMessageButton =
-    document.getElementById("sendMessageButton");
-
-const messageStatus =
-    document.getElementById("messageStatus");
-
-if (!messageInput) {
-    return;
-}
-
-const messageText = messageInput.value.trim();
-
-if (!messageText) {
-    if (messageStatus) {
-        messageStatus.textContent = "Type a message first.";
-    }
-    return;
-}
-
-if (messageText.length > 5000) {
-    if (messageStatus) {
-        messageStatus.textContent =
-            "Your message is too long. Please shorten it.";
-    }
-    return;
-}
-
-if (sendMessageButton) {
-    sendMessageButton.disabled = true;
-}
-
-if (messageStatus) {
-    messageStatus.textContent = "Sending message...";
-}
-
-try {
-    const { error: sendError } = await supabase
-        .from("messages")
-        .insert({
-            conversation_id: currentConversationId,
-            sender_id: currentUser.id,
-            message: messageText,
-            is_read: false
-        });
-
-    if (sendError) {
-        throw sendError;
-    }
-
-    messageInput.value = "";
-
-    await supabase
-        .from("conversations")
-        .update({
-            updated_at: new Date().toISOString()
-        })
-        .eq("id", currentConversationId);
-
-    if (messageStatus) {
-        messageStatus.textContent = "Message sent.";
-    }
-
-    await loadConversationMessages(
-        currentConversationId,
-        false
-    );
 
     await loadConversations();
 
-} catch (error) {
-    console.error("SiomaMarket: could not send message:", error);
+    stopMessageRefresh();
 
-    if (messageStatus) {
-        messageStatus.textContent =
-            error.message ||
-            "Message could not be sent. Please try again.";
-    }
-} finally {
-    if (sendMessageButton) {
-        sendMessageButton.disabled = false;
-    }
+    messageRefreshTimer = setInterval(async () => {
+        if (!currentUser) {
+            stopMessageRefresh();
+            return;
+        }
+
+        await updateUnreadMessagesBadge();
+
+        if (currentConversationId) {
+            await loadConversationMessages(
+                currentConversationId,
+                false
+            );
+        }
+    }, 10000);
 }
 
+function closeMessagesWindow() {
+    const modal = byId("messagesModal");
+
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = "";
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+    }
+
+    stopMessageRefresh();
+
+    if (!document.querySelector(".app-modal:not([hidden])")) {
+        document.body.classList.remove("modal-open");
+    }
 }
 
 /* =========================================================
-10. UPDATE UNREAD MESSAGE BADGE
-========================================================= */
+   16. LOAD CONVERSATIONS
+   ========================================================= */
+
+async function loadConversations() {
+    const conversationList = byId("conversationList");
+
+    if (!conversationList) {
+        console.warn("conversationList is missing from index.html.");
+        return;
+    }
+
+    if (!currentUser) {
+        conversationList.textContent =
+            "Please log in to view your messages.";
+        return;
+    }
+
+    conversationList.textContent = "Loading conversations...";
+
+    try {
+        const { data: conversations, error } = await supabaseClient
+            .from("conversations")
+            .select(
+                "id, listing_id, buyer_id, seller_id, created_at, updated_at"
+            )
+            .or(
+                "buyer_id.eq." + currentUser.id +
+                ",seller_id.eq." + currentUser.id
+            )
+            .order("updated_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (!conversations || conversations.length === 0) {
+            conversationList.textContent =
+                "You have no conversations yet.";
+            return;
+        }
+
+        const listingIds = [
+            ...new Set(
+                conversations
+                    .map(conversation => conversation.listing_id)
+                    .filter(id => id !== null && id !== undefined)
+            )
+        ];
+
+        const listingMap = {};
+
+        if (listingIds.length > 0) {
+            const { data: listings, error: listingsError } =
+                await supabaseClient
+                    .from("listings")
+                    .select("id, title")
+                    .in("id", listingIds);
+
+            if (listingsError) throw listingsError;
+
+            (listings || []).forEach(listing => {
+                listingMap[String(listing.id)] = listing.title;
+            });
+        }
+
+        conversationList.replaceChildren();
+
+        conversations.forEach(conversation => {
+            const isBuyer =
+                conversation.buyer_id === currentUser.id;
+
+            const recipientId = isBuyer
+                ? conversation.seller_id
+                : conversation.buyer_id;
+
+            const title =
+                listingMap[String(conversation.listing_id)] ||
+                "Marketplace conversation";
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "conversation-item";
+
+            button.dataset.conversationId = conversation.id;
+            button.dataset.listingId = conversation.listing_id || "";
+            button.dataset.recipientId = recipientId || "";
+
+            button.style.width = "100%";
+            button.style.textAlign = "left";
+            button.style.padding = "12px";
+            button.style.marginBottom = "8px";
+            button.style.border = "1px solid #e2e8e5";
+            button.style.borderRadius = "10px";
+            button.style.background = "#ffffff";
+            button.style.cursor = "pointer";
+
+            const heading = document.createElement("strong");
+            heading.textContent = title;
+
+            const subtitle = document.createElement("div");
+
+            subtitle.textContent = isBuyer
+                ? "Seller conversation"
+                : "Buyer conversation";
+
+            subtitle.style.fontSize = "13px";
+            subtitle.style.marginTop = "4px";
+            subtitle.style.color = "#64748b";
+
+            button.appendChild(heading);
+            button.appendChild(subtitle);
+
+            conversationList.appendChild(button);
+        });
+
+        await updateUnreadMessagesBadge();
+
+    } catch (error) {
+        reportError("Could not load conversations", error);
+
+        conversationList.textContent =
+            "Unable to load conversations. Please try again.";
+    }
+}
+
+/* =========================================================
+   17. OPEN A CONVERSATION
+   ========================================================= */
+
+async function openConversation(
+    conversationId,
+    listingId = null,
+    recipientId = null
+) {
+    if (!currentUser) {
+        showLoginModal("Please log in to view messages.");
+        return;
+    }
+
+    currentConversationId = conversationId;
+    currentConversationListingId = listingId;
+    currentConversationRecipientId = recipientId;
+
+    const heading = byId("conversationHeading");
+    const input = byId("messageInput");
+    const sendButton = byId("sendMessageButton");
+    const status = byId("messageStatus");
+
+    if (heading) {
+        heading.textContent = "Conversation";
+    }
+
+    if (input) {
+        input.disabled = false;
+    }
+
+    if (sendButton) {
+        sendButton.disabled = false;
+    }
+
+    if (status) {
+        status.textContent = "";
+    }
+
+    document.querySelectorAll("[data-conversation-id]").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.getAttribute("data-conversation-id") ===
+                String(conversationId)
+        );
+    });
+
+    await loadConversationMessages(conversationId, true);
+}
+
+/* =========================================================
+   18. LOAD CONVERSATION MESSAGES
+   ========================================================= */
+
+async function loadConversationMessages(
+    conversationId,
+    markAsRead = true
+) {
+    const messagesList = byId("messagesList");
+
+    if (!messagesList || !currentUser || !conversationId) return;
+
+    try {
+        const { data: messages, error } = await supabaseClient
+            .from("messages")
+            .select(
+                "id, conversation_id, sender_id, message, created_at, is_read"
+            )
+            .eq("conversation_id", conversationId)
+            .order("created_at", { ascending: true });
+
+        if (error) throw error;
+
+        messagesList.replaceChildren();
+
+        if (!messages || messages.length === 0) {
+            messagesList.textContent =
+                "No messages yet. Send the first message.";
+            return;
+        }
+
+        const unreadIncomingIds = [];
+
+        messages.forEach(message => {
+            const isMine = message.sender_id === currentUser.id;
+
+            const bubble = document.createElement("div");
+
+            bubble.className = isMine
+                ? "message-bubble message-mine"
+                : "message-bubble message-theirs";
+
+            bubble.style.maxWidth = "85%";
+            bubble.style.padding = "10px 12px";
+            bubble.style.marginBottom = "10px";
+            bubble.style.borderRadius = "12px";
+            bubble.style.whiteSpace = "pre-wrap";
+            bubble.style.overflowWrap = "anywhere";
+
+            if (isMine) {
+                bubble.style.marginLeft = "auto";
+                bubble.style.background = "#e8f6ee";
+            } else {
+                bubble.style.marginRight = "auto";
+                bubble.style.background = "#f1f5f9";
+            }
+
+            const text = document.createElement("div");
+            text.textContent = message.message || "";
+
+            const timestamp = document.createElement("small");
+            const date = message.created_at
+                ? new Date(message.created_at)
+                : null;
+
+            timestamp.textContent =
+                date && !Number.isNaN(date.getTime())
+                    ? date.toLocaleString()
+                    : "";
+
+            timestamp.style.display = "block";
+            timestamp.style.marginTop = "5px";
+            timestamp.style.fontSize = "11px";
+            timestamp.style.color = "#64748b";
+
+            bubble.appendChild(text);
+            bubble.appendChild(timestamp);
+
+            messagesList.appendChild(bubble);
+
+            if (
+                markAsRead &&
+                !isMine &&
+                message.is_read === false
+            ) {
+                unreadIncomingIds.push(message.id);
+            }
+        });
+
+        messagesList.scrollTop = messagesList.scrollHeight;
+
+        if (unreadIncomingIds.length > 0) {
+            const { error: readError } = await supabaseClient
+                .from("messages")
+                .update({ is_read: true })
+                .in("id", unreadIncomingIds);
+
+            if (readError) {
+                reportError("Messages could not be marked as read", readError);
+            }
+        }
+
+        await updateUnreadMessagesBadge();
+
+    } catch (error) {
+        reportError("Could not load messages", error);
+
+        messagesList.textContent =
+            "Unable to load messages. Please try again.";
+    }
+}
+
+/* =========================================================
+   19. SEND A MESSAGE
+   ========================================================= */
+
+async function sendCurrentMessage() {
+    if (!currentUser) {
+        showLoginModal("Please log in to send messages.");
+        return;
+    }
+
+    if (!currentConversationId) {
+        alert("Please select a conversation first.");
+        return;
+    }
+
+    const input = byId("messageInput");
+    const sendButton = byId("sendMessageButton");
+    const status = byId("messageStatus");
+
+    if (!input) return;
+
+    const messageText = input.value.trim();
+
+    if (!messageText) {
+        if (status) status.textContent = "Type a message first.";
+        return;
+    }
+
+    if (messageText.length > 5000) {
+        if (status) {
+            status.textContent =
+                "Your message is too long. Please shorten it.";
+        }
+
+        return;
+    }
+
+    if (sendButton) sendButton.disabled = true;
+    if (status) status.textContent = "Sending message...";
+
+    try {
+        const conversationId = currentConversationId;
+
+        const { error } = await supabaseClient
+            .from("messages")
+            .insert({
+                conversation_id: conversationId,
+                sender_id: currentUser.id,
+                message: messageText,
+                is_read: false
+            });
+
+        if (error) throw error;
+
+        input.value = "";
+
+        const { error: updateError } = await supabaseClient
+            .from("conversations")
+            .update({
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", conversationId);
+
+        if (updateError) {
+            reportError(
+                "Conversation timestamp could not be updated",
+                updateError
+            );
+        }
+
+        if (status) status.textContent = "Message sent.";
+
+        await loadConversationMessages(conversationId, false);
+        await loadConversations();
+        await updateUnreadMessagesBadge();
+
+    } catch (error) {
+        if (status) {
+            status.textContent =
+                reportError("Could not send message", error);
+        }
+    } finally {
+        if (sendButton) sendButton.disabled = false;
+    }
+}
+
+/* =========================================================
+   20. UNREAD MESSAGE BADGE
+   ========================================================= */
 
 async function updateUnreadMessagesBadge() {
-const badgeIds = [
-"unreadMessagesBadge",
-"messagesBadge"
-];
+    const badges = [
+        byId("unreadMessagesBadge"),
+        byId("messagesBadge")
+    ].filter(Boolean);
 
-const badges = badgeIds
-    .map(function (id) {
-        return document.getElementById(id);
-    })
-    .filter(Boolean);
+    if (badges.length === 0) return;
 
-if (badges.length === 0) {
-    return;
-}
+    if (!currentUser || !supabaseClient) {
+        badges.forEach(badge => {
+            badge.textContent = "";
+            badge.style.display = "none";
+        });
 
-if (!currentUser) {
-    badges.forEach(function (badge) {
-        badge.textContent = "";
-        badge.style.display = "none";
-    });
-    return;
-}
+        return;
+    }
 
-try {
-    const { data: conversations, error: conversationsError } =
-        await supabase
+    try {
+        const { data: conversations, error } = await supabaseClient
             .from("conversations")
             .select("id")
             .or(
@@ -1974,109 +1801,97 @@ try {
                 ",seller_id.eq." + currentUser.id
             );
 
-    if (conversationsError) {
-        throw conversationsError;
-    }
+        if (error) throw error;
 
-    const conversationIds = (conversations || []).map(
-        function (conversation) {
-            return conversation.id;
+        const conversationIds = (conversations || []).map(
+            conversation => conversation.id
+        );
+
+        if (conversationIds.length === 0) {
+            badges.forEach(badge => {
+                badge.textContent = "";
+                badge.style.display = "none";
+            });
+
+            return;
         }
-    );
 
-    if (conversationIds.length === 0) {
-        badges.forEach(function (badge) {
-            badge.textContent = "";
-            badge.style.display = "none";
+        const { count, error: countError } = await supabaseClient
+            .from("messages")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .in("conversation_id", conversationIds)
+            .neq("sender_id", currentUser.id)
+            .eq("is_read", false);
+
+        if (countError) throw countError;
+
+        const unreadCount = count || 0;
+
+        badges.forEach(badge => {
+            badge.textContent =
+                unreadCount > 99 ? "99+" : String(unreadCount);
+
+            badge.style.display =
+                unreadCount > 0 ? "inline-flex" : "none";
         });
-        return;
+
+    } catch (error) {
+        reportError("Unread badge could not be updated", error);
     }
-
-    const { count, error: countError } = await supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .in("conversation_id", conversationIds)
-        .neq("sender_id", currentUser.id)
-        .eq("is_read", false);
-
-    if (countError) {
-        throw countError;
-    }
-
-    const unreadCount = count || 0;
-
-    badges.forEach(function (badge) {
-        badge.textContent =
-            unreadCount > 99 ? "99+" : String(unreadCount);
-
-        badge.style.display =
-            unreadCount > 0 ? "inline-flex" : "none";
-    });
-
-} catch (error) {
-    console.warn(
-        "SiomaMarket: unread badge could not be updated:",
-        error.message
-    );
-}
-
 }
 
 /* =========================================================
-11. START A CONVERSATION WITH A LISTING'S SELLER
-This function can be called when a buyer clicks
-"Message Seller" on a product.
-========================================================= */
+   21. START A CONVERSATION WITH A SELLER
+   ========================================================= */
 
 async function startConversationForListing(listing) {
-if (!listing || !listing.id) {
-alert("This listing could not be opened.");
-return;
-}
-
-if (!currentUser) {
-    showAuthModal();
-    return;
-}
-
-const sellerId = listing.user_id;
-
-if (!sellerId) {
-    alert(
-        "This listing does not have a seller account linked. " +
-        "Please contact the seller using the available contact details."
-    );
-    return;
-}
-
-if (sellerId === currentUser.id) {
-    alert("You cannot start a conversation with yourself.");
-    return;
-}
-
-try {
-    let conversation = null;
-
-    const { data: existingConversation, error: findError } =
-        await supabase
-            .from("conversations")
-            .select(
-                "id, listing_id, buyer_id, seller_id, created_at, updated_at"
-            )
-            .eq("listing_id", listing.id)
-            .eq("buyer_id", currentUser.id)
-            .eq("seller_id", sellerId)
-            .maybeSingle();
-
-    if (findError) {
-        throw findError;
+    if (!listing || !listing.id) {
+        alert("This listing could not be opened.");
+        return;
     }
 
-    conversation = existingConversation;
+    if (!currentUser) {
+        showLoginModal("Please log in to message the seller.");
+        return;
+    }
 
-    if (!conversation) {
-        const { data: newConversation, error: createError } =
-            await supabase
+    const sellerId = listing.user_id;
+
+    if (!sellerId) {
+        alert(
+            "This listing does not have a linked seller account. " +
+            "Please contact the seller using the available phone number."
+        );
+
+        return;
+    }
+
+    if (sellerId === currentUser.id) {
+        alert("You cannot start a conversation with yourself.");
+        return;
+    }
+
+    try {
+        const { data: existingConversation, error: findError } =
+            await supabaseClient
+                .from("conversations")
+                .select(
+                    "id, listing_id, buyer_id, seller_id, created_at, updated_at"
+                )
+                .eq("listing_id", listing.id)
+                .eq("buyer_id", currentUser.id)
+                .eq("seller_id", sellerId)
+                .maybeSingle();
+
+        if (findError) throw findError;
+
+        let conversation = existingConversation;
+
+        if (!conversation) {
+            const { data, error } = await supabaseClient
                 .from("conversations")
                 .insert({
                     listing_id: listing.id,
@@ -2088,47 +1903,42 @@ try {
                 )
                 .single();
 
-        if (createError) {
-            throw createError;
+            if (error) throw error;
+
+            conversation = data;
         }
 
-        conversation = newConversation;
+        await openMessagesWindow();
+
+        await openConversation(
+            conversation.id,
+            conversation.listing_id,
+            sellerId
+        );
+
+        await loadConversations();
+
+    } catch (error) {
+        reportError("Could not start seller conversation", error);
+
+        alert(
+            "Could not start the conversation. Check your connection " +
+            "and Supabase permissions, then try again."
+        );
     }
-
-    await openMessagesWindow();
-
-    await openConversation(
-        conversation.id,
-        conversation.listing_id,
-        sellerId
-    );
-
-    await loadConversations();
-
-} catch (error) {
-    console.error(
-        "SiomaMarket: could not start seller conversation:",
-        error
-    );
-
-    alert(
-        "Could not start the conversation. " +
-        "Please check your connection and try again."
-    );
-}
-
 }
 
 /* =========================================================
-12. PUBLIC FUNCTIONS
-========================================================= */
+   22. EXPOSE FUNCTIONS FOR HTML BUTTONS
+   ========================================================= */
 
 window.openSiomaMessages = openMessagesWindow;
 window.closeSiomaMessages = closeMessagesWindow;
 window.startConversationForListing = startConversationForListing;
 window.refreshSiomaConversations = loadConversations;
+window.loadSiomaListings = loadListings;
+window.searchSiomaListings = searchListings;
 
 /* =========================================================
-END OF PART 3
-SIOMAMARKET MESSAGING SYSTEM
-========================================================= */
+   END OF SIOMAMARKET APPLICATION
+   ========================================================= */
