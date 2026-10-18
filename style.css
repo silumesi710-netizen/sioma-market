@@ -1215,3 +1215,16 @@ body.modal-open {
     opacity: 0.6;
     cursor: wait;
 }
+/* SIOMAMARKET — LOGO SIZE FIX */
+header .header-inner > .site-logo,
+header .site-logo {
+width: 240px !important;
+height: 100px !important;
+max-width: 90% !important;
+max-height: 100px !important;
+object-fit: contain !important;
+object-position: center !important;
+flex-shrink: 0 !important;
+display: block !important;
+margin: 0 auto 8px !important;
+}
