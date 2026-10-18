@@ -1751,6 +1751,70 @@ async function updateUnreadMessagesBadge() {
     const badge = byId("unreadMessagesBadge");
 
     if (!badge || !supabaseClient || !currentUser) {
+        if (badge) {
+            badge.hidden = true;
+            badge.textContent = "0";
+        }
+        return;
+    }
+
+    try {
+        // Find conversations belonging to the logged-in user.
+        const { data: conversations, error: conversationError } =
+            await supabaseClient
+                .from("conversations")
+                .select("id")
+                .or(
+                    `buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`
+                );
+
+        if (conversationError) {
+            throw conversationError;
+        }
+
+        const conversationIds = (conversations || []).map(
+            conversation => conversation.id
+        );
+
+        if (conversationIds.length === 0) {
+            badge.textContent = "0";
+            badge.hidden = true;
+            return;
+        }
+
+        // Count unread messages sent by other users.
+        const { count, error } = await supabaseClient
+            .from("messages")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .in("conversation_id", conversationIds)
+            .neq("sender_id", currentUser.id)
+            .eq("is_read", false);
+
+        if (error) {
+            throw error;
+        }
+
+        const unreadCount = count || 0;
+
+        badge.textContent = String(unreadCount);
+        badge.hidden = unreadCount === 0;
+
+    } catch (error) {
+        console.error(
+            "Unread message badge error:",
+            error.message
+        );
+
+        badge.textContent = "0";
+        badge.hidden = true;
+    }
+}
+    const badge = byId("unreadMessagesBadge");
+
+    if (!badge || !supabaseClient || !currentUser) {
         if (badge) badge.hidden = true;
         return;
     }
