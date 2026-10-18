@@ -1228,3 +1228,75 @@ flex-shrink: 0 !important;
 display: block !important;
 margin: 0 auto 8px !important;
 }
+/* =========================================
+   SIOMAMARKET — HEADER & LOGO FIX
+   Mobile-friendly layout
+========================================= */
+
+.site-header {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.site-header .header-inner {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 100px;
+  height: auto;
+  margin: 0 auto;
+  padding: 12px 18px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Logo */
+.site-header .site-logo {
+  display: block;
+  width: 170px;
+  max-width: 48%;
+  height: auto;
+  max-height: 95px;
+  object-fit: contain;
+  flex: 0 1 170px;
+  min-width: 0;
+}
+
+/* Header text */
+.site-header .site-title,
+.site-header .site-branding {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* Account and header buttons */
+.site-header button,
+.site-header .account-button {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* Smaller Android screens */
+@media (max-width: 480px) {
+  .site-header .header-inner {
+    min-height: 85px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .site-header .site-logo {
+    width: 145px;
+    max-width: 45%;
+    max-height: 75px;
+  }
+}
+
+/* Prevent accidental horizontal overflow */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
