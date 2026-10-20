@@ -130,14 +130,13 @@ button:disabled {
   align-items: center;
   gap: 10px;
 }
-
 .site-logo {
-width: 100px;
-height: 75px;
-max-width: 85%;
-object-fit: contain;
-object-position: center;
-flex-shrink: 0;
+  width: 180px;
+  height: 75px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
 }
 
 .brand-text {
