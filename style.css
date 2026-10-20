@@ -740,24 +740,43 @@ line-height: 1.2;
 
 pointer-events: none;
 }
-
 /* SMALL ANDROID SCREENS */
 @media (max-width: 360px) {
-  #productGrid {
-    gap: 9px;
-  }
+#productGrid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 8px;
+}
 
-  .product-info {
-    padding: 9px;
-  }
+.product-card {
+border-radius: 12px;
+}
 
-  .product-title {
-    font-size: 12px;
-  }
+.product-info {
+padding: 8px;
+}
 
-  .product-price {
-    font-size: 17px;
-  }
+.product-title {
+min-height: 35px;
+margin-bottom: 6px;
+font-size: 12px;
+line-height: 1.4;
+}
+
+.product-price {
+margin-bottom: 6px;
+font-size: 16px;
+}
+
+.product-location {
+font-size: 10px;
+}
+
+.buy-result {
+min-height: 42px;
+margin-top: 8px;
+padding: 9px 6px;
+font-size: 12px;
+}
 }
 
 /* ACCESSIBILITY */
