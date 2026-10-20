@@ -1529,3 +1529,113 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
+/* =========================================
+SIOMAMARKET — SPACING & PADDING IMPROVEMENT
+Mobile-first layout
+========================================= */
+
+/* Consistent spacing around the main page */
+main {
+width: 100%;
+min-width: 0;
+padding-left: 14px;
+padding-right: 14px;
+box-sizing: border-box;
+}
+
+/* Consistent spacing inside homepage sections */
+section {
+box-sizing: border-box;
+min-width: 0;
+}
+
+/* Category grid */
+.category-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 12px;
+width: 100%;
+margin: 14px 0 22px;
+box-sizing: border-box;
+}
+
+/* Agriculture, Livestock and other category cards */
+.category-card {
+box-sizing: border-box;
+min-width: 0;
+min-height: 100px;
+padding: 16px 12px;
+margin: 0;
+border-radius: 16px;
+overflow-wrap: anywhere;
+}
+
+/* Keep category text comfortably inside each card */
+.category-card h3,
+.category-card h4,
+.category-card p,
+.category-card span {
+line-height: 1.4;
+}
+
+/* Space between homepage sections */
+section + section {
+margin-top: 20px;
+}
+
+/* Product grid spacing */
+.product-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 14px 12px;
+width: 100%;
+margin: 16px 0 24px;
+box-sizing: border-box;
+}
+
+/* Product cards */
+.product-card {
+box-sizing: border-box;
+min-width: 0;
+overflow: hidden;
+border-radius: 16px;
+}
+
+/* Prevent card content from touching the edges */
+.product-card .product-info,
+.product-card .product-details {
+padding: 12px;
+box-sizing: border-box;
+}
+
+/* Consistent spacing around section headings */
+section h2 {
+margin-top: 0;
+margin-bottom: 14px;
+line-height: 1.35;
+}
+
+/* Extra room at the bottom of the page */
+main {
+padding-bottom: 24px;
+}
+
+/* Small Android screens */
+@media (max-width: 360px) {
+main {
+padding-left: 10px;
+padding-right: 10px;
+}
+
+.category-grid {
+gap: 10px;
+}
+
+.category-card {
+padding: 12px 10px;
+}
+
+.product-grid {
+gap: 12px 10px;
+}
+}
