@@ -953,14 +953,14 @@ main {
     padding: 36px 32px;
   }
 
-  .category-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
+.category-grid {
+grid-template-columns: repeat(5, minmax(0, 1fr));
+}
 
-  .product-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-  }
+.product-grid {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 16px;
+}
 
   .seller-banner {
     margin-right: 32px;
