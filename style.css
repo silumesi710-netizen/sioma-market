@@ -717,18 +717,28 @@ outline-offset: 2px;
 
 /* PHOTO COUNT */
 .photo-count-badge {
-  position: absolute;
-  right: 9px;
-  bottom: 9px;
+position: absolute;
+right: 8px;
+bottom: 8px;
+z-index: 2;
 
-  padding: 5px 8px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
 
-  color: #ffffff;
-  background: rgba(18, 53, 36, 0.82);
-  border-radius: 7px;
+min-height: 25px;
+padding: 5px 9px;
 
-  font-size: 10px;
-  font-weight: 700;
+color: #ffffff;
+background: rgba(18, 53, 36, 0.88);
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 8px;
+
+font-size: 11px;
+font-weight: 700;
+line-height: 1.2;
+
+pointer-events: none;
 }
 
 /* SMALL ANDROID SCREENS */
