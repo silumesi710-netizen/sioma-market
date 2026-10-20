@@ -961,47 +961,184 @@ function createProductCard(listing) {
 
     return card;
 }
-
 /* =========================================================
    11. PRODUCT DETAILS AND SELLER CONTACT
-   ========================================================= */
+========================================================= */
 
 function showListingDetails(listing) {
-    const details = [
-        listing.title || "Product",
-        "",
-        "Price: " + formatPrice(listing.price),
-        "Category: " + (listing.category || ""),
-        "Location: " + (listing.location || ""),
-        "",
-        listing.description || "No description provided.",
-        "",
-        "Seller: " + (listing.seller_name || "Seller"),
-        "Phone: " + (listing.seller_phone || "")
-    ].join("\n");
+    if (!listing) return;
 
-    const shouldContact = confirm(
-        details + "\n\nPress OK to contact the seller on WhatsApp."
+    // Remove an older product-details modal, if one exists.
+    document.getElementById("productDetailsModal")?.remove();
+
+    const images = getProductImages(listing.image_url);
+    const phone = normalizeZambianPhone(listing.seller_phone);
+    const sellerId = listing.user_id || "";
+    const isOwnProduct = currentUser && sellerId === currentUser.id;
+
+    const modal = document.createElement("div");
+    modal.id = "productDetailsModal";
+    modal.className = "app-modal";
+    modal.style.display = "flex";
+
+    const content = document.createElement("div");
+    content.className = "app-modal-content";
+    content.style.maxWidth = "560px";
+    content.style.maxHeight = "90vh";
+    content.style.overflowY = "auto";
+    content.style.position = "relative";
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "modal-close";
+    closeButton.setAttribute("aria-label", "Close product details");
+    closeButton.textContent = "×";
+    closeButton.addEventListener("click", () => modal.remove());
+
+    const title = document.createElement("h2");
+    title.textContent = listing.title || "Product details";
+
+    const image = document.createElement("img");
+    image.src = getPrimaryImage(listing);
+    image.alt = listing.title || "Product photo";
+    image.style.width = "100%";
+    image.style.maxHeight = "320px";
+    image.style.objectFit = "contain";
+    image.style.borderRadius = "12px";
+    image.style.background = "#f4f7f5";
+
+    image.addEventListener("error", () => {
+        image.src = "https://placehold.co/600x400?text=SiomaMarket";
+    }, { once: true });
+
+    const price = document.createElement("h3");
+    price.textContent = formatPrice(listing.price);
+    price.style.color = "#087f3d";
+
+    const information = document.createElement("div");
+    information.style.whiteSpace = "pre-wrap";
+    information.style.overflowWrap = "anywhere";
+    information.textContent =
+        "Category: " + (listing.category || "Other") + "\n" +
+        "Location: " + (listing.location || "Not provided") + "\n" +
+        "Seller: " + (listing.seller_name || "SiomaMarket seller") + "\n\n" +
+        (listing.description || "No description provided.");
+
+    content.append(
+        closeButton,
+        image,
+        title,
+        price,
+        information
     );
 
-    if (!shouldContact) return;
+    if (images.length > 1) {
+        const gallery = document.createElement("div");
+        gallery.style.display = "flex";
+        gallery.style.gap = "8px";
+        gallery.style.overflowX = "auto";
+        gallery.style.margin = "12px 0";
 
-    const phone = normalizeZambianPhone(listing.seller_phone);
+        images.forEach((imageUrl, index) => {
+            const thumbnail = document.createElement("button");
+            thumbnail.type = "button";
+            thumbnail.style.padding = "2px";
+            thumbnail.style.border = "1px solid #dce5df";
+            thumbnail.style.borderRadius = "8px";
+            thumbnail.style.background = "#fff";
 
-    if (!phone) {
-        alert("The seller has not provided a valid phone number.");
-        return;
+            const thumbImage = document.createElement("img");
+            thumbImage.src = imageUrl;
+            thumbImage.alt = "Product photo " + (index + 1);
+            thumbImage.style.width = "68px";
+            thumbImage.style.height = "68px";
+            thumbImage.style.objectFit = "cover";
+            thumbImage.style.borderRadius = "6px";
+
+            thumbnail.appendChild(thumbImage);
+            thumbnail.addEventListener("click", () => {
+                image.src = imageUrl;
+            });
+
+            gallery.appendChild(thumbnail);
+        });
+
+        content.insertBefore(gallery, title);
     }
 
-    const message = encodeURIComponent(
-        "Hello, I found your product on SiomaMarket: " +
-        listing.title
-    );
+    const actions = document.createElement("div");
+    actions.style.display = "grid";
+    actions.style.gridTemplateColumns = "1fr";
+    actions.style.gap = "10px";
+    actions.style.marginTop = "18px";
 
-    const whatsappUrl =
-        "https://wa.me/" + phone + "?text=" + message;
+    function makeActionButton(label, callback, background) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.style.width = "100%";
+        button.style.padding = "13px";
+        button.style.border = "none";
+        button.style.borderRadius = "10px";
+        button.style.background = background;
+        button.style.color = "#fff";
+        button.style.fontWeight = "700";
+        button.style.cursor = "pointer";
+        button.addEventListener("click", callback);
+        return button;
+    }
 
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    if (phone) {
+        actions.appendChild(
+            makeActionButton("📞 Call Seller", () => {
+                window.location.href = "tel:+" + phone;
+            }, "#087f3d")
+        );
+
+        actions.appendChild(
+            makeActionButton("🟢 WhatsApp Seller", () => {
+                const message = encodeURIComponent(
+                    "Hello, I found your product on SiomaMarket: " +
+                    listing.title
+                );
+
+                window.open(
+                    "https://wa.me/" + phone + "?text=" + message,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+            }, "#168447")
+        );
+    } else {
+        const phoneNotice = document.createElement("p");
+        phoneNotice.textContent =
+            "The seller has not provided a valid phone number.";
+        actions.appendChild(phoneNotice);
+    }
+
+    if (!isOwnProduct) {
+        actions.appendChild(
+            makeActionButton("💬 Message Seller", async () => {
+                await startConversationForListing(listing);
+            }, "#075b2d")
+        );
+    } else {
+        const ownNotice = document.createElement("p");
+        ownNotice.textContent = "This is your own listing.";
+        actions.appendChild(ownNotice);
+    }
+
+    content.appendChild(actions);
+    modal.appendChild(content);
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) modal.remove();
+    });
+
+    document.body.appendChild(modal);
+    document.body.classList.add("modal-open");
+
+    modal.querySelector(".modal-close")?.focus();
 }
 
 function normalizeZambianPhone(value) {
