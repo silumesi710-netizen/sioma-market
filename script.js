@@ -1985,84 +1985,125 @@ async function updateUnreadMessagesBadge() {
    ========================================================= */
 
 async function startConversationForListing(listing) {
-    if (!listing || !listing.id) {
-        alert("This listing could not be opened.");
-        return;
+if (!listing || !listing.id) {
+alert("This listing could not be opened.");
+return;
+}
+
+if (!currentUser) {
+    showListingDetailsCloseMessage();
+    showLoginModal("Please log in to message the seller.");
+    return;
+}
+
+const sellerId = listing.user_id;
+
+if (!sellerId) {
+    alert(
+        "This listing does not have a linked seller account. " +
+        "Please contact the seller using the available phone number."
+    );
+    return;
+}
+
+if (sellerId === currentUser.id) {
+    alert("You cannot start a conversation with yourself.");
+    return;
+}
+
+const messageButton = document.querySelector(
+    "#productDetailsModal button"
+);
+
+try {
+    if (messageButton) {
+        messageButton.disabled = true;
     }
 
-    if (!currentUser) {
-        showLoginModal("Please log in to message the seller.");
-        return;
+    const { data: existingConversation, error: findError } =
+        await supabaseClient
+            .from("conversations")
+            .select(
+                "id, listing_id, buyer_id, seller_id, created_at, updated_at"
+            )
+            .eq("listing_id", listing.id)
+            .eq("buyer_id", currentUser.id)
+            .eq("seller_id", sellerId)
+            .maybeSingle();
+
+    if (findError) {
+        throw findError;
     }
 
-    const sellerId = listing.user_id;
+    let conversation = existingConversation;
 
-    if (!sellerId) {
-        alert(
-            "This listing does not have a linked seller account. " +
-            "Please contact the seller using the available phone number."
-        );
+    if (!conversation) {
+        const { data, error } = await supabaseClient
+            .from("conversations")
+            .insert({
+                listing_id: listing.id,
+                buyer_id: currentUser.id,
+                seller_id: sellerId
+            })
+            .select(
+                "id, listing_id, buyer_id, seller_id, created_at, updated_at"
+            )
+            .single();
 
-        return;
-    }
-
-    if (sellerId === currentUser.id) {
-        alert("You cannot start a conversation with yourself.");
-        return;
-    }
-
-    try {
-        const { data: existingConversation, error: findError } =
-            await supabaseClient
-                .from("conversations")
-                .select(
-                    "id, listing_id, buyer_id, seller_id, created_at, updated_at"
-                )
-                .eq("listing_id", listing.id)
-                .eq("buyer_id", currentUser.id)
-                .eq("seller_id", sellerId)
-                .maybeSingle();
-
-        if (findError) throw findError;
-
-        let conversation = existingConversation;
-
-        if (!conversation) {
-            const { data, error } = await supabaseClient
-                .from("conversations")
-                .insert({
-                    listing_id: listing.id,
-                    buyer_id: currentUser.id,
-                    seller_id: sellerId
-                })
-                .select(
-                    "id, listing_id, buyer_id, seller_id, created_at, updated_at"
-                )
-                .single();
-
-            if (error) throw error;
-
-            conversation = data;
+        if (error) {
+            throw error;
         }
 
-        await openMessagesWindow();
-
-        await openConversation(
-            conversation.id,
-            conversation.listing_id,
-            sellerId
-        );
-
-        await loadConversations();
-
-    } catch (error) {
-        reportError("Could not start seller conversation", error);
-
-        alert(
-            "Could not start the conversation. Check your connection " +
-            "and Supabase permissions, then try again."
-        );
+        conversation = data;
     }
+
+    // Close product details before opening the messaging window.
+    document.getElementById("productDetailsModal")?.remove();
+
+    // Open the messaging window.
+    await openMessagesWindow();
+
+    // Select the correct conversation immediately.
+    await openConversation(
+        conversation.id,
+        conversation.listing_id,
+        sellerId
+    );
+
+    // Refresh the conversation list.
+    await loadConversations();
+
+    // Ensure the messaging window remains visible.
+    const messagesModal = byId("messagesModal");
+
+    if (messagesModal) {
+        messagesModal.hidden = false;
+        messagesModal.style.display = "flex";
+        messagesModal.classList.add("active");
+        messagesModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-open");
+    }
+
+    byId("messageInput")?.focus();
+
+} catch (error) {
+    reportError("Could not start seller conversation", error);
+
+    alert(
+        "Could not start the conversation. Please try again. " +
+        "If the problem continues, check your Supabase permissions."
+    );
+
+} finally {
+    if (messageButton) {
+        messageButton.disabled = false;
+    }
+}
+
+}
+
+function showListingDetailsCloseMessage() {
+document.getElementById("productDetailsModal")?.remove();
 }
 
 /* =========================================================
