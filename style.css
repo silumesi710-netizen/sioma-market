@@ -521,14 +521,16 @@ main {
 /* PRODUCT IMAGE */
 .product-image,
 .product-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+display: block;
+width: 100%;
+height: 100%;
+aspect-ratio: 1 / 1;
 
-  object-fit: cover;
-  background: #edf5ef;
+object-fit: cover;
+object-position: center;
+
+background: #edf5ef;
 }
-
 /* PRODUCT INFORMATION */
 .product-info {
   display: flex;
