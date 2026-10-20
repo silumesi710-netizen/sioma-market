@@ -559,15 +559,17 @@ line-height: 1.45;
 overflow-wrap: anywhere;
 word-break: normal;
 }
-
 /* PRODUCT PRICE */
 .product-price {
-  margin: 0 0 8px;
+margin: 0 0 8px;
 
-  color: #087f3d;
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 1.3;
+color: #087f3d;
+font-size: 18px;
+font-weight: 800;
+line-height: 1.4;
+
+overflow-wrap: anywhere;
+font-variant-numeric: tabular-nums;
 }
 
 /* PRODUCT LOCATION */
