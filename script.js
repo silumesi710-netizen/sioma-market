@@ -2118,7 +2118,163 @@ window.startConversationForListing = startConversationForListing;
 window.refreshSiomaConversations = loadConversations;
 window.loadSiomaListings = loadListings;
 window.searchSiomaListings = searchListings;
+/* ==================================================
+SELLER DASHBOARD — DATA AND CONTROLS
+================================================== */
 
+async function loadSellerDashboard() {
+const message = document.getElementById("sellerDashboardMessage");
+const container = document.getElementById("sellerListingsContainer");
+
+if (!supabaseClient || !currentUser) {
+if (message) {
+message.textContent = "Please log in to view your seller dashboard.";
+}
+return;
+}
+
+if (message) message.textContent = "Loading your products...";
+if (container) container.replaceChildren();
+
+try {
+const { data, error } = await supabaseClient
+.from("listings")
+.select(LISTING_COLUMNS)
+.eq("user_id", currentUser.id)
+.order("created_at", { ascending: false });
+
+if (error) throw error;
+
+const listings = data || [];
+
+const counts = {
+  total: listings.length,
+  pending: listings.filter(item => item.status === "pending").length,
+  active: listings.filter(item => item.status === "active").length,
+  rejected: listings.filter(item => item.status === "rejected").length
+};
+
+document.getElementById("sellerTotalCount").textContent = counts.total;
+document.getElementById("sellerPendingCount").textContent = counts.pending;
+document.getElementById("sellerActiveCount").textContent = counts.active;
+document.getElementById("sellerRejectedCount").textContent = counts.rejected;
+
+if (!container) return;
+
+if (listings.length === 0) {
+  if (message) {
+    message.textContent = "You have not listed any products yet.";
+  }
+  return;
+}
+
+const fragment = document.createDocumentFragment();
+
+listings.forEach(listing => {
+  const card = document.createElement("article");
+  card.className = "seller-listing-card";
+
+  const image = document.createElement("img");
+  image.className = "seller-listing-image";
+  image.alt = listing.title || "Product image";
+  image.loading = "lazy";
+
+  const images = getProductImages(listing.image_url);
+  image.src = images[0] || "";
+  image.addEventListener("error", () => {
+    image.style.visibility = "hidden";
+  }, { once: true });
+
+  const info = document.createElement("div");
+  info.className = "seller-listing-info";
+
+  const title = document.createElement("h4");
+  title.textContent = listing.title || "Untitled product";
+
+  const price = document.createElement("p");
+  price.className = "seller-listing-price";
+  price.textContent = formatPrice(listing.price);
+
+  const status = document.createElement("span");
+  status.className = "seller-listing-status";
+
+  const safeStatus = ["pending", "active", "rejected", "sold"]
+    .includes(listing.status) ? listing.status : "unknown";
+
+  status.classList.add("status-" + safeStatus);
+  status.textContent = safeStatus;
+
+  info.append(title, price, status);
+  card.append(image, info);
+  fragment.appendChild(card);
+});
+
+container.appendChild(fragment);
+
+if (message) {
+  message.textContent = "Here are your products and their current statuses.";
+}
+
+} catch (error) {
+console.error("Seller dashboard error:", error);
+
+if (message) {
+  message.textContent =
+    "Could not load your products. Please refresh and try again.";
+}
+
+}
+}
+
+function openSellerDashboard() {
+if (!currentUser) {
+if (typeof openAuthModal === "function") {
+openAuthModal();
+} else {
+document.getElementById("authModal")?.removeAttribute("hidden");
+}
+return;
+}
+
+const dashboard = document.getElementById("sellerDashboard");
+if (!dashboard) return;
+
+dashboard.hidden = false;
+document.getElementById("home")?.setAttribute("hidden", "");
+document.getElementById("sellerDashboard")
+?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+loadSellerDashboard();
+}
+
+function closeSellerDashboard() {
+const dashboard = document.getElementById("sellerDashboard");
+if (dashboard) dashboard.hidden = true;
+
+document.getElementById("home")?.removeAttribute("hidden");
+document.getElementById("home")
+?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.getElementById("closeSellerDashboard")
+?.addEventListener("click", closeSellerDashboard);
+
+document.getElementById("sellerAddProductButton")
+?.addEventListener("click", () => {
+closeSellerDashboard();
+
+if (typeof handleSellClick === "function") {
+  handleSellClick();
+} else {
+  document.getElementById("sellModal")?.removeAttribute("hidden");
+}
+
+});
+
+/* Seller dashboard functions available for navigation. */
+window.openSellerDashboard = openSellerDashboard;
+window.loadSellerDashboard = loadSellerDashboard;
+window.closeSellerDashboard = closeSellerDashboard;
 /* =========================================================
    END OF SIOMAMARKET APPLICATION
    ========================================================= */
