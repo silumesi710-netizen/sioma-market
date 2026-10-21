@@ -1639,3 +1639,224 @@ padding: 12px 10px;
 gap: 12px 10px;
 }
 }
+/* ==================================================
+SIOMAMARKET SELLER DASHBOARD
+Mobile-friendly dashboard styling
+================================================== */
+
+.dashboard-section {
+width: 100%;
+max-width: 1100px;
+margin: 0 auto;
+padding: 24px 16px 110px;
+box-sizing: border-box;
+color: #123524;
+}
+
+.dashboard-section[hidden] {
+display: none !important;
+}
+
+.dashboard-header {
+margin-bottom: 24px;
+}
+
+.dashboard-back-button {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+margin-bottom: 18px;
+padding: 10px 14px;
+border: 1px solid #d8e7dd;
+border-radius: 10px;
+background: #ffffff;
+color: #075b2d;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+}
+
+.dashboard-header h2 {
+margin: 0 0 8px;
+font-size: 26px;
+line-height: 1.25;
+font-weight: 800;
+}
+
+.dashboard-header p {
+margin: 0;
+color: #627468;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.dashboard-stats {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 12px;
+margin-bottom: 28px;
+}
+
+.dashboard-stat-card {
+min-width: 0;
+padding: 18px 14px;
+border: 1px solid #e0ebe4;
+border-radius: 16px;
+background: #ffffff;
+box-shadow: 0 3px 12px rgba(18, 53, 36, 0.05);
+box-sizing: border-box;
+}
+
+.dashboard-stat-icon {
+display: block;
+margin-bottom: 10px;
+font-size: 25px;
+}
+
+.dashboard-stat-card h3 {
+margin: 0 0 8px;
+color: #52665a;
+font-size: 13px;
+font-weight: 600;
+line-height: 1.4;
+}
+
+.dashboard-stat-card p {
+margin: 0;
+color: #087f3d;
+font-size: 28px;
+font-weight: 800;
+}
+
+.seller-products-section {
+padding: 18px 14px;
+border: 1px solid #e0ebe4;
+border-radius: 16px;
+background: #ffffff;
+box-shadow: 0 3px 12px rgba(18, 53, 36, 0.04);
+}
+
+.seller-products-heading {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+margin-bottom: 16px;
+}
+
+.seller-products-heading h3 {
+margin: 0;
+font-size: 19px;
+font-weight: 800;
+}
+
+.primary-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-height: 42px;
+padding: 10px 14px;
+border: none;
+border-radius: 10px;
+background: #ffb703;
+color: #123524;
+font-size: 13px;
+font-weight: 800;
+cursor: pointer;
+}
+
+.primary-button:active,
+.dashboard-back-button:active {
+transform: scale(0.98);
+}
+
+#sellerDashboardMessage {
+margin: 12px 0;
+color: #627468;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.seller-listings-container {
+display: grid;
+grid-template-columns: minmax(0, 1fr);
+gap: 14px;
+}
+
+.seller-listing-card {
+display: grid;
+grid-template-columns: 100px minmax(0, 1fr);
+gap: 12px;
+padding: 12px;
+border: 1px solid #e3ece6;
+border-radius: 14px;
+background: #ffffff;
+}
+
+.seller-listing-image {
+display: block;
+width: 100px;
+height: 100px;
+border-radius: 10px;
+background: #edf8f1;
+object-fit: cover;
+}
+
+.seller-listing-info {
+min-width: 0;
+}
+
+.seller-listing-info h4 {
+margin: 0 0 7px;
+overflow-wrap: anywhere;
+font-size: 15px;
+line-height: 1.4;
+}
+
+.seller-listing-price {
+margin: 0 0 8px;
+color: #087f3d;
+font-size: 16px;
+font-weight: 800;
+}
+
+.seller-listing-status {
+display: inline-block;
+padding: 5px 9px;
+border-radius: 20px;
+background: #fff4d5;
+color: #765600;
+font-size: 11px;
+font-weight: 800;
+text-transform: capitalize;
+}
+
+.seller-listing-status.status-active {
+background: #e2f6e9;
+color: #087f3d;
+}
+
+.seller-listing-status.status-rejected {
+background: #ffebeb;
+color: #b42318;
+}
+
+.seller-listing-status.status-sold {
+background: #e9edf0;
+color: #455560;
+}
+
+@media (min-width: 700px) {
+.dashboard-section {
+padding-right: 24px;
+padding-left: 24px;
+}
+
+.dashboard-stats {
+grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.seller-listings-container {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+}
