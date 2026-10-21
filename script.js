@@ -524,23 +524,44 @@ async function registerUser(email, password) {
 }
 
 async function loginUser(email, password) {
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
+const { data, error } =
+await supabaseClient.auth.signInWithPassword({
+email,
+password
+});
 
-    if (error) throw error;
+if (error) throw error;
 
-    currentUser = data.user;
+currentUser = data.user;
 
-    updateAccountButtons();
-    closeModal("authModal");
+updateAccountButtons();
 
-    await refreshFavorites();
-    await updateUnreadMessagesBadge();
+closeModal("authModal");
 
-    alert("Welcome back to SiomaMarket!");
+await refreshFavorites();
+await updateUnreadMessagesBadge();
+
+// Open the Seller Dashboard automatically after login.
+const dashboard = document.getElementById("sellerDashboard");
+const home = document.getElementById("home");
+
+if (dashboard) {
+    dashboard.hidden = false;
+
+    if (home) {
+        home.hidden = true;
+    }
+
+    await loadSellerDashboard();
+
+    dashboard.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+alert("Welcome back to SiomaMarket!");
+
 }
 
 async function logoutUser() {
