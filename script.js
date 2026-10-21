@@ -798,7 +798,7 @@ async function handlePublishListing(event) {
             seller_name: sellerName,
             seller_phone: sellerPhone,
             image_url: JSON.stringify(imageUrls),
-            status: "active"
+            status: "pending"
         };
 
         const { error } = await supabaseClient
@@ -823,11 +823,13 @@ async function handlePublishListing(event) {
         await loadListings();
 
         showProductMessage(
-            "Your product has been published successfully!"
-        );
+    "Your product was submitted and is awaiting administrator approval."
+);
 
-        alert("Your product is now published on SiomaMarket!");
-
+     alert(
+    "Your product has been submitted successfully. " +
+    "It will appear publicly after administrator approval."
+);   
     } catch (error) {
         showSellMessage(
             reportError("Product publishing failed", error),
