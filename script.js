@@ -2275,6 +2275,36 @@ if (typeof handleSellClick === "function") {
 window.openSellerDashboard = openSellerDashboard;
 window.loadSellerDashboard = loadSellerDashboard;
 window.closeSellerDashboard = closeSellerDashboard;
+/* ==================================================
+ADD SELLER DASHBOARD ACCESS TO ACCOUNT MODAL
+================================================== */
+
+function addSellerDashboardAccountButton() {
+const authModal = document.getElementById("authModal");
+const modalContent = authModal?.querySelector(".app-modal-content");
+
+if (!modalContent) return;
+
+if (document.getElementById("openSellerDashboardButton")) return;
+
+const button = document.createElement("button");
+
+button.type = "button";
+button.id = "openSellerDashboardButton";
+button.className = "primary-button";
+button.textContent = "📦 My Seller Dashboard";
+button.style.width = "100%";
+button.style.marginTop = "14px";
+
+button.addEventListener("click", () => {
+authModal.setAttribute("hidden", "");
+openSellerDashboard();
+});
+
+modalContent.appendChild(button);
+}
+
+addSellerDashboardAccountButton();
 /* =========================================================
    END OF SIOMAMARKET APPLICATION
    ========================================================= */
