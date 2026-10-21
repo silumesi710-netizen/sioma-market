@@ -2296,9 +2296,35 @@ button.textContent = "📦 My Seller Dashboard";
 button.style.width = "100%";
 button.style.marginTop = "14px";
 
-button.addEventListener("click", () => {
-authModal.setAttribute("hidden", "");
-openSellerDashboard();
+button.addEventListener("click", async () => {
+  authModal.setAttribute("hidden", "");
+
+  const dashboard = document.getElementById("sellerDashboard");
+
+  if (!dashboard) {
+    alert("Seller Dashboard section was not found. Please check index.html.");
+    return;
+  }
+
+  if (!currentUser) {
+    alert("Please log in first to open your Seller Dashboard.");
+    document.getElementById("authModal")?.removeAttribute("hidden");
+    return;
+  }
+
+  dashboard.hidden = false;
+
+  const home = document.getElementById("home");
+  if (home) {
+    home.hidden = true;
+  }
+
+  dashboard.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  await loadSellerDashboard();
 });
 
 modalContent.appendChild(button);
