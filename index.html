@@ -239,7 +239,82 @@
 
   </main>
 
+<!-- ==================================================
+     SIOMAMARKET SELLER DASHBOARD
+     ================================================== -->
 
+<section id="sellerDashboard" class="dashboard-section" hidden>
+
+  <div class="dashboard-header">
+    <button
+      type="button"
+      id="closeSellerDashboard"
+      class="dashboard-back-button">
+      ← Back to Marketplace
+    </button>
+
+    <h2>Seller Dashboard</h2>
+    <p>Manage your products and track their approval status.</p>
+  </div>
+
+  <!-- SELLER STATISTICS -->
+
+  <div class="dashboard-stats">
+
+    <article class="dashboard-stat-card">
+      <span class="dashboard-stat-icon">📦</span>
+      <h3>Total Products</h3>
+      <p id="sellerTotalCount">0</p>
+    </article>
+
+    <article class="dashboard-stat-card">
+      <span class="dashboard-stat-icon">⏳</span>
+      <h3>Pending Approval</h3>
+      <p id="sellerPendingCount">0</p>
+    </article>
+
+    <article class="dashboard-stat-card">
+      <span class="dashboard-stat-icon">✅</span>
+      <h3>Approved</h3>
+      <p id="sellerActiveCount">0</p>
+    </article>
+
+    <article class="dashboard-stat-card">
+      <span class="dashboard-stat-icon">❌</span>
+      <h3>Rejected</h3>
+      <p id="sellerRejectedCount">0</p>
+    </article>
+
+  </div>
+
+  <!-- SELLER PRODUCTS -->
+
+  <div class="seller-products-section">
+
+    <div class="seller-products-heading">
+      <h3>My Products</h3>
+
+      <button
+        type="button"
+        id="sellerAddProductButton"
+        class="primary-button">
+        + Add Product
+      </button>
+    </div>
+
+    <p id="sellerDashboardMessage" role="status">
+      Your products will appear here.
+    </p>
+
+    <div id="sellerListingsContainer" class="seller-listings-container">
+      <!-- JavaScript will display the seller's products here. -->
+    </div>
+
+  </div>
+
+</section>
+
+<!-- END SELLER DASHBOARD -->
   <!-- FOOTER -->
   <footer class="site-footer">
 
