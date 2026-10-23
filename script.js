@@ -1020,7 +1020,13 @@ function showListingDetails(listing) {
     closeButton.className = "modal-close";
     closeButton.setAttribute("aria-label", "Close product details");
     closeButton.textContent = "×";
-    closeButton.addEventListener("click", () => modal.remove());
+    closeButton.addEventListener("click", () => {
+  modal.remove();
+
+  if (!document.querySelector(".app-modal:not([hidden])")) {
+    document.body.classList.remove("modal-open");
+  }
+});
 
     const title = document.createElement("h2");
     title.textContent = listing.title || "Product details";
