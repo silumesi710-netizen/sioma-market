@@ -2180,10 +2180,20 @@ const counts = {
   rejected: listings.filter(item => item.status === "rejected").length
 };
 
-document.getElementById("sellerTotalCount").textContent = counts.total;
-document.getElementById("sellerPendingCount").textContent = counts.pending;
-document.getElementById("sellerActiveCount").textContent = counts.active;
-document.getElementById("sellerRejectedCount").textContent = counts.rejected;
+const statElements = {
+sellerTotalCount: counts.total,
+sellerPendingCount: counts.pending,
+sellerActiveCount: counts.active,
+sellerRejectedCount: counts.rejected
+};
+
+Object.entries(statElements).forEach(([id, value]) => {
+const element = document.getElementById(id);
+
+if (element) {
+element.textContent = String(value);
+}
+});
 
 if (!container) return;
 
