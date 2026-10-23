@@ -535,11 +535,15 @@ if (error) throw error;
 currentUser = data.user;
 
 updateAccountButtons();
-
 closeModal("authModal");
 
 await refreshFavorites();
 await updateUnreadMessagesBadge();
+
+// Keep the user on the marketplace after login.
+// Open the Seller Dashboard only when requested.
+alert("Welcome back to SiomaMarket!");
+}
 
 // Open the Seller Dashboard automatically after login.
 const dashboard = document.getElementById("sellerDashboard");
