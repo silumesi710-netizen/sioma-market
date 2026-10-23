@@ -2034,10 +2034,11 @@ if (sellerId === currentUser.id) {
     return;
 }
 
-const messageButton = document.querySelector(
-    "#productDetailsModal button"
+const messageButton = Array.from(
+    document.querySelectorAll("#productDetailsModal button")
+).find(button =>
+    button.textContent.trim().includes("Message Seller")
 );
-
 try {
     if (messageButton) {
         messageButton.disabled = true;
