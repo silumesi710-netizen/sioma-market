@@ -1165,8 +1165,14 @@ function showListingDetails(listing) {
     modal.appendChild(content);
 
     modal.addEventListener("click", event => {
-        if (event.target === modal) modal.remove();
-    });
+  if (event.target === modal) {
+    modal.remove();
+
+    if (!document.querySelector(".app-modal:not([hidden])")) {
+      document.body.classList.remove("modal-open");
+    }
+  }
+});
 
     document.body.appendChild(modal);
     document.body.classList.add("modal-open");
