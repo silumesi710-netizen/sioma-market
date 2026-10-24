@@ -578,14 +578,17 @@ function formatPrice(value) {
 function displayStatus(status) {
   return String(status || "unknown").toLowerCase();
 }
-
 function isConfigurationReady() {
-  return (
-    SUPABASE_URL.startsWith("https://") &&
-    !SUPABASE_URL.includes("https://luolbdjonzissgskjupd.supabase.co") &&
-    SUPABASE_KEY.length > 20 &&
-    !SUPABASE_KEY.includes("sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
-)
+return (
+typeof SUPABASE_URL === "string" &&
+SUPABASE_URL.startsWith("https://") &&
+!SUPABASE_URL.includes("PASTE_YOUR_EXISTING") &&
+typeof SUPABASE_KEY === "string" &&
+SUPABASE_KEY.length > 20 &&
+!SUPABASE_KEY.includes("PASTE_YOUR_EXISTING")
+);
+}
+
   );
 }
 
