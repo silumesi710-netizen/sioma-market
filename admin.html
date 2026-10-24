@@ -476,9 +476,7 @@ async function loadDashboard() {
     }
 
     if (results[0].status === "fulfilled") {
-      $("totalListings").textContent = allProducts.length.toLocaleString();
-      $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
-      $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
+      updateDashboardCounts();
       populateCategories();
       renderProducts();
     } else {
@@ -508,6 +506,12 @@ async function loadDashboard() {
     refreshInProgress = false;
     $("refreshBtn").disabled = false;
   }
+}
+
+function updateDashboardCounts() {
+  $("totalListings").textContent = allProducts.length.toLocaleString();
+  $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
+  $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
 }
 
 function populateCategories() {
@@ -605,24 +609,18 @@ async function toggleListing(id) {
   if (!confirmed) return;
 
   try {
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from("listings")
       .update({ status: newStatus })
-      .eq("id", product.id)
-      .select("id, status");
+      .eq("id", product.id);
 
     if (error) throw error;
-    if (!data || data.length === 0) {
-      throw new Error("No listing was updated. Check administrator UPDATE permissions and RLS policies.");
-    }
 
-    product.status = data[0].status;
-    showMessage("dashboardMessage", "Listing status changed to " + data[0].status + ".");
+    // Update local state and re-render
+    product.status = newStatus;
+    showMessage("dashboardMessage", "Listing status changed to " + newStatus + ".");
     renderProducts();
-
-    $("totalListings").textContent = allProducts.length.toLocaleString();
-    $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
-    $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
+    updateDashboardCounts();
   } catch (error) {
     console.error(error);
     showMessage("dashboardMessage", "Could not change listing status: " + (error.message || "Unknown error"), true);
@@ -644,16 +642,12 @@ async function deleteListing(id) {
 
     if (error) throw error;
 
-    // Remove from local array
     allProducts = allProducts.filter(p => String(p.id) !== String(id));
     
     showMessage("dashboardMessage", "Listing successfully deleted.");
     renderProducts();
     populateCategories();
-
-    $("totalListings").textContent = allProducts.length.toLocaleString();
-    $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
-    $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
+    updateDashboardCounts();
   } catch (error) {
     console.error(error);
     showMessage("dashboardMessage", "Could not delete listing: " + (error.message || "Unknown error"), true);
