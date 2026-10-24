@@ -1,325 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#087f3d">
-
-  <title>SiomaMarket Admin Dashboard</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --green: #087f3d;
-      --dark-green: #075b2d;
-      --light-green: #e8f6ee;
-      --gold: #ffb703;
-      --background: #f4f7f5;
-      --text: #183126;
-      --muted: #68776e;
-      --border: #e1e9e3;
-      --white: #ffffff;
-      --red: #c62828;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--background);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 14px;
-    }
-
-    button, input, select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .topbar {
-      background: var(--dark-green);
-      color: white;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .brand small {
-      display: block;
-      margin-top: 4px;
-      font-size: 11px;
-      font-weight: normal;
-      opacity: 0.8;
-    }
-
-    .topbar button {
-      background: var(--gold);
-      color: #243020;
-      border: none;
-      padding: 10px 13px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .container {
-      width: min(1200px, 100%);
-      padding: 18px;
-      margin: auto;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 17px;
-      margin-bottom: 16px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.025);
-    }
-
-    h1 {
-      font-size: 24px;
-      margin: 0 0 8px;
-    }
-
-    h2 {
-      font-size: 17px;
-      margin: 0 0 15px;
-    }
-
-    .muted {
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .login-box {
-      max-width: 420px;
-      margin: 50px auto;
-    }
-
-    label {
-      display: block;
-      margin: 14px 0 6px;
-      font-weight: 700;
-    }
-
-    input, select {
-      width: 100%;
-      min-height: 44px;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 11px;
-      background: white;
-      color: var(--text);
-    }
-
-    .primary-btn {
-      width: 100%;
-      border: none;
-      border-radius: 9px;
-      padding: 13px;
-      margin-top: 16px;
-      background: var(--green);
-      color: white;
-      font-weight: bold;
-    }
-
-    .notice {
-      padding: 12px;
-      border-radius: 9px;
-      margin-top: 12px;
-      background: var(--light-green);
-      overflow-wrap: anywhere;
-      line-height: 1.5;
-    }
-
-    .notice.error {
-      background: #ffebee;
-      color: #a51d26;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin: 20px 0;
-    }
-
-    .stat {
-      background: white;
-      padding: 15px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      min-width: 0;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .stat-value {
-      font-size: 25px;
-      font-weight: 800;
-      margin-top: 9px;
-      overflow-wrap: anywhere;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .toolbar input,
-    .toolbar select {
-      min-width: 0;
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-
-    th {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    td {
-      line-height: 1.5;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 8px;
-      border-radius: 20px;
-      background: var(--light-green);
-      color: var(--dark-green);
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .badge.inactive {
-      background: #fff3cd;
-      color: #785500;
-    }
-
-    .action-btn {
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 7px;
-      padding: 8px 10px;
-      margin: 2px;
-      white-space: nowrap;
-    }
-
-    .action-btn.danger {
-      color: var(--red);
-    }
-
-    .action-btn.success {
-      color: var(--green);
-    }
-
-    .section-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      margin: 20px 0;
-      padding-bottom: 4px;
-    }
-
-    .tab-btn {
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 9px;
-      padding: 11px 14px;
-      white-space: nowrap;
-      font-weight: bold;
-    }
-
-    .tab-btn.active {
-      background: var(--green);
-      color: white;
-      border-color: var(--green);
-    }
-
-    .empty {
-      text-align: center;
-      padding: 28px 12px;
-      color: var(--muted);
-    }
-
-    .footer {
-      text-align: center;
-      padding: 25px 12px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    @media (max-width: 650px) {
-      .container {
-        padding: 12px;
-      }
-
-      .stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .stat-value {
-        font-size: 22px;
-      }
-
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      h1 {
-        font-size: 21px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#087f3d">
+<title>SiomaMarket Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green: #087f3d;
+  --dark-green: #075b2d;
+  --light-green: #e8f6ee;
+  --gold: #ffb703;
+  --background: #f4f7f5;
+  --text: #183126;
+  --muted: #68776e;
+  --border: #e1e9e3;
+  --white: #ffffff;
+  --red: #c62828;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+.hidden { display: none !important; }
+.topbar {
+  background: var(--dark-green);
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.brand { font-size: 18px; font-weight: 800; }
+.brand small { display: block; margin-top: 4px; font-size: 11px; font-weight: normal; opacity: 0.8; }
+.topbar button {
+  background: var(--gold);
+  color: #243020;
+  border: none;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-weight: bold;
+}
+.container { width: min(1200px, 100%); padding: 18px; margin: auto; }
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 17px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.025);
+}
+h1 { font-size: 24px; margin: 0 0 8px; }
+h2 { font-size: 17px; margin: 0 0 15px; }
+.muted { color: var(--muted); line-height: 1.6; }
+.login-box { max-width: 420px; margin: 50px auto; }
+label { display: block; margin: 14px 0 6px; font-weight: 700; }
+input, select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 11px;
+  background: white;
+  color: var(--text);
+}
+.primary-btn {
+  width: 100%;
+  border: none;
+  border-radius: 9px;
+  padding: 13px;
+  margin-top: 16px;
+  background: var(--green);
+  color: white;
+  font-weight: bold;
+}
+.notice {
+  padding: 12px;
+  border-radius: 9px;
+  margin-top: 12px;
+  background: var(--light-green);
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.notice.error { background: #ffebee; color: #a51d26; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.stat {
+  background: white;
+  padding: 15px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+.stat-label { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.stat-value { font-size: 25px; font-weight: 800; margin-top: 9px; overflow-wrap: anywhere; }
+.toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.toolbar input, .toolbar select { min-width: 0; }
+.table-wrap { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); white-space: nowrap; }
+td { line-height: 1.5; }
+.badge {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: var(--light-green);
+  color: var(--dark-green);
+  font-size: 11px;
+  font-weight: bold;
+}
+.badge.inactive { background: #fff3cd; color: #785500; }
+.action-btn {
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 7px;
+  padding: 8px 10px;
+  margin: 2px;
+  white-space: nowrap;
+}
+.action-btn.danger { color: var(--red); }
+.action-btn.success { color: var(--green); }
+.section-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 20px 0;
+  padding-bottom: 4px;
+}
+.tab-btn {
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 9px;
+  padding: 11px 14px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+.tab-btn.active {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.empty { text-align: center; padding: 28px 12px; color: var(--muted); }
+.footer { text-align: center; padding: 25px 12px; color: var(--muted); font-size: 12px; }
+@media (max-width: 650px) {
+  .container { padding: 12px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-value { font-size: 22px; }
+  .toolbar { grid-template-columns: 1fr; }
+  h1 { font-size: 21px; }
+}
+</style>
 </head>
-
 <body>
 
 <header class="topbar">
@@ -327,64 +178,34 @@
     SiomaMarket 🇿🇲
     <small>Administration Dashboard</small>
   </div>
-
-  <button id="logoutBtn" class="hidden" type="button">
-    Log out
-  </button>
+  <button id="logoutBtn" class="hidden" type="button">Log out</button>
 </header>
 
 <main class="container">
-
   <!-- ADMIN LOGIN -->
   <section id="loginSection" class="card login-box">
     <h1>Admin Login</h1>
-
-    <p class="muted">
-      Sign in with your registered SiomaMarket administrator account.
-    </p>
-
+    <p class="muted">Sign in with your registered SiomaMarket administrator account.</p>
     <form id="loginForm">
       <label for="adminEmail">Email address</label>
-      <input
-        id="adminEmail"
-        type="email"
-        autocomplete="username"
-        required
-      >
-
+      <input id="adminEmail" type="email" autocomplete="username" required>
+      
       <label for="adminPassword">Password</label>
-      <input
-        id="adminPassword"
-        type="password"
-        autocomplete="current-password"
-        required
-      >
-
-      <button class="primary-btn" id="loginBtn" type="submit">
-        Sign in securely
-      </button>
+      <input id="adminPassword" type="password" autocomplete="current-password" required>
+      
+      <button class="primary-btn" id="loginBtn" type="submit">Sign in securely</button>
     </form>
-
     <div id="loginMessage" class="notice hidden" role="status"></div>
   </section>
 
   <!-- ADMIN APPLICATION -->
   <section id="dashboardSection" class="hidden">
-
     <div class="card">
       <h1>Marketplace Overview</h1>
-
-      <p class="muted">
-        Manage SiomaMarket listings and monitor your marketplace.
-      </p>
-
+      <p class="muted">Manage SiomaMarket listings and monitor your marketplace.</p>
       <div id="adminIdentity" class="muted"></div>
-
       <div id="dashboardMessage" class="notice hidden" role="status"></div>
-
-      <button id="refreshBtn" class="action-btn success" type="button">
-        Refresh dashboard
-      </button>
+      <button id="refreshBtn" class="action-btn success" type="button">Refresh dashboard</button>
     </div>
 
     <div class="stats">
@@ -392,27 +213,22 @@
         <div class="stat-label">Total Listings Loaded</div>
         <div class="stat-value" id="totalListings">—</div>
       </div>
-
       <div class="stat">
         <div class="stat-label">Active Listings Loaded</div>
         <div class="stat-value" id="activeListings">—</div>
       </div>
-
       <div class="stat">
         <div class="stat-label">Inactive Listings Loaded</div>
         <div class="stat-value" id="inactiveListings">—</div>
       </div>
-
       <div class="stat">
         <div class="stat-label">Registered Sellers</div>
         <div class="stat-value" id="totalSellers">—</div>
       </div>
-
       <div class="stat">
         <div class="stat-label">Favorites Records</div>
         <div class="stat-value" id="totalFavorites">—</div>
       </div>
-
       <div class="stat">
         <div class="stat-label">Administrator</div>
         <div class="stat-value" style="font-size:16px">Verified</div>
@@ -420,31 +236,18 @@
     </div>
 
     <nav class="section-tabs" aria-label="Admin sections">
-      <button class="tab-btn active" data-section="productsSection">
-        Products
-      </button>
-
-      <button class="tab-btn" data-section="sellersSection">
-        Sellers
-      </button>
+      <button class="tab-btn active" data-section="productsSection">Products</button>
+      <button class="tab-btn" data-section="sellersSection">Sellers</button>
     </nav>
 
     <!-- PRODUCTS -->
     <section id="productsSection" class="card">
       <h2>Product Management</h2>
-
       <div class="toolbar">
-        <input
-          id="productSearch"
-          type="search"
-          placeholder="Search product or seller..."
-          aria-label="Search products"
-        >
-
+        <input id="productSearch" type="search" placeholder="Search product or seller..." aria-label="Search products">
         <select id="categoryFilter" aria-label="Filter by category">
           <option value="">All categories</option>
         </select>
-
         <select id="statusFilter" aria-label="Filter by status">
           <option value="">All statuses</option>
           <option value="active">Active</option>
@@ -452,7 +255,6 @@
           <option value="pending">Pending</option>
         </select>
       </div>
-
       <div class="table-wrap">
         <table>
           <thead>
@@ -464,7 +266,6 @@
               <th>Actions</th>
             </tr>
           </thead>
-
           <tbody id="productsBody">
             <tr>
               <td colspan="5" class="empty">Loading listings...</td>
@@ -472,21 +273,13 @@
           </tbody>
         </table>
       </div>
-
       <div id="productCount" class="muted"></div>
     </section>
 
     <!-- SELLERS -->
     <section id="sellersSection" class="card hidden">
       <h2>Seller Management</h2>
-
-      <input
-        id="sellerSearch"
-        type="search"
-        placeholder="Search seller name, email or location..."
-        aria-label="Search sellers"
-      >
-
+      <input id="sellerSearch" type="search" placeholder="Search seller name, email or location..." aria-label="Search sellers">
       <div class="table-wrap" style="margin-top:15px">
         <table>
           <thead>
@@ -496,7 +289,6 @@
               <th>Phone</th>
             </tr>
           </thead>
-
           <tbody id="sellersBody">
             <tr>
               <td colspan="3" class="empty">Loading sellers...</td>
@@ -505,9 +297,7 @@
         </table>
       </div>
     </section>
-
   </section>
-
 </main>
 
 <footer class="footer">
@@ -517,24 +307,11 @@
 <script>
 "use strict";
 
-/*
-  IMPORTANT:
-  Use the SAME Supabase project URL and publishable/anon key
-  as your existing SiomaMarket application.
-
-  Never put a service-role key in this public HTML file.
-*/
 const SUPABASE_URL = "https://luolbdjonzissgskjupd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
-
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = (id) => document.getElementById(id);
-
 let currentAdmin = null;
 let allProducts = [];
 let allSellers = [];
@@ -545,7 +322,6 @@ function showMessage(id, message, isError = false) {
   const element = $(id);
   element.textContent = message;
   element.classList.remove("hidden", "error");
-
   if (isError) {
     element.classList.add("error");
   }
@@ -567,28 +343,24 @@ function escapeHTML(value) {
 
 function formatPrice(value) {
   const amount = Number(value);
-
   if (!Number.isFinite(amount)) {
     return "K" + escapeHTML(value);
   }
-
   return "K" + amount.toLocaleString("en-ZM");
 }
 
 function displayStatus(status) {
   return String(status || "unknown").toLowerCase();
 }
-function isConfigurationReady() {
-return (
-typeof SUPABASE_URL === "string" &&
-SUPABASE_URL.startsWith("https://") &&
-!SUPABASE_URL.includes("PASTE_YOUR_EXISTING") &&
-typeof SUPABASE_KEY === "string" &&
-SUPABASE_KEY.length > 20 &&
-!SUPABASE_KEY.includes("PASTE_YOUR_EXISTING")
-);
-}
 
+function isConfigurationReady() {
+  return (
+    typeof SUPABASE_URL === "string" &&
+    SUPABASE_URL.startsWith("https://") &&
+    !SUPABASE_URL.includes("PASTE_YOUR_EXISTING") &&
+    typeof SUPABASE_KEY === "string" &&
+    SUPABASE_KEY.length > 20 &&
+    !SUPABASE_KEY.includes("PASTE_YOUR_EXISTING")
   );
 }
 
@@ -596,7 +368,6 @@ async function verifyAdministrator(user) {
   if (!user || !user.id || !user.email) {
     return false;
   }
-
   const { data, error } = await supabaseClient
     .from("admin_users")
     .select("user_id, email")
@@ -610,54 +381,39 @@ async function verifyAdministrator(user) {
       "Could not verify administrator permissions. Check the admin_users table and its RLS policies."
     );
   }
-
   return Boolean(data);
 }
 
 async function openDashboard(user) {
   if (sessionCheckInProgress) return;
-
   sessionCheckInProgress = true;
-
   try {
     const isAdmin = await verifyAdministrator(user);
-
     if (!isAdmin) {
       currentAdmin = null;
-
       await supabaseClient.auth.signOut();
-
       $("dashboardSection").classList.add("hidden");
       $("loginSection").classList.remove("hidden");
       $("logoutBtn").classList.add("hidden");
-
       showMessage(
         "loginMessage",
         "Access denied. This account is not registered as a SiomaMarket administrator.",
         true
       );
-
       return;
     }
-
     currentAdmin = user;
-
     $("loginSection").classList.add("hidden");
     $("dashboardSection").classList.remove("hidden");
     $("logoutBtn").classList.remove("hidden");
-
     $("adminIdentity").textContent = "Signed in as " + user.email;
-
     hideMessage("loginMessage");
-
     await loadDashboard();
   } catch (error) {
     console.error(error);
-
     $("dashboardSection").classList.add("hidden");
     $("loginSection").classList.remove("hidden");
     $("logoutBtn").classList.add("hidden");
-
     showMessage(
       "loginMessage",
       error.message || "Unable to verify administrator access.",
@@ -670,148 +426,84 @@ async function openDashboard(user) {
 
 async function loadDashboard() {
   if (!currentAdmin || refreshInProgress) return;
-
   refreshInProgress = true;
   $("refreshBtn").disabled = true;
-
   showMessage("dashboardMessage", "Loading marketplace data...");
 
   try {
-    /*
-      Fetch actual records in pages.
-      This avoids treating an arbitrary 1000-row limit as the
-      total number of marketplace listings.
-    */
-
     async function fetchAllRows(table, columns) {
       const pageSize = 500;
       let rows = [];
       let offset = 0;
-
       while (true) {
         const { data, error } = await supabaseClient
           .from(table)
           .select(columns)
           .range(offset, offset + pageSize - 1);
-
         if (error) throw error;
-
         const batch = data || [];
         rows = rows.concat(batch);
-
         if (batch.length < pageSize) break;
-
         offset += pageSize;
       }
-
       return rows;
     }
 
     const results = await Promise.allSettled([
-      fetchAllRows(
-        "listings",
-        "id, title, price, category, location, seller_name, seller_phone, status, created_at"
-      ),
-
-      fetchAllRows(
-        "seller_profiles",
-        "id, full_name, phone, location"
-      ),
-
+      fetchAllRows("listings", "id, title, price, category, location, seller_name, seller_phone, status, created_at"),
+      fetchAllRows("seller_profiles", "id, full_name, phone, location"),
       fetchAllRows("favorites", "listing_id")
     ]);
 
-    const labels = [
-      "listings",
-      "seller profiles",
-      "favorites"
-    ];
-
+    const labels = ["listings", "seller profiles", "favorites"];
     const failures = [];
-
     results.forEach((result, index) => {
       if (result.status === "rejected") {
-        failures.push(
-          labels[index] + ": " +
-          (result.reason?.message || "request failed")
-        );
+        failures.push(labels[index] + ": " + (result.reason?.message || "request failed"));
       }
     });
 
     if (results[0].status === "fulfilled") {
       allProducts = results[0].value;
     }
-
     if (results[1].status === "fulfilled") {
       allSellers = results[1].value;
     }
-
     if (results[2].status === "fulfilled") {
-      $("totalFavorites").textContent =
-        results[2].value.length.toLocaleString();
+      $("totalFavorites").textContent = results[2].value.length.toLocaleString();
     } else {
       $("totalFavorites").textContent = "Unavailable";
     }
 
     if (results[0].status === "fulfilled") {
-      $("totalListings").textContent =
-        allProducts.length.toLocaleString();
-
-      $("activeListings").textContent =
-        allProducts.filter(
-          p => displayStatus(p.status) === "active"
-        ).length.toLocaleString();
-
-      $("inactiveListings").textContent =
-        allProducts.filter(
-          p => displayStatus(p.status) !== "active"
-        ).length.toLocaleString();
-
+      $("totalListings").textContent = allProducts.length.toLocaleString();
+      $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
+      $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
       populateCategories();
       renderProducts();
     } else {
       $("totalListings").textContent = "Unavailable";
       $("activeListings").textContent = "Unavailable";
       $("inactiveListings").textContent = "Unavailable";
-
-      $("productsBody").innerHTML =
-        '<tr><td colspan="5" class="empty">' +
-        'Could not load listings. Check the listings table and its RLS policies.' +
-        '</td></tr>';
+      $("productsBody").innerHTML = '<tr><td colspan="5" class="empty">Could not load listings. Check the listings table and its RLS policies.</td></tr>';
     }
 
     if (results[1].status === "fulfilled") {
-      $("totalSellers").textContent =
-        allSellers.length.toLocaleString();
-
+      $("totalSellers").textContent = allSellers.length.toLocaleString();
       renderSellers();
     } else {
       $("totalSellers").textContent = "Unavailable";
-
-      $("sellersBody").innerHTML =
-        '<tr><td colspan="3" class="empty">' +
-        'Could not load seller profiles. Check the table and its RLS policies.' +
-        '</td></tr>';
+      $("sellersBody").innerHTML = '<tr><td colspan="3" class="empty">Could not load seller profiles. Check the table and its RLS policies.</td></tr>';
     }
 
     if (failures.length) {
-      showMessage(
-        "dashboardMessage",
-        "Some information could not be loaded: " + failures.join(" | "),
-        true
-      );
+      showMessage("dashboardMessage", "Some information could not be loaded: " + failures.join(" | "), true);
     } else {
       showMessage("dashboardMessage", "Marketplace data updated.");
     }
-
   } catch (error) {
     console.error(error);
-
-    showMessage(
-      "dashboardMessage",
-      "Dashboard error: " + (error.message || "Unknown error"),
-      true
-    );
+    showMessage("dashboardMessage", "Dashboard error: " + (error.message || "Unknown error"), true);
   } finally {
     refreshInProgress = false;
     $("refreshBtn").disabled = false;
@@ -821,21 +513,11 @@ async function loadDashboard() {
 function populateCategories() {
   const select = $("categoryFilter");
   const previous = select.value;
-
-  const categories = [
-    ...new Set(
-      allProducts
-        .map(p => p.category)
-        .filter(Boolean)
-    )
-  ].sort((a, b) => String(a).localeCompare(String(b)));
-
+  const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
   select.replaceChildren(new Option("All categories", ""));
-
   categories.forEach(category => {
     select.add(new Option(category, category));
   });
-
   if (categories.includes(previous)) {
     select.value = previous;
   }
@@ -847,13 +529,7 @@ function renderProducts() {
   const status = $("statusFilter").value.toLowerCase();
 
   const filtered = allProducts.filter(product => {
-    const text = [
-      product.title,
-      product.seller_name,
-      product.location,
-      product.category
-    ].join(" ").toLowerCase();
-
+    const text = [product.title, product.seller_name, product.location, product.category].join(" ").toLowerCase();
     return (
       text.includes(search) &&
       (!category || product.category === category) &&
@@ -861,54 +537,32 @@ function renderProducts() {
     );
   });
 
-  $("productCount").textContent =
-    "Showing " + filtered.length + " of " + allProducts.length +
-    " loaded listings.";
+  $("productCount").textContent = "Showing " + filtered.length + " of " + allProducts.length + " loaded listings.";
 
   if (!filtered.length) {
-    $("productsBody").innerHTML =
-      '<tr><td colspan="5" class="empty">' +
-      'No matching listings found.' +
-      '</td></tr>';
-
+    $("productsBody").innerHTML = '<tr><td colspan="5" class="empty">No matching listings found.</td></tr>';
     return;
   }
 
   $("productsBody").innerHTML = filtered.map(product => {
     const status = displayStatus(product.status);
     const active = status === "active";
-
     return `
       <tr>
         <td>
           <strong>${escapeHTML(product.title || "Untitled")}</strong>
           <br>
-          <span class="muted">
-            ${escapeHTML(product.category || "Uncategorized")}
-          </span>
+          <span class="muted">${escapeHTML(product.category || "Uncategorized")}</span>
           <br>
-          <span class="muted">
-            ${escapeHTML(product.location || "No location")}
-          </span>
+          <span class="muted">${escapeHTML(product.location || "No location")}</span>
         </td>
-
         <td>${formatPrice(product.price)}</td>
-
         <td>${escapeHTML(product.seller_name || "Unknown")}</td>
-
         <td>
-          <span class="badge ${active ? "" : "inactive"}">
-            ${escapeHTML(status)}
-          </span>
+          <span class="badge ${active ? "" : "inactive"}">${escapeHTML(status)}</span>
         </td>
-
         <td>
-          <button
-            class="action-btn ${active ? "danger" : "success"}"
-            data-action="toggle"
-            data-id="${escapeHTML(product.id)}"
-            type="button"
-          >
+          <button class="action-btn ${active ? "danger" : "success"}" data-action="toggle" data-id="${escapeHTML(product.id)}" type="button">
             ${active ? "Deactivate" : "Activate"}
           </button>
         </td>
@@ -919,23 +573,13 @@ function renderProducts() {
 
 function renderSellers() {
   const search = $("sellerSearch").value.trim().toLowerCase();
-
   const filtered = allSellers.filter(seller => {
-    const text = [
-      seller.full_name,
-      seller.location,
-      seller.phone
-    ].join(" ").toLowerCase();
-
+    const text = [seller.full_name, seller.location, seller.phone].join(" ").toLowerCase();
     return text.includes(search);
   });
 
   if (!filtered.length) {
-    $("sellersBody").innerHTML =
-      '<tr><td colspan="3" class="empty">' +
-      'No matching seller profiles found.' +
-      '</td></tr>';
-
+    $("sellersBody").innerHTML = '<tr><td colspan="3" class="empty">No matching seller profiles found.</td></tr>';
     return;
   }
 
@@ -950,24 +594,14 @@ function renderSellers() {
 
 async function toggleListing(id) {
   const product = allProducts.find(p => String(p.id) === String(id));
-
   if (!product || !currentAdmin) return;
 
   const currentlyActive = displayStatus(product.status) === "active";
   const newStatus = currentlyActive ? "inactive" : "active";
-
-  const confirmed = window.confirm(
-    "Change this listing's status to " + newStatus + "?"
-  );
-
+  const confirmed = window.confirm("Change this listing's status to " + newStatus + "?");
   if (!confirmed) return;
 
   try {
-    /*
-      The database must independently verify that the current user
-      is an administrator before allowing this update.
-    */
-
     const { data, error } = await supabaseClient
       .from("listings")
       .update({ status: newStatus })
@@ -975,80 +609,41 @@ async function toggleListing(id) {
       .select("id, status");
 
     if (error) throw error;
-
     if (!data || data.length === 0) {
-      throw new Error(
-        "No listing was updated. Check administrator UPDATE permissions and RLS policies."
-      );
+      throw new Error("No listing was updated. Check administrator UPDATE permissions and RLS policies.");
     }
 
     product.status = data[0].status;
-
-    showMessage(
-      "dashboardMessage",
-      "Listing status changed to " + data[0].status + "."
-    );
-
+    showMessage("dashboardMessage", "Listing status changed to " + data[0].status + ".");
     renderProducts();
 
     $("totalListings").textContent = allProducts.length.toLocaleString();
-
-    $("activeListings").textContent = allProducts.filter(
-      p => displayStatus(p.status) === "active"
-    ).length.toLocaleString();
-
-    $("inactiveListings").textContent = allProducts.filter(
-      p => displayStatus(p.status) !== "active"
-    ).length.toLocaleString();
-
+    $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
+    $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
   } catch (error) {
     console.error(error);
-
-    showMessage(
-      "dashboardMessage",
-      "Could not change listing status: " +
-      (error.message || "Unknown error"),
-      true
-    );
+    showMessage("dashboardMessage", "Could not change listing status: " + (error.message || "Unknown error"), true);
   }
 }
 
 $("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
-
   if (!isConfigurationReady()) {
-    showMessage(
-      "loginMessage",
-      "Setup required: enter your existing Supabase project URL and publishable key in admin.html.",
-      true
-    );
-
+    showMessage("loginMessage", "Setup required: enter your existing Supabase project URL and publishable key.", true);
     return;
   }
-
   const email = $("adminEmail").value.trim();
   const password = $("adminPassword").value;
   const button = $("loginBtn");
-
   button.disabled = true;
   button.textContent = "Signing in...";
 
   try {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
     await openDashboard(data.user);
-
   } catch (error) {
-    showMessage(
-      "loginMessage",
-      error.message || "Login failed.",
-      true
-    );
+    showMessage("loginMessage", error.message || "Login failed.", true);
   } finally {
     button.disabled = false;
     button.textContent = "Sign in securely";
@@ -1057,26 +652,21 @@ $("loginForm").addEventListener("submit", async event => {
 
 $("logoutBtn").addEventListener("click", async () => {
   const { error } = await supabaseClient.auth.signOut();
-
   if (error) {
     showMessage("dashboardMessage", error.message, true);
     return;
   }
-
   currentAdmin = null;
   allProducts = [];
   allSellers = [];
-
   $("dashboardSection").classList.add("hidden");
   $("loginSection").classList.remove("hidden");
   $("logoutBtn").classList.add("hidden");
-
   $("adminPassword").value = "";
   hideMessage("loginMessage");
 });
 
 $("refreshBtn").addEventListener("click", loadDashboard);
-
 $("productSearch").addEventListener("input", renderProducts);
 $("categoryFilter").addEventListener("change", renderProducts);
 $("statusFilter").addEventListener("change", renderProducts);
@@ -1084,7 +674,6 @@ $("sellerSearch").addEventListener("input", renderSellers);
 
 $("productsBody").addEventListener("click", event => {
   const button = event.target.closest("button[data-action='toggle']");
-
   if (button) {
     toggleListing(button.dataset.id);
   }
@@ -1095,7 +684,6 @@ document.querySelectorAll(".tab-btn").forEach(button => {
     document.querySelectorAll(".tab-btn").forEach(tab => {
       tab.classList.toggle("active", tab === button);
     });
-
     ["productsSection", "sellersSection"].forEach(id => {
       $(id).classList.toggle("hidden", id !== button.dataset.section);
     });
@@ -1103,18 +691,13 @@ document.querySelectorAll(".tab-btn").forEach(button => {
 });
 
 if (!isConfigurationReady()) {
-  showMessage(
-    "loginMessage",
-    "Setup required: replace the two Supabase configuration placeholders in admin.html before signing in.",
-    true
-  );
+  showMessage("loginMessage", "Setup required: replace the two Supabase configuration placeholders before signing in.", true);
 } else {
   supabaseClient.auth.getSession().then(({ data, error }) => {
     if (error) {
       showMessage("loginMessage", error.message, true);
       return;
     }
-
     if (data.session?.user) {
       openDashboard(data.session.user);
     }
@@ -1126,11 +709,7 @@ if (!isConfigurationReady()) {
       $("dashboardSection").classList.add("hidden");
       $("loginSection").classList.remove("hidden");
       $("logoutBtn").classList.add("hidden");
-    } else if (
-      session?.user &&
-      !currentAdmin &&
-      !sessionCheckInProgress
-    ) {
+    } else if (session?.user && !currentAdmin && !sessionCheckInProgress) {
       openDashboard(session.user);
     }
   });
