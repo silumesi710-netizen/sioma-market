@@ -1606,3 +1606,14 @@ async function startConversationForListing(listing) {
 async function updateUnreadMessagesBadge() {
   // Safe placeholder function for unread messages tracking
 }
+// Simple hash-based active class toggling for bottom nav
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash || '#home';
+  document.querySelectorAll('nav a').forEach(link => {
+    if (link.getAttribute('href') === hash) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+});
