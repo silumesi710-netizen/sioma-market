@@ -591,39 +591,63 @@ function renderSellers() {
     </tr>
   `).join("");
 }
-
 async function toggleListing(id) {
-  const product = allProducts.find(p => String(p.id) === String(id));
-  if (!product || !currentAdmin) return;
+const product = allProducts.find(p => String(p.id) === String(id));
+if (!product || !currentAdmin) return;
 
-  const currentlyActive = displayStatus(product.status) === "active";
-  const newStatus = currentlyActive ? "inactive" : "active";
-  const confirmed = window.confirm("Change this listing's status to " + newStatus + "?");
-  if (!confirmed) return;
+const currentlyActive = displayStatus(product.status) === "active";
+const newStatus = currentlyActive ? "rejected" : "active";
 
-  try {
-    const { data, error } = await supabaseClient
-      .from("listings")
-      .update({ status: newStatus })
-      .eq("id", product.id)
-      .select("id, status");
+const confirmed = window.confirm(
+"Change this listing's status to " + newStatus + "?"
+);
+if (!confirmed) return;
 
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      throw new Error("No listing was updated. Check administrator UPDATE permissions and RLS policies.");
-    }
+try {
+const { data, error } = await supabaseClient
+.from("listings")
+.update({ status: newStatus })
+.eq("id", product.id)
+.select("id, status");
 
-    product.status = data[0].status;
-    showMessage("dashboardMessage", "Listing status changed to " + data[0].status + ".");
-    renderProducts();
+if (error) throw error;
 
-    $("totalListings").textContent = allProducts.length.toLocaleString();
-    $("activeListings").textContent = allProducts.filter(p => displayStatus(p.status) === "active").length.toLocaleString();
-    $("inactiveListings").textContent = allProducts.filter(p => displayStatus(p.status) !== "active").length.toLocaleString();
-  } catch (error) {
-    console.error(error);
-    showMessage("dashboardMessage", "Could not change listing status: " + (error.message || "Unknown error"), true);
-  }
+if (!data || data.length === 0) {
+  throw new Error(
+    "No listing was updated. Check administrator UPDATE permissions and RLS policies."
+  );
+}
+
+product.status = data[0].status;
+
+showMessage(
+  "dashboardMessage",
+  "Listing status changed to " + data[0].status + "."
+);
+
+renderProducts();
+
+$("totalListings").textContent =
+  allProducts.length.toLocaleString();
+
+$("activeListings").textContent =
+  allProducts.filter(p => displayStatus(p.status) === "active")
+    .length.toLocaleString();
+
+$("inactiveListings").textContent =
+  allProducts.filter(p => displayStatus(p.status) === "inactive")
+    .length.toLocaleString();
+
+} catch (error) {
+console.error(error);
+
+showMessage(
+  "dashboardMessage",
+  "Could not change listing status: " +
+    (error.message || "Unknown error"),
+  true
+);
+
 }
 
 $("loginForm").addEventListener("submit", async event => {
