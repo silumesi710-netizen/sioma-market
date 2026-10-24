@@ -582,9 +582,10 @@ function displayStatus(status) {
 function isConfigurationReady() {
   return (
     SUPABASE_URL.startsWith("https://") &&
-    !SUPABASE_URL.includes("PASTE_YOUR") &&
+    !SUPABASE_URL.includes("https://luolbdjonzissgskjupd.supabase.co";) &&
     SUPABASE_KEY.length > 20 &&
-    !SUPABASE_KEY.includes("PASTE_YOUR")
+    !SUPABASE_KEY.includes("sb_publishable_bMHzln24777v-kDo-uE8Eg_AYUWThn-";
+)
   );
 }
 
